@@ -1,10 +1,15 @@
 function Deliverable3_SeqDisc( A, B )
 
-    trainingDataRatio = 0.15;
+    trainingDataRatio = 0.1;
     
     avgErr = zeros(5,1);
+    minErr = zeros(5,1);
+    maxErr = zeros(5,1);
+    stdErr = zeros(5,1);
 
-    for J = 1:5
+    j_max = 5;
+    
+    for J = 1:j_max
         
         p_err = zeros(1, 20);
         
@@ -21,15 +26,28 @@ function Deliverable3_SeqDisc( A, B )
         end
         
         avgErr(J) = mean(p_err);
+        minErr(J) = min(p_err);
+        maxErr(J) = max(p_err);
+        stdErr(J) = std(p_err);
         
     end
     
-    avgErr
-    
-    
     figure;
-    hold on;
-    plot(avgErr);
+    %hold on;
+    %'LineWidth', 2.5, 
+    plot( ...
+        1:j_max, avgErr, 'r', ...
+        1:j_max, stdErr, '--r', ...    
+        1:j_max, minErr, 'g', ...
+        1:j_max, maxErr, 'b');
+    
+    h = legend('Avg','Std','Min','Max',1);
+    set(h,'Interpreter','none')
+    
+    %plot(stdErr, 'r', 'LineStyle', '--');
+    
+    %plot(minErr, 'g');
+    %plot(maxErr, 'b');
 
 end
 

@@ -31,8 +31,7 @@ classdef DiscriminateClassifier
                
                 %Check to make sure we have not stalled for some reason
                 interationCountSinceLastSave = interationCountSinceLastSave + 1;
-                if(interationCountSinceLastSave > 500)
-                    G_ = this.G
+                if(interationCountSinceLastSave > 1000)
                     A
                     B
                     error('Getting nowhere')

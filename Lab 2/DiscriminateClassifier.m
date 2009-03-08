@@ -18,8 +18,8 @@ classdef DiscriminateClassifier
    end
 
    methods
-       function this = DiscriminateClassifier(A, B)
-           
+       function this = DiscriminateClassifier(A, B, maxClassifiers)
+
            %TODO: consider end condition when either a or b is zero but the other is not
            
            interationCountSinceLastSave= 0;
@@ -73,6 +73,11 @@ classdef DiscriminateClassifier
                     this.G = [this.G; za, zb, n_aB, n_bA];
                     interationCountSinceLastSave = 0;
                     
+                    if(nargin >= 3 && size(this.G) >= maxClassifiers)
+                       %check if we have reached the maximum number of classifiers
+                       break;
+                    end
+                    
                     %Keep points which were classified incorrectly
                     if(n_aB == 0)
                         initialSize = size(B, 1);
@@ -110,10 +115,57 @@ classdef DiscriminateClassifier
 
             end
                %[classify_MED(A, z), classify_MED(B, z)]
-               
            %end
-           
        end %constructor
+       
+       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       
+       function class = Classify(this, x)
+           %x is a two column, m x 2 element matrix containing the points to classify 
+           %class is a m x 1 vector where each element is either 1 or 2
+           
+           class = zeros(size(x,1),1);
+           
+           for j = 1:size(this.G, 1)
+               
+               classifierClass = mod((~this.G(j, 5:6))*[2;1], 3);
+               x_Classified = classify_MED(x, [this.G(j,1:2);this.G(j,3:4)]);
+               
+               if (classifierClass == 0 || j == size(this.G, 1))
+                    %error('temp');
+                    class = class + (~class).*(x_Classified*[1;2]);
+               else
+                    class = class + (~class).*(classifierClass*x_Classified(:,classifierClass));
+               end
+               
+               if (min(min(class)) > 0)
+                  return; %everything has been fully classified
+               end
+           end
+           
+           class = class + ~class; %set any undecided elements as class A
+       end %Classify
+       
+       function boundaryContour = GenerateContourMatrix(this, x1Range, x2Range)
+           
+           x1Start = min(min(x1Range));
+           x1End = max(max(x1Range));
+           
+           x2Start = min(min(x2Range));
+           x2End = max(max(x2Range));
+
+           boundaryContour = zeros(x2End - x2Start + 1, x1End - x1Start + 1);
+           
+           x2Input = (x2Start:x2End)';
+           x1InputTemplate = ones(x2End-x2Start + 1, 1); 
+ 
+           for x1 = x1Start:x1End
+
+               toClassify = [x1InputTemplate*x1, x2Input];
+               
+               boundaryContour(:,x1 - x1Start + 1) = this.Classify(toClassify);
+           end
+       end %Generate contour
        
    end
 end 

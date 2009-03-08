@@ -5,8 +5,8 @@ classdef DiscriminateClassifier
    properties
        
        %Datasets
-       %A;
-       %B;
+       %DataSet1;
+       %DataSet2;
        
        %Format (column wise): 
        %1,2: prototype for class A
@@ -20,7 +20,8 @@ classdef DiscriminateClassifier
    methods
        function this = DiscriminateClassifier(A, B, maxClassifiers)
 
-           %TODO: consider end condition when either a or b is zero but the other is not
+           %this.DataSet1 = A;
+           %this.DataSet2 = B;
            
            interationCountSinceLastSave= 0;
            za_IndexPermutations = [];
@@ -73,7 +74,7 @@ classdef DiscriminateClassifier
                     this.G = [this.G; za, zb, n_aB, n_bA];
                     interationCountSinceLastSave = 0;
                     
-                    if(nargin >= 3 && size(this.G) >= maxClassifiers)
+                    if(nargin >= 3 && size(this.G, 1) >= maxClassifiers)
                        %check if we have reached the maximum number of classifiers
                        break;
                     end
@@ -170,19 +171,3 @@ classdef DiscriminateClassifier
    end
 end 
 
-
-function cleared = RemoveElements(toRemove, mask)
-    
-    cleared = toRemove;
-
-    if(size(mask, 2) > 1)
-        error('Mask size error')
-    end
-
-    for i = 0:(size(toRemove, 1) - 1)
-        i = size(toRemove, 1) - i;
-        if(mask(i, 1) == 0)
-            cleared(i, :) = [];
-        end
-    end
-end

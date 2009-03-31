@@ -1,12 +1,21 @@
-function [ finalPrototypes  ] = KMeans( inputData )
+function [ finalPrototypes  ] = KMeans( inputData, useFuzzy )
 %KMEANS Summary of this function goes here
 %   Detailed explanation goes here
 
+    if(nargin < 2)
+       useFuzzy = 0; 
+    end
+
     points = inputData(1:2, :);
-    prototypes = SelectInitialPrototypes(inputData);
+    prototypes = KM_SelectInitialPrototypes(inputData);
     
-    prototypeUpdate = UpdatePrototypes(points, prototypes);
-	prototypeChange = sum(sum(abs(prototypes - prototypeUpdate)));
+    if(useFuzzy == 0)
+        prototypeUpdate = UpdatePrototypes(points, prototypes);
+    else
+        prototypeUpdate = FuzzyPrototypeUpdate(points, prototypes);
+    end
+	
+    prototypeChange = sum(sum(abs(prototypes - prototypeUpdate)));
     
     iterationCount = 0;
     
@@ -14,13 +23,23 @@ function [ finalPrototypes  ] = KMeans( inputData )
         
         prototypes = prototypeUpdate;
         
-        prototypeUpdate = UpdatePrototypes(points, prototypes);
+        if(useFuzzy == 0)
+            prototypeUpdate = UpdatePrototypes(points, prototypes);
+        else
+            prototypeUpdate = FuzzyPrototypeUpdate(points, prototypes);
+        end
+        
         prototypeChange = sum(sum(abs(prototypes - prototypeUpdate)));
         
         iterationCount = iterationCount + 1;
         
         if iterationCount > 100
-            error('Iteration limit exceeded');
+            %pointProb
+            %prototypeUpdate
+            %prototypeChange
+            
+            warning('Iteration limit exceeded');
+            break;
         end
     end
 
@@ -29,25 +48,10 @@ function [ finalPrototypes  ] = KMeans( inputData )
     finalPrototypes = prototypes;
 end
 
-function prototypes = SelectInitialPrototypes(points)
-%prototypes: 2x10 matrix, each column is a prototype 
-
-    indicies = randperm(size(points, 2));
-    prototypes = zeros(2, 10);
-    
-    for i=1:10
-        prototypes(:, i) = points(1:2, indicies(i));
-    end
-
-end
-
 function [newPrototypes] = UpdatePrototypes(points, currentPrototypes)
 
     newPrototypes = zeros(size(currentPrototypes));
     pointCount = zeros(1, size(currentPrototypes, 2));
-    
-    %distances = GetDistances(points, currentPrototypes);
-    %classified = ClassifyByDistance(distances);
     
     classified = classify_MED(points, currentPrototypes);
     
@@ -69,7 +73,44 @@ function [newPrototypes] = UpdatePrototypes(points, currentPrototypes)
     %Average it out - I think there should be some way to do this in one step 
     newPrototypes(1,:) = newPrototypes(1,:)./pointCount;
     newPrototypes(2,:) = newPrototypes(2,:)./pointCount;
-    
-    
+
 end
 
+function [newPrototypes, probabilities] = FuzzyPrototypeUpdate(points, currentPrototypes)
+
+    b = 2;
+
+    newPrototypes = zeros(size(currentPrototypes));
+    probabilities = FuzzyPointProbabilities(points, currentPrototypes, b);
+
+    for cluster=1:size(currentPrototypes,2)
+        for point=1:size(points,2)        
+            newPrototypes(:,cluster) = newPrototypes(:,cluster) + probabilities(cluster,point)^b*points(:, point);
+        end
+        
+        newPrototypes(:,cluster) = newPrototypes(:,cluster)./sum(probabilities(cluster,:).^b);
+
+    end
+
+end
+
+function probabilities = FuzzyPointProbabilities(points, prototypes, b)
+
+    distances = GetDistances(points, prototypes);
+    probabilities = zeros(size(distances));
+    
+    for currentPoint=1:size(points,2)
+        if(min(min(distances(:, currentPoint))) == 0) 
+            %prototype right on a point
+            probabilities(:, currentPoint) = eq(distances(:, currentPoint), zeros(size(distances(:, currentPoint))));
+        else
+            probabilities(:, currentPoint) = distances(:, currentPoint).^(-1/(b-1));
+            divisor = sum(probabilities(:, currentPoint));
+            probabilities(:, currentPoint) = probabilities(:, currentPoint)./divisor;
+        end
+    end
+    
+    %probabilities
+    
+    %error('temp');
+end

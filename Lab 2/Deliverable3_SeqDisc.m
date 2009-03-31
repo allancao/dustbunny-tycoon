@@ -1,6 +1,8 @@
-function Deliverable3_SeqDisc( A, B )
+function [avgErr, stdErr, maxErr, minErr] = Deliverable3_SeqDisc( A, B, trainingDataRatio )
 
-    trainingDataRatio = 0.1;
+    if(nargin < 3)
+        trainingDataRatio = 0.1;
+    end
     
     avgErr = zeros(5,1);
     minErr = zeros(5,1);
@@ -32,7 +34,7 @@ function Deliverable3_SeqDisc( A, B )
         
     end
     
-    figure;
+    figure('Name', sprintf('Training data ratio: %g', trainingDataRatio));
     %hold on;
     %'LineWidth', 2.5, 
     plot( ...

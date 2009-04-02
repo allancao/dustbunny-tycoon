@@ -34,10 +34,7 @@ function [ finalPrototypes  ] = KMeans( inputData, useFuzzy )
         iterationCount = iterationCount + 1;
         
         if iterationCount > 100
-            %pointProb
-            %prototypeUpdate
-            %prototypeChange
-            
+            prototypeChange
             warning('Iteration limit exceeded');
             break;
         end
@@ -109,8 +106,4 @@ function probabilities = FuzzyPointProbabilities(points, prototypes, b)
             probabilities(:, currentPoint) = probabilities(:, currentPoint)./divisor;
         end
     end
-    
-    %probabilities
-    
-    %error('temp');
 end

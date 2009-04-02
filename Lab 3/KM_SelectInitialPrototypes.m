@@ -4,7 +4,7 @@ function prototypes = KM_SelectInitialPrototypes(points)
 
     indicies = randperm(size(points, 2));
     prototypes = zeros(2, 10);
-    indicies(1:10)
+    %indicies(1:10)
     
     for i=1:10
         prototypes(:, i) = points(1:2, indicies(i));

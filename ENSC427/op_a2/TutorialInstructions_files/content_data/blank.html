@@ -1,0 +1,971 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta name="GENERATOR" content="Quadralay WebWorks AutoMap 2003 Platinum Edition for FrameMaker 8.5.5844.3">
+    <meta name="TEMPLATEBASE" content="Modeler_13.3.2">
+    <meta name="LASTUPDATED" content="09/15/07 17:54:30"><title>Small Internetworks</title>
+    
+    <link rel="StyleSheet" href="blank_data/modeler.css" type="text/css">
+    
+<script type="text/javascript" language="JavaScript1.2" src="blank_data/context.js"></script>
+  <script type="text/javascript" language="JavaScript1.2" src="blank_data/towwhdir.js"></script>
+  <script type="text/javascript" language="JavaScript1.2" src="blank_data/wwhpagef.js"></script>
+
+  <script type="text/javascript" language="JavaScript1.2">
+   <!--
+    // Set reference to top level help frame
+    //
+    var  WWHFrame = WWHGetWWHFrame("");
+   // -->
+  </script>
+
+    <script type="text/javascript" language="JavaScript1.2" src="blank_data/expand.js"></script></head>
+
+
+  <body onload="WWHUpdate();" onunload="WWHUnload();" onkeydown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onkeypress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onkeyup="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+
+<!--Comment out OPNET Logo 
+   <p>
+      <img id="LongDescNotReq1" src="images/opnet.gif" width="174" height="46" alt=" OPNET logo" />
+    </p>
+-->
+<blockquote> 
+
+<b><font face="arial" size="2"><a href="file:////ensc/local2/opnet/14.0.A/doc/modeler/BasicTut/BasicTut-3-1.html"> Small Internetworks</a> &gt; Comparing Results</font></b> 
+
+</blockquote>
+
+    <hr align="left">
+
+    <blockquote>
+<a name="wp1007549"> </a><h2 class="pTitle">
+Small Internetworks
+</h2>
+<hr>
+
+ 
+
+
+<a name="wp1030950"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Introduction
+</h2>
+
+ 
+
+
+<a name="wp1030940"> </a><p class="pBody"> In this lesson, you will see how
+Modeler can do organizational scaling to solve a typical "what if" problem.
+You will learn how to use Modeler features to build and analyze network models.
+This lesson focuses on the use of the Project Editor, and how it will be
+used with the Node and Process editors in later lessons. In this lesson,
+you will </p>
+<div class="pSmartList1"><ul class="pSmartList1">
+<a name="wp999593"> </a><div class="pSmartList1"><li>Build a network quickly</li></div>
+<a name="wp999594"> </a><div class="pSmartList1"><li>Collect statistics about network performance</li></div>
+<a name="wp1055930"> </a><div class="pSmartList1"><li>Analyze these statistics</li></div>
+</ul></div>
+<a name="wp1055931"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>In this lesson, you
+use the Project Editor to build a topology of a small internetwork, choose
+statistics to collect, run a simulation, and analyze the results. </p>
+<a name="wp1031003"> </a><p class="pBody"> In this lesson, you plan for the
+expansion of a small company's intranet. Currently, the company has a star
+topology network on the first floor of its office building and plans to add
+an additional star topology network on another floor. You will build and
+test this "what-if" scenario to ensure that the load added by the second
+network will not cause the network to fail. </p>
+<a name="wp1037009"> </a><p class="pFigCaption">
+The Final Network
+</p>
+<a name="wp1037023"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-01.jpg" height="372" width="429" id="wp1037026" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp999788"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Getting Started
+</h2>
+
+ 
+
+
+<a name="wp1030957"> </a><p class="pBody">
+When creating a new network model, you must first create a new <span style="font-weight: bold;">project</span> and <span style="font-weight: bold;">scenario</span>.
+A project is a group of related scenarios that each explore a different aspect
+of the network. Projects can contain multiple scenarios. </p>
+<a name="wp1023411"> </a><p class="pBody">
+After you create a new project, you use the <b class="cBold">Startup Wizard</b> to set up a new scenario. The options in the Wizard let you
+</p>
+<div class="pSmartList1"><ul class="pSmartList1">
+<a name="wp1023412"> </a><div class="pSmartList1"><li>Define the initial topology of the network</li></div>
+<a name="wp1023413"> </a><div class="pSmartList1"><li>Define the scale and size of the network</li></div>
+<a name="wp999792"> </a><div class="pSmartList1"><li>Select a background map for the network</li></div>
+<a name="wp999793"> </a><div class="pSmartList1"><li>Associate an <b class="cBold">object palette</b> with the scenario</li></div>
+</ul></div>
+<a name="wp999911"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>The <b class="cBold">Startup Wizard</b>
+automatically appears each time you create a new project. The Startup Wizard
+lets you define certain aspects of the network environment. </p>
+<a name="wp1031015"> </a><p class="pBody">
+To use the Startup Wizard to set up a new scenario, do the following:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp999912"> </a><div style="text-align: left;" class="pSmartList2Test"><li>If Modeler is not already running, start it.</li></div>
+<a name="wp999913"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">File</b> &gt; <b class="cBold">New...</b></li></div>
+<a name="wp1002569"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select<b class="cBold"> Project</b> from the pull-down menu and click <b class="cBold">OK</b>.</li></div>
+<a name="wp999914"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Name the project and scenario, as follows:</li></div>
+<ol type="a">
+<a name="wp1045895"> </a><div class="pprocstepSub"><li>Name the project<b class="cBold"> &lt;initials&gt;_Sm_Int</b>.</li></div>
+<a name="wp1045907"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+Include your initials in the project name to distinguish it from other versions of this project.
+</p>
+<a name="wp1045899"> </a><div class="pprocstepSub"><li>Name the scenario <b class="cBold">first_floor</b>.</li></div>
+<a name="wp1045911"> </a><div class="pprocstepSub"><li>Click <b class="cBold">OK</b>.</li></div>
+<a name="wp999915"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Startup Wizard opens.
+</p>
+</ol>
+<a name="wp999916"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Enter the values shown in the following table in the dialog boxes of the Startup Wizard.</li></div>
+<a name="wp1037036"> </a><p class="pFigCaption">
+Values to Enter in the Startup Wizard
+</p>
+<a name="wp1037172"> </a><p class="pBodyRelative">
+</p><div align="left">
+<table border="5" cellpadding="3" cellspacing="2" bordercolor="Gray" id="wp1037236table1037175">
+  <caption></caption>
+  <tbody><tr bgcolor="#c0c0c0" align="center">    <th><a name="wp1037236"> </a><div class="pCellHeading">
+<span style="font-style: normal; font-weight: bold; text-decoration: none; vertical-align: baseline;">Dialog Box Name</span>
+</div>
+</th>
+    <th><a name="wp1037238"> </a><div class="pCellHeading">
+<b class="cBold">Value</b>
+</div>
+</th>
+</tr>
+  <tr align="left" valign="top">    <td><a name="wp1037240"> </a><div class="pCellBody">
+<b class="cBold">1. Initial Topology</b>
+</div>
+</td>
+    <td><a name="wp1037242"> </a><div class="pCellBody">
+Select the default value: <b class="cBold">Create empty scenario</b>.
+</div>
+</td>
+</tr>
+  <tr align="left" valign="top">    <td><a name="wp1037244"> </a><div class="pCellBody">
+<b class="cBold">2. Choose Network Scale</b>
+</div>
+</td>
+    <td><a name="wp1037246"> </a><div class="pCellBody">
+Select <b class="cBold">Office</b>. Select the <b class="cBold">Use metric units</b> checkbox.
+</div>
+</td>
+</tr>
+  <tr align="left" valign="top">    <td><a name="wp1037248"> </a><div class="pCellBody">
+<b class="cBold">3. Specify Size</b>
+</div>
+</td>
+    <td><a name="wp1037250"> </a><div class="pCellBody">
+Select the default size: <b class="cBold">100 m x 100 m</b>
+</div>
+</td>
+</tr>
+  <tr align="left" valign="top">    <td><a name="wp1037252"> </a><div class="pCellBody">
+<b class="cBold">4. Select Technologies</b>
+</div>
+</td>
+    <td><a name="wp1037254"> </a><div class="pCellBody">
+Include the <b class="cBold">Sm_Int_Model_List</b> model family.
+</div>
+</td>
+</tr>
+  <tr align="left" valign="top">    <td><a name="wp1037256"> </a><div class="pCellBody">
+<b class="cBold">5. Review</b>
+</div>
+</td>
+    <td><a name="wp1037258"> </a><div class="pCellBody">
+Check values, then click <b class="cBold">Finish</b>.
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+
+
+<a name="wp1018895"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+A workspace of the size you specified is created. The object palette you specified opens in a separate window.
+</p>
+</ol></div>
+<a name="wp1018537"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Creating the Network
+</h2>
+
+ 
+
+
+<a name="wp1031026"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>Network models are created in the Project Editor using <b class="cBold">nodes</b> and <b class="cBold">links</b> from the <b class="cBold">object palette</b>.
+</p>
+<a name="wp1013843"> </a><p class="pBody">
+<span style="font-weight: bold;">Node</span>&#8212;A representation of a real-world network object that can transmit and receive information.
+</p>
+<a name="wp1037262"> </a><p class="pFigCaption">
+Nodes
+</p>
+<a name="wp1037266"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-02.jpg" height="72" width="426" id="wp1037269" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1000199"> </a><p class="pBody">
+<span style="font-weight: bold;">Link</span>&#8212;A communication medium that
+connects nodes to one another. Links represent physical connectivity (e.g.,
+electrical or fiber optic cables). </p>
+<a name="wp1037275"> </a><p class="pFigCaption">
+A Link
+</p>
+<a name="wp1037279"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-03.jpg" height="57" width="427" id="wp1037282" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1000011"> </a><p class="pBody">
+These objects are found in the <b class="cBold">object palette</b>, a dialog box that contains graphical representations of node and link models.
+</p>
+<a name="wp1050291"> </a><p class="pBody">
+If it is still open, close the object palette.
+</p>
+<a name="wp1031035"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>You can use any of three
+methods to create a network topology, or a combination of all three. One
+method is to import the topology (discussed in a later lesson). Another is
+to place individual nodes from the object palette into the workspace. The
+third method is to use <b class="cBold">Rapid Configuration</b>.
+</p>
+<a name="wp1009362"> </a><p class="pBody">
+<b class="cBold">Rapid Configuration</b> creates a network in one action
+after you select a network configuration, the types of nodes within the network,
+and the types of links that connect the nodes. </p>
+<a name="wp1045936"> </a><p class="pBody">
+To create the first-floor network using Rapid Configuration:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1009366"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">Topology &gt; Rapid Configuration</b>.</li></div>
+<a name="wp1000217"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">Star</b> from the pull-down menu of available configurations, then click <b class="cBold">Next...</b></li></div>
+<a name="wp1037288"> </a><p class="pFigCaption">
+Available Configurations Pull-Down Menu
+</p>
+<a name="wp1037292"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-04.jpg" height="133" width="387" id="wp1037295" border="0" hspace="0" vspace="0"><br>
+
+</p>
+</ol></div>
+<a name="wp1000221"> </a><p class="pBody">
+Specify the node models and link models in the network. Models follow this naming scheme:
+</p>
+<a name="wp1062679"> </a><p class="pBody">
+Generic Devices:<br><b style="font-weight: bold;" class="cBold">&lt;protocol</b><em style="font-style: oblique; font-weight: normal;" class="cEmphasis">1</em><span style="font-style: normal; font-weight: bold;">&gt;_..._&lt;protocol</span><em style="font-style: oblique; font-weight: normal;" class="cEmphasis">n</em><span style="font-style: normal;">&gt;_&lt;function&gt;_&lt;mod&gt;</span>
+</p>
+<a name="wp1000223"> </a><p class="pBody">
+Vendor Devices:<br><span style="font-weight: bold;">&lt;Vendor&gt;_&lt;Chassis/Make&gt;_&lt;protocol</span><em style="font-weight: normal;" class="cEmphasis">1</em><span style="font-weight: bold;">&gt;</span>
+</p>
+<a name="wp1062685"> </a><p class="pBody">
+where:
+</p>
+<div class="pSmartList1"><ul class="pSmartList1">
+<a name="wp1045957"> </a><div class="pSmartList1"><li><b class="cBold">&lt;protocol&gt;</b> specifies the specific protocol(s) supported by the model</li></div>
+<a name="wp1045970"> </a><div class="pSmartList1"><li><b class="cBold">&lt;function&gt;</b> is an abbreviation of the general function of the model</li></div>
+<a name="wp1045971"> </a><div class="pSmartList1"><li><b class="cBold">&lt;mod&gt;</b> indicates the level of derivation of the model</li></div>
+</ul></div>
+<a name="wp1045956"> </a><p class="pBody">
+For example:
+</p>
+<a name="wp1000224"> </a><p class="pBody">
+<b class="cBold">ethernet2_bridge_int</b>
+</p>
+<a name="wp1000225"> </a><p class="pBody">
+specifies the intermediate (<b class="cBold">int</b>) derivation of a 2-port Ethernet (<b class="cBold">ethernet2</b>) bridge (<b class="cBold">bridge</b>).
+</p>
+<a name="wp1000226"> </a><p class="pBody"> Vendor models have an additional
+prefix that specifies the vendor and the vendor product number for that particular
+network object. </p>
+<a name="wp1045975"> </a><p class="pBody">
+For example, the 3Com switch used in this lesson is named:
+</p>
+<a name="wp1000227"> </a><p class="pBody">
+ <b class="cBold">3C_SSII_1100_3300_4s_ae52_e48_ge3</b>
+</p>
+<a name="wp1000228"> </a><p class="pBody">
+This node is a stack of two 3Com SuperStack II 1100 and two Superstack II 3300 chassis (<b class="cBold">3C_SSII_1100_3300</b>) with four slots (<b class="cBold">4s</b>), 52 auto-sensing Ethernet ports (<b class="cBold">ae52</b>), 48 Ethernet ports (<b class="cBold">e48</b>), and 3 Gigabit Ethernet ports (<b class="cBold">ge3</b>).
+</p>
+<a name="wp1000230"> </a><p class="pBody">
+To specify the nodes and links to use to build the network:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000231"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Set the <b class="cBold">Center Node Model</b> to <b class="cBold">3C_SSII_1100_3300_4s_ae52_e48_ge3</b>. This is a 3Com switch.</li></div>
+<a name="wp1000232"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Set the <b class="cBold">Periphery Node Model</b> to <b class="cBold">Sm_Int_wkstn</b>, and change the <b class="cBold">Number</b> of periphery nodes to <b class="cBold">30</b>. This sets 30 Ethernet workstations as the peripheral nodes.</li></div>
+<a name="wp1000233"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Set the <b class="cBold">Link Model</b> to <b class="cBold">10BaseT</b>.</li></div>
+</ol></div>
+<a name="wp1000234"> </a><p class="pBody">
+Specify where the new network will be placed:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000235"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Set the <b class="cBold">X center</b> and <b class="cBold">Y center</b> to <b class="cBold">25</b>.</li></div>
+<a name="wp1000240"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Set the <b class="cBold">Radius</b> to <b class="cBold">20</b>.</li></div>
+<a name="wp1037306"> </a><p class="pFigCaption">
+Rapid Configuration Dialog Box
+</p>
+<a name="wp1037310"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-05.jpg" height="210" width="386" id="wp1037313" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1000241"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click <b class="cBold">OK</b>.</li></div>
+<a name="wp1010579"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The network is drawn in the Project Editor.
+</p>
+<a name="wp1037323"> </a><p class="pFigCaption">
+The First Floor Network
+</p>
+<a name="wp1037334"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-06.jpg" height="271" width="384" id="wp1037337" border="0" hspace="0" vspace="0"><br>
+
+</p>
+</ol></div>
+<a name="wp1000248"> </a><p class="pBody"> Now that the general network topology
+has been built, you need to add a server. You will use the second method
+of creating network objects: dragging them from the object palette into the
+workspace. </p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000252"> </a><div style="text-align: left;" class="pSmartList2Test"><li>If it is not already open, open the object palette by clicking on the <b class="cBold">Object Palette</b> tool button.<br>
+<img src="blank_data/BasicTut-3-1-07.jpg" height="59" width="387" id="wp1063487" border="0" hspace="0" vspace="0"><br>
+</li></div>
+<a name="wp1000253"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Find the <b class="cBold">Sm_Int_server</b> object in the palette and drag it into the workspace. </li></div>
+<a name="wp1018548"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+You will not find this exact server model on other object palettes because
+we created it with the correct configuration for this tutorial. </p>
+<a name="wp1045320"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+By default, you can create additional instances of the same object by left-clicking
+after the initial "drag-and-drop" from the palette. </p>
+<a name="wp1000257"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Because you do not need additional copies of this model, right-click to turn off node creation.</li></div>
+</ol></div>
+<a name="wp1000258"> </a><p class="pBody">
+You also need to connect the server to the star network.
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000259"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Find the <b class="cBold">10BaseT</b> link object in the palette and double-click on it.</li></div>
+<a name="wp1000260"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Move
+the mouse from the object palette to the project workspace. Now click on
+the server object to draw one endpoint of your link, then click on the switch
+object in the center of the star to complete the link.</li></div>
+<a name="wp1000261"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+ A link is drawn, connecting the two objects.
+</p>
+<a name="wp1000262"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click to turn off link creation.</li></div>
+</ol></div>
+<a name="wp1002814"> </a><p class="pBody"> Finally, you need to add configuration
+objects to specify the application traffic that will exist on the network.
+Configuring the application definition and profile definition objects can
+be complicated, so you do not have to do these tasks right now. For this
+tutorial, we included, on the object palette: </p>
+<div class="pSmartList1"><ul class="pSmartList1">
+<a name="wp1017298"> </a><div class="pSmartList1"><li>an application definition object with the default configurations of the standard applications, and</li></div>
+<a name="wp1017299"> </a><div class="pSmartList1"><li>a profile definition object with a profile that models light database access</li></div>
+</ul></div>
+<a name="wp1017302"> </a><p class="pBody"> You need only drag the objects
+into your network. Doing so means that the traffic caused by workstations
+accessing a database at a low rate will be modeled. </p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1002815"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Find the <b class="cBold">Sm_Application_Config</b> object in the palette and drag it into the workspace</li></div>
+<a name="wp1002816"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click to turn off object creation.</li></div>
+<a name="wp1002817"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Find the <b class="cBold">Sm_Profile_Config</b> object in the palette, drag it into the workspace, and right-click.</li></div>
+<a name="wp1016773"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Close the object palette.</li></div>
+</ol></div>
+<a name="wp1016780"> </a><p class="pBody">
+The network is now built and should look similar to the following figure.
+</p>
+<a name="wp1030655"> </a><p class="pFigCaption">
+The Finished First Floor Network
+</p>
+<a name="wp1041993"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-08.jpg" height="266" width="427" id="wp1041991" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1042020"> </a><p class="pBody">
+You are now ready to collect statistics.
+</p>
+<a name="wp1065806"> </a><p class="pBody">
+However, first let's explore the Node and Process Editors.
+</p>
+<a name="wp1065810"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>The Node and Process
+Editors are integral to the Modeler workflow. The Node Editor is used to
+create node models that describe the internal flow of data within a network
+object. The Process Editor is used to create process models that describe
+the behavioral logic of a module in a node model. </p>
+<a name="wp1065811"> </a><p class="pBody"> Every node in a network has an
+underlying node model that specifies the internal flow of information in
+the object. Node models are made up of one or more <b class="cBold">modules </b>connected by<b class="cBold"> packet streams </b>or<b class="cBold"> statistic wires</b>. Node modules in turn contain process models. A process model is represented by a <b class="cBold">state transition diagram</b> (<b class="cBold">STD</b>) that describes the behavior of a node module in terms of <b class="cBold">states</b> and <b class="cBold">transitions</b>.
+</p>
+<a name="wp1065812"> </a><p class="pBody">
+Let's explore the node model that controls the server in the first floor network:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1065816"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Double-click on <b class="cBold">node_31</b> (the <b class="cBold">Server object</b>) in the Project Editor.<br>
+<img src="blank_data/BasicTut-3-1-09.jpg" height="118" width="387" id="wp1065814" border="0" hspace="0" vspace="0"><br>
+ </li></div>
+<a name="wp1065820"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Node Editor opens as a new window within Modeler.
+</p>
+</ol></div>
+<a name="wp1065821"> </a><p class="pBody"> The following figure shows the
+node model within the Ethernet Server network object. The node model is made
+up of several different types of <b class="cBold">modules,</b> which are described in the M/M/1 tutorial. <b class="cBold">Packet streams</b> and <b class="cBold">statistic wires </b>connect the modules.
+</p>
+<a name="wp1065822"> </a><p class="pFigCaption">
+Ethernet Server Node Model
+</p>
+<a name="wp1065840"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-10.jpg" height="310" width="426" id="wp1065824" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1065841"> </a><p class="pBody"> During a simulation, packets sent
+from a client machine are received by the hub receiver object (hub_rx_0_0)
+and processed up the protocol stack to the application module. After processing,
+they are sent down the stack to the transmitter (hub_tx_0_0), then back to
+the client machine. </p>
+<a name="wp1065842"> </a><p class="pFigCaption">
+Packet Processing by the Node Model
+</p>
+<a name="wp1065854"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-11.jpg" height="159" width="424" id="wp1065844" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1065855"> </a><p class="pBody">
+Next, let's look at the process model that defines the behavior of the <b class="cBold">tpal</b> module. To view the process model:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1065859"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Double-click on the <b class="cBold">tpal</b> module in the Node Editor.<br>
+<img src="blank_data/BasicTut-3-1-12.jpg" height="54" width="387" id="wp1065857" border="0" hspace="0" vspace="0"><br>
+</li></div>
+<a name="wp1065860"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Process Model Editor opens in a new window.
+</p>
+<a name="wp1065861"> </a><p class="pFigCaption">
+Example Process Model
+</p>
+<a name="wp1065875"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-13.jpg" height="234" width="384" id="wp1065863" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1065876"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Note
+the red and green states (these will be discussed in greater detail in the
+Basic Processes lesson) and the solid and dotted lines indicating transitions
+between the states.</li></div>
+<a name="wp1065877"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+Each state in the process model contains an <b class="cBold">enter executive</b> and an <b class="cBold">exit executive</b>.
+Enter executives are executed when a process enters a state. Exit executives
+are executed when the process leaves the state. Operations performed in the
+state are described in C or C++. </p>
+<a name="wp1065878"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Open an enter exec by double-clicking on the top half of the <b class="cBold">init</b> state.</li></div>
+<a name="wp1065879"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Open an exit exec by double-clicking on the bottom half of the state.</li></div>
+<a name="wp1065880"> </a><p class="pFigCaption">
+Opening the Enter Exec or Exit Exec of a State
+</p>
+<a name="wp1065896"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-14.jpg" height="312" width="384" id="wp1065882" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1065897"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Close both exec windows.</li></div>
+<a name="wp1065898"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+States are connected via <b class="cBold">transitions</b>.
+Transitions can be either conditional (that is, they have a logical test
+that must be true before the transition occurs) or unconditional (no logical
+test). </p>
+<a name="wp1065899"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The following figure shows a conditional transition (the dotted line) from the <b class="cBold">wait</b> state to the <b class="cBold">reg</b> state. The condition <b class="cBold">SERV_REG</b> must be true before the transition can occur. However, the transition from <b class="cBold">reg</b> to <b class="cBold">wait</b> (solid line) is unconditional, and occurs whenever the code in the <b class="cBold">reg</b> state has finished execution.
+</p>
+<a name="wp1065900"> </a><p class="pFigCaption">
+Conditional and Unconditional Transitions
+</p>
+<a name="wp1065904"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-15.jpg" height="249" width="427" id="wp1065902" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1065906"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+Later lessons explore these editors in greater depth.
+</p>
+<a name="wp1065907"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Close the Node and Process editors. If prompted, do not save changes.</li></div>
+</ol></div>
+<a name="wp1044983"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Collecting Statistics
+</h2>
+
+ 
+
+
+<a name="wp1000504"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>You can collect statistics from individual nodes in your network (<b class="cBold">object statistics</b>) or from the entire network (<b class="cBold">global statistics</b>).
+</p>
+<a name="wp1031061"> </a><p class="pBody"> Now that you have created the
+network, you should decide which statistics you need to collect to answer
+the questions presented earlier in this lesson: </p>
+<div class="pSmartList1"><ul class="pSmartList1">
+<a name="wp1000505"> </a><div class="pSmartList1"><li>Will the server be able to handle the additional load of the second network?</li></div>
+<a name="wp1000506"> </a><div class="pSmartList1"><li>Will the total delay across the network be acceptable once the second network is installed?</li></div>
+</ul></div>
+<a name="wp1003039"> </a><p class="pBody"> To answer these questions, you
+need a snapshot of current performance for comparison. To get this baseline,
+you will collect one object statistic, <b class="cBold">Server Load</b>, and one global statistic, <b class="cBold">Ethernet Delay</b>.
+</p>
+<a name="wp1000516"> </a><p class="pBody"> Server load is a key statistic
+that reflects the performance of the entire network. To collect statistics
+related to the server's load, do the following steps:  </p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000517"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click on the server node (<b class="cBold">node_31</b>) and select <b class="cBold">Choose Individual DES Statistics </b>from the server Object pop-up menu.</li></div>
+<a name="wp1000519"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Choose Results dialog box for node_31 appears.
+</p>
+<a name="wp1000521"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Choose Results dialog box hierarchically organizes the statistics you may collect.
+</p>
+<a name="wp1063958"> </a><div style="text-align: left;" class="pSmartList2Test"><li>To collect the Ethernet load on the server:</li></div>
+<a name="wp1000522"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Expand the treeview for <b class="cBold">Ethernet</b> in the <b class="cBold">Choose Results</b> dialog box to see the Ethernet statistic hierarchy.</li></div>
+<a name="wp1063984"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+<b class="cBold">Note&#8212;</b>The list of statistics can vary from the ones shown
+in this tutorial; they depend on the set of software components you have
+installed. </p>
+<a name="wp1000527"> </a><p class="pFigCaption">
+Choose Results Dialog Box
+</p>
+<a name="wp1037643"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-16.jpg" height="357" width="387" id="wp1037658" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1037642"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the checkbox next to <b class="cBold">Load (bits/sec)</b> to enable collection for that statistic.</li></div>
+<a name="wp1050313"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click <b class="cBold">OK</b> to close the dialog box.</li></div>
+</ol></div>
+<a name="wp1050314"> </a><p class="pBody">
+<b class="cBold">Global statistics</b> can be used to gather information
+about the network as a whole. For example, you can find out the delay for
+the entire network by collecting the global <b class="cBold">Delay</b> statistic:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1016103"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click in the workspace (but not on an object) and select <b class="cBold">Choose Individual DES Statistics</b> from the workspace pop-up menu.</li></div>
+<a name="wp1016107"> </a><p class="pFigCaption">
+Global Statistic Chosen
+</p>
+<a name="wp1037662"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-17.jpg" height="363" width="386" id="wp1037678" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1037663"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Expand the Global Statistics hierarchy.</li></div>
+<a name="wp1000537"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Expand the Ethernet hierarchy.</li></div>
+<a name="wp1000538"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the checkbox next to <b class="cBold">Delay (sec)</b> to enable data collection.</li></div>
+<a name="wp1000539"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click <b class="cBold">OK</b> to close the Choose Results dialog box.</li></div>
+<a name="wp1000540"> </a><div style="text-align: left;" class="pSmartList2Test"><li>It is good to get into the habit of saving your project every so often. Choose <b class="cBold">File &gt; Save</b>, then click <b class="cBold">Save</b> (the project already has a name, so you don't need to rename it).</li></div>
+</ol></div>
+<a name="wp1000542"> </a><p class="pBody">
+Now that you have specified the statistics to collect and saved the project, you are almost ready to run your simulation.
+</p>
+<a name="wp1065917"> </a><p class="pBody">
+First, though, verify that your <b class="cBold">Network Simulation Repositories</b> preference is set appropriately.
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1065918"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Choose <b class="cBold">Edit &gt; Preferences</b>.</li></div>
+<a name="wp1065919"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Type <b class="cBold">network sim</b> in the <b class="cBold">Search for: </b>field and click the <b class="cBold">Find</b> button.</li></div>
+<a name="wp1065920"> </a><div style="text-align: left;" class="pSmartList2Test"><li>If the <b class="cBold">Value</b> field for the <b class="cBold">Network Simulation Repositories</b> preference is not <b class="cBold">stdmod</b>, click on the field.</li></div>
+<a name="wp1065921"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The <b class="cBold">Network Simulation Repositories</b> dialog box opens.
+</p>
+<a name="wp1065922"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the <b class="cBold">Insert</b> button, then type <b class="cBold">stdmod</b> in the field.</li></div>
+<a name="wp1065923"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click <b class="cBold">OK</b> twice to close the <b class="cBold">Network Simulation Repositories</b> and <b class="cBold">Preferences</b> dialog boxes.</li></div>
+</ol></div>
+<a name="wp1041428"> </a><p class="pBody">
+To run a simulation:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000543"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">DES &gt; Configure/Run Discrete Event Simulation...</b></li></div>
+<a name="wp1002707"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+You can also open the Configure Discrete Event Simulation dialog box by clicking on the <b class="cBold">Configure/Run Discrete Event Simulation (DES) </b>tool button.<br>
+<img src="blank_data/BasicTut-3-1-18.jpg" height="47" width="387" id="wp1017322" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1062783"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click on the <b class="cBold">Detailed...</b> button, if it is present.</li></div>
+<a name="wp1058440"> </a><p class="pFigCaption">
+Configure Discrete Event Simulation Dialog Box
+</p>
+<a name="wp1058447"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-19.jpg" height="129" width="387" id="wp1058442" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1000548"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Type <b class="cBold">0.5</b> in the <b class="cBold">Duration:</b> field to simulate one-half hour of network activity.</li></div>
+<a name="wp1065928"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Type <b class="cBold">10000</b> (events) in the <b class="cBold">Update interval:</b> field to specify how often the simulation calculates events/second data.</li></div>
+<a name="wp1058332"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+In this case, the simulation calculates and displays events/second data at
+10,000-event intervals. The default setting for this is 500,000 for larger
+network simulations. </p>
+<a name="wp1065933"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Set the Simulation Kernel to <b class="cBold">Optimized</b>.</li></div>
+<a name="wp1065934"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+You can use one of two types of kernels to run your simulation. The development
+kernel collects simulation data you can use to debug your models, but the
+optimized kernel runs faster. </p>
+<a name="wp1052432"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the <b class="cBold">Run</b> button to begin the simulation.</li></div>
+<a name="wp1000551"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+While the simulation runs, a dialog box appears showing the simulation's progress.
+</p>
+<a name="wp1023238"> </a><p class="pFigCaption">
+Simulation Progress Dialog Box
+</p>
+<a name="wp1037700"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-20.jpg" height="304" width="386" id="wp1037713" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1037701"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+The dialog box above shows that, in 1 second of elapsed (actual) time, Modeler
+has simulated 19 minutes and 25 seconds of network time. The entire simulation
+should take less than one minute to complete&#8212;the elapsed time varies according
+to the speed of your computer. </p>
+<a name="wp1000556"> </a><div style="text-align: left;" class="pSmartList2Test"><li>When the simulation finishes, the contents of the Messages tab appears. Click the <b class="cBold">Close</b> button in the Simulation Sequence dialog box.</li></div>
+<a name="wp1025728"> </a><div style="text-align: left;" class="pSmartList2Test"><li>If
+your simulation does not complete, if no results were collected, or if the
+results vary significantly from those shown, you will have to troubleshoot
+your simulation. See <a href="javascript:WWHClickedPopup('basic_tut', 'BasicTut-9-1.html');" onmouseover="WWHShowPopup('basic_tut', 'BasicTut-9-1.html', (document.all||document.getElementById||document.layers)?event:null);" onmouseout="WWHHidePopup();"><em class="cEmphasis">"Troubleshooting Tutorials"</em></a>.</li></div>
+</ol></div>
+<a name="wp1000572"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Viewing Results
+</h2>
+
+ 
+
+
+<a name="wp1031071"> </a><p class="pBody"> After your simulation has executed,
+you will want to see the information collected for each statistic. There
+are several ways to view results; in this lesson you will use the View Results
+option in the Workspace pop-up menu. </p>
+<a name="wp1000574"> </a><p class="pBody">
+You will learn different ways to view results in later lessons. 
+</p>
+<a name="wp1000640"> </a><p class="pBody">
+To view the server Ethernet load for the simulation:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000641"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click on the server node (<b class="cBold">node_31</b>) choose <b class="cBold">View Results</b> from the server's Object pop-up menu.</li></div>
+<a name="wp1000643"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Results Browser opens.
+</p>
+<a name="wp1000644"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Expand the <b class="cBold">Office network.node_31 &gt; Ethernet</b> hierarchy.</li></div>
+<a name="wp1000645"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click on the checkbox next to <b class="cBold">Load (bits/sec)</b> to indicate that you want to view that result.</li></div>
+<a name="wp1000646"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the <b class="cBold">Show</b> button in the Results Browser.</li></div>
+<a name="wp1000647"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The graph of the server load appears in the Project Editor, as shown in the following figure.
+</p>
+</ol></div>
+<a name="wp1000648"> </a><p class="pBody"> The graph of the server load should
+resemble the following graph. Your results may differ slightly due to differences
+in node placement and link length, but the general trends should be consistent. 
+</p>
+<a name="wp1000652"> </a><p class="pFigCaption">
+Server Load Graph
+</p>
+<a name="wp1037751"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-21.jpg" height="312" width="423" id="wp1037753" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1037747"> </a><p class="pBody"> Note that at its peak, the load
+on the server is about 7,000 bits/second. You will need this baseline for
+comparison after you add the second network. </p>
+<a name="wp1003047"> </a><p class="pBody"> When you finish viewing the server
+load graph, close this dialog box and the Results Browser. (If the system
+prompts you, choose to delete the graph panel.) </p>
+<a name="wp1061565"> </a><p class="pTutKeyConcept">
+<span style="font-weight: bold; color: grey;"></span>The <b class="cBold">View Results</b>
+option from the Workspace pop-up menu allows you to obtain global statistics
+and individual object statistics from one treeview. </p>
+<a name="wp1000654"> </a><p class="pBody">
+You also should look at the Global Ethernet Delay on the network. To view this statistic:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000655"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click in the workspace, then select <b class="cBold">View Results</b> from the pop-up menu.</li></div>
+<a name="wp1063546"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Check the box next to <b class="cBold">Global Statistics &gt; Ethernet &gt; Delay (sec)</b>.</li></div>
+<a name="wp1063552"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Check the box next to <b class="cBold">Object Statistics &gt; Office Network.node_31 &gt; Ethernet &gt; Load (bits/sec)</b>, and then click the Show button to view the Ethernet delay for the whole network.</li></div>
+<a name="wp1063547"> </a><p class="pFigCaption">
+Viewing Ethernet Delay for the Whole Network
+</p>
+<a name="wp1037784"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-22.jpg" height="329" width="386" id="wp1037786" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1037776"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The Ethernet delay graph appears in the Project Editor. The graph should resemble the following figure.
+</p>
+<a name="wp1000665"> </a><p class="pFigCaption">
+Ethernet Delay Graph
+</p>
+<a name="wp1037807"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-23.jpg" height="295" width="424" id="wp1037809" border="0" hspace="0" vspace="0"><br>
+
+</p>
+</ol></div>
+<a name="wp1037799"> </a><p class="pBody">
+Note that after the network reaches steady state the maximum delay is around 0.4 milliseconds.
+</p>
+<a name="wp1000666"> </a><p class="pBody">
+When you finish viewing the graph, close the graph and the Results Browser.
+</p>
+<a name="wp1000688"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Expanding the Network
+</h2>
+
+ 
+
+
+<a name="wp1030985"> </a><p class="pBody"> You have created a baseline network
+and gathered statistics about it. Now you are ready to expand the network
+and verify that it still operates sufficiently well with the additional load. 
+</p>
+<a name="wp1000689"> </a><p class="pBody"> When performing a "what-if" comparison,
+it is convenient to store the baseline network as one scenario and create
+the experimental network as a different scenario. You will duplicate the
+existing scenario and make changes to it instead of building the new topology
+from the beginning.  </p>
+<a name="wp1000746"> </a><p class="pBody">
+To duplicate a scenario:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000747"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Choose <b class="cBold">Scenarios &gt; Duplicate Scenario...</b></li></div>
+<a name="wp1000748"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Enter <b class="cBold">expansion</b> as the name for the new scenario.</li></div>
+<a name="wp1000749"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click <b class="cBold">OK</b>.</li></div>
+<a name="wp1000750"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+The scenario, with all the nodes, links, statistics, and the simulation configuration, is duplicated and named <b class="cBold">expansion</b>.
+</p>
+</ol></div>
+<a name="wp1000751"> </a><p class="pBody">
+The second-floor segment will resemble the first-floor segment, but will not have a server of its own. To build the new segment:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000752"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">Topology &gt; Rapid Configuration</b>.</li></div>
+<a name="wp1011737"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Choose <b class="cBold">Star</b> for the topology and click <b class="cBold">Next...</b></li></div>
+<a name="wp1000753"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Complete the Rapid Configuration dialog box with these values:</li></div>
+<div class="pSmartList2"><ul class="pSmartList2">
+<a name="wp1000754"> </a><div class="pSmartList2"><li>Center Node Model: <b class="cBold">3C_SSII_1100_3300_4s_ae52_e48_ge3</b></li></div>
+<a name="wp1000755"> </a><div class="pSmartList2"><li>Periphery Node Model: <b class="cBold">Sm_Int_wkstn</b></li></div>
+<a name="wp1000756"> </a><div class="pSmartList2"><li>Number: <b class="cBold">15</b></li></div>
+<a name="wp1000757"> </a><div class="pSmartList2"><li>Link model: <b class="cBold">10BaseT</b></li></div>
+<a name="wp1000761"> </a><div class="pSmartList2"><li>X: <b class="cBold">75</b>, Y: <b class="cBold">62.5</b>, Radius: <b class="cBold">20</b></li></div>
+<a name="wp1037848"> </a><p class="pFigCaption">
+Rapid Configuration Dialog Box
+</p>
+<a name="wp1037849"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-24.jpg" height="180" width="386" id="wp1037854" border="0" hspace="0" vspace="0"><br>
+
+</p>
+</ul></div>
+<a name="wp1037850"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click <b class="cBold">OK</b> to create the network.</li></div>
+</ol></div>
+<a name="wp1000763"> </a><p class="pBody">
+Join the two networks:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1061469"> </a><div style="text-align: left;" class="pSmartList2Test"><li>If it is not already open, click the tool button to open the object palette.<br>
+<img src="blank_data/BasicTut-3-1-25.jpg" height="58" width="387" id="wp1061471" border="0" hspace="0" vspace="0"><br>
+</li></div>
+<a name="wp1062744"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Expand the Cisco 2514 folder.</li></div>
+<a name="wp1061451"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-26.jpg" height="173" width="387" id="wp1061455" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1061437"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Drag the <b class="cBold">Cisco 2514</b> router icon into the workspace between the two networks. Right-click to turn off node creation.</li></div>
+<a name="wp1061489"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Expand the Link Models folder and double-click on the <b class="cBold">10BaseT</b> link icon in the object palette.</li></div>
+<a name="wp1000767"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Create <b class="cBold">10BaseT</b> links between the Cisco router (<b class="cBold">node_50</b>) and the 3Com switches at the center of each star.</li></div>
+<a name="wp1023454"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click to turn off link creation.</li></div>
+<a name="wp1023455"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Close the object palette.</li></div>
+<a name="wp1000768"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">File &gt; Save</b>.</li></div>
+</ol></div>
+<a name="wp1000772"> </a><p class="pBody">
+The final network should look like this:
+</p>
+<a name="wp1037905"> </a><p class="pFigCaption">
+The Final Network
+</p>
+<a name="wp1037909"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-27.jpg" height="363" width="424" id="wp1037911" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1020550"> </a><p class="pBody">
+To run the expansion scenario:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000774"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">DES &gt; Configure/Run Discrete Event Simulation...</b></li></div>
+<a name="wp1023474"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the <b class="cBold">Detailed...</b> button, if it appears, and verify that the <b class="cBold">Duration</b> is set to <b class="cBold">0.5</b> hours and the <b class="cBold">Update interval</b> is set to <b class="cBold">10000</b>.</li></div>
+<a name="wp1023478"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the <b class="cBold">Run</b> button to begin the simulation.</li></div>
+<a name="wp1023479"> </a><p class="pFigCaption">
+Simulation Progress Dialog Box, Simulation Speed Tab Selected
+</p>
+<a name="wp1037923"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-28.jpg" height="255" width="386" id="wp1037925" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1037915"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+As before, a window displays simulation start-up messages first, and then
+an animated graph shows both the current and average speed in events per
+second during the simulation. When the simulation is completed, you can view
+the event/second graph results from the Simulation Speed tab. </p>
+<a name="wp1000791"> </a><div style="text-align: left;" class="pSmartList2Test"><li>When the simulation is done, close the Simulation Progress dialog box. If you had problems, see <a href="javascript:WWHClickedPopup('basic_tut', 'BasicTut-9-1.html');" onmouseover="WWHShowPopup('basic_tut', 'BasicTut-9-1.html', (document.all||document.getElementById||document.layers)?event:null);" onmouseout="WWHHidePopup();"><em class="cEmphasis">"Troubleshooting Tutorials"</em></a>.</li></div>
+</ol></div>
+<a name="wp1030991"> </a><h2 style="font-family: Helvetica; margin-bottom: 0pt;" class="pHeading1">
+Comparing Results
+</h2>
+
+ 
+
+
+<a name="wp1036870"> </a><p class="pBody"> To answer the questions posed
+about the addition of a second network to the existing LAN, you need to compare
+the results from both of the simulations you ran. </p>
+<a name="wp1000814"> </a><p class="pBody">
+You will use the <b class="cBold">View Results</b> menu item in the Object and Workspace pop-up menus to combine statistics from different scenarios in the same graph.
+</p>
+<a name="wp1000871"> </a><p class="pBody">
+To view the server load from both scenarios at once:
+</p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000872"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click on the server node (<b class="cBold">node_31</b>) to display the pop-up menu and choose <b class="cBold">View Results</b>.</li></div>
+<a name="wp1063563"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">Current Project</b> from the pull down menu for Results.</li></div>
+<a name="wp1063564"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Check the box next to both the scenarios listed.</li></div>
+<a name="wp1063573"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select Overlaid Statistics from the pull down menu for Presentation.</li></div>
+</ol></div>
+<a name="wp1000875"> </a><p class="pBody">
+If your results differ radically from those shown in the following figures, you will have to troubleshoot your simulation. See <a href="javascript:WWHClickedPopup('basic_tut', 'BasicTut-9-1.html');" onmouseover="WWHShowPopup('basic_tut', 'BasicTut-9-1.html', (document.all||document.getElementById||document.layers)?event:null);" onmouseout="WWHHidePopup();"><em class="cEmphasis">"Troubleshooting Tutorials"</em></a>.
+</p>
+<a name="wp1003056"> </a><p class="pBody"> When comparing results, choosing
+a statistic in one scenario produces a graph showing the value of that statistic
+in all scenarios. To view the results: </p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000879"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select the <b class="cBold">Office Network.node_31 &gt; Ethernet &gt; Load (bits/sec)</b> statistic and click the <b class="cBold">Show</b> button. Your results should resemble those in the following figure (but may not be identical):</li></div>
+<a name="wp1037935"> </a><p class="pFigCaption">
+Server Load Compared
+</p>
+<a name="wp1037947"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-29.jpg" height="315" width="383" id="wp1037949" border="0" hspace="0" vspace="0"><br>
+
+</p>
+</ol></div>
+<a name="wp1000883"> </a><p class="pBody"> The following graph is the time
+average of the Ethernet load between the baseline (first_floor) scenario
+and the expansion scenario. You will learn how to create a graph of the time
+average in the next lesson. </p>
+<a name="wp1000887"> </a><p class="pFigCaption">
+Time-Averaged Server Load Compared
+</p>
+<a name="wp1037987"> </a><p class="pBodyRelative">
+</p>
+<div><img src="blank_data/BasicTut-3-1-30.jpg" height="293" width="423" id="wp1037989" border="0" hspace="0" vspace="0"></div><p class="pBodyRelative">
+
+</p>
+<a name="wp1037979"> </a><p class="pBody"> Note that while the average load
+for the expansion scenario is higher (as expected), the load as a whole appears
+to be leveling off (that is, not monotonically increasing), indicating a
+stable network. </p>
+<a name="wp1000888"> </a><p class="pBody"> The last step is to see how much
+the network's delay is affected by adding a second floor. To compare Ethernet
+delay for the two scenarios: </p>
+<div class="pSmartList2Test" style="text-align: left;"><ol type="1" class="pSmartList2Test" style="text-align: left;">
+<a name="wp1000889"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Close the graph and the Results Browser for the server.</li></div>
+<a name="wp1063111"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Right-click in the workspace to display the pop-up menu and choose <b class="cBold">View Results</b>.</li></div>
+<a name="wp1063113"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Under Show Results, select <b class="cBold">Global Statistics</b> -&gt; <b class="cBold">Ethernet</b> -&gt; <b class="cBold">Delay (sec)</b>.</li></div>
+<a name="wp1063114"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Click the <b class="cBold">Show</b> button to display the graph.</li></div>
+<a name="wp1000894"> </a><p style="font-family: Helvetica;" class="pprocStepResult">
+Your graph of Ethernet Delay should resemble the following:
+</p>
+<a name="wp1000898"> </a><p class="pFigCaption">
+Ethernet Delay Compared
+</p>
+<a name="wp1038004"> </a><p class="pBodyRelative">
+<br>
+<img src="blank_data/BasicTut-3-1-31.jpg" height="312" width="423" id="wp1038006" border="0" hspace="0" vspace="0"><br>
+
+</p>
+<a name="wp1037993"> </a><p style="font-family: Helvetica;" class="pprocStepResult"> 
+This graph shows that there is no significant change in Ethernet delay on
+the network. Although server load has increased, delay has not. </p>
+<a name="wp1050338"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Close the graph and the Results Browser.</li></div>
+<a name="wp1024248"> </a><div style="text-align: left;" class="pSmartList2Test"><li>Select <b class="cBold">File</b> &gt; <b class="cBold">Close</b> and save changes before closing.</li></div>
+</ol></div>
+<a name="wp1010401"> </a><p class="pBody"> Now you are ready to go on to
+the M/M/1 Queue tutorial. This lesson explores the use of node models in
+the workflow. Return to the main tutorial menu and choose <b class="cBold">M/M/1 Queue</b> from the list of available lessons. Or choose another tutorial of interest.
+</p>
+<a name="wp1065954"> </a><p class="pBody">
+<b class="cBold">Note</b>&#8212;Be sure to delete the <b class="cBold">stdmod</b> setting for the <b class="cBold">Network Simulation Repositories</b> preference when you are finished doing tutorials. To delete the setting, select <b class="cBold">Edit &gt; Preferences</b>, search for <b class="cBold">Network Simulation Repositories</b>, click on the value, and choose <b class="cBold">Delete</b>.
+</p>
+
+
+
+  <script type="text/javascript" language="JavaScript1.2">
+   <!--
+    // Clear related topics
+    //
+    WWHClearRelatedTopics();
+
+   // -->
+  </script>
+    </blockquote>
+
+    <hr>
+
+    <table id="SummaryNotReq1" align="left" border="0" cellspacing="0" cellpadding="0">
+      <tbody><tr>
+        
+    <td align="left"> <!--Comment out Title
+  <span style="font-size: 11px ; font-weight: bold ; font-family: arial, sans-serif">
+            OPNET Technologies, Inc.<br />
+          </span>
+--> <span style="font-size: 9px; font-family: arial,sans-serif;"> <a href="file:////ensc/local2/opnet/14.0.A/doc/modeler/wwhelp/wwhimpl/common/html/default.htm"><b><font size="3">Home</font></b></a><br> 
+      © 1986-2007 OPNET Technologies, Inc. <br>
+            All Rights Reserved. This software may be covered by one or more U.S. Patents. See complete patent notice in the <a href="file:////ensc/local2/opnet/14.0.A/doc/modeler/Copyright/Copyright-1-1.html">Legal Notices</a> section.<br>
+
+            <a href="http://www.opnet.com/support" target="_blank"> OPNET Support Center </a><br>
+          </span>
+        </td>
+      </tr>
+    </tbody></table>
+
+<script type="text/javascript" language="JavaScript1.2">
+   <!--
+    function PDFLocation()
+    {
+        var PDFLocation = "pdfs/tut_com_small_int.pdf";
+        return PDFLocation;     // Used by the PDF control.
+    }
+
+    document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+   // -->
+  </script><div id="WWHRelatedTopicsDIV" style="position: absolute; z-index: 1; visibility: hidden; display: none; top: 0px; left: 0px;">
+<table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff"> <tbody><tr>  <td height="2" colspan="6" bgcolor="#666666"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4" colspan="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4"></td>  <td height="4" colspan="2" bgcolor="#999999"></td>  <td height="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td bgcolor="#999999" width="100%" align="left" valign="middle"><nobr><span style="font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 10pt; color: rgb(255,255,255);"><img src="blank_data/spacer4.gif" width="4" height="4">HOME</span></nobr></td>  <td bgcolor="#999999" width="16" align="right" valign="middle"><nobr><a href="javascript:WWHFrame.WWHRelatedTopics.fHide();"><img src="blank_data/close.gif" border="0" width="16" height="15"></a><img src="blank_data/spacer4.gif" width="4" height="4"></nobr></td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4"></td>  <td height="4" colspan="2" bgcolor="#999999"></td>  <td height="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4" colspan="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td colspan="2" width="100%" id="WWHRelatedTopicsText">Popup</td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4" colspan="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td height="2" colspan="6" bgcolor="#666666"></td> </tr></tbody></table></div>
+<div id="WWHPopupDIV" style="position: absolute; z-index: 1; visibility: hidden; display: none; top: 0px; left: 0px;">
+<table width="200" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffcc"> <tbody><tr>  <td height="2" colspan="5" bgcolor="#999999"></td> </tr> <tr>  <td height="7" bgcolor="#999999"></td>  <td height="7" colspan="3"></td>  <td height="7" bgcolor="#999999"></td> </tr> <tr>  <td bgcolor="#999999"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td>  <td><img src="blank_data/spc5w1h.gif" width="5" height="1"></td>  <td width="100%" id="WWHPopupText">Popup</td>  <td><img src="blank_data/spc5w1h.gif" width="5" height="1"></td>  <td bgcolor="#999999"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td> </tr> <tr>  <td height="7" bgcolor="#999999"></td>  <td height="7" colspan="3"></td>  <td height="7" bgcolor="#999999"></td> </tr> <tr>  <td height="2" colspan="5" bgcolor="#999999"></td> </tr></tbody></table></div>
+<div id="WWHALinksDIV" style="position: absolute; z-index: 1; visibility: hidden; display: none; top: 0px; left: 0px;">
+<table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff"> <tbody><tr>  <td height="2" colspan="6" bgcolor="#666666"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4" colspan="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4"></td>  <td height="4" colspan="2" bgcolor="#999999"></td>  <td height="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td bgcolor="#999999" width="100%" align="left" valign="middle"><nobr><span style="font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 10pt; color: rgb(255,255,255);"><img src="blank_data/spacer4.gif" width="4" height="4">See Also</span></nobr></td>  <td bgcolor="#999999" width="16" align="right" valign="middle"><nobr><a href="javascript:WWHFrame.WWHALinks.fHide();"><img src="blank_data/close.gif" border="0" width="16" height="15"></a><img src="blank_data/spacer4.gif" width="4" height="4"></nobr></td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4"></td>  <td height="4" colspan="2" bgcolor="#999999"></td>  <td height="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4" colspan="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td colspan="2" width="100%" id="WWHALinksText">Popup</td>  <td><img src="blank_data/spacer4.gif" width="4" height="4"></td>  <td bgcolor="#666666"><img src="blank_data/spc2w1h.gif" width="2" height="1"></td> </tr> <tr>  <td height="4" bgcolor="#666666"></td>  <td height="4" colspan="4"></td>  <td height="4" bgcolor="#666666"></td> </tr> <tr>  <td height="2" colspan="6" bgcolor="#666666"></td> </tr></tbody></table></div>
+
+
+  </body></html>

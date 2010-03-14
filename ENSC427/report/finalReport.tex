@@ -1,0 +1,67 @@
+\documentclass{enscStyle}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{pgf}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+
+\usetikzlibrary{shapes}
+
+%TODO: TITLE
+\title{TITLE}
+
+\coursecode{427}
+
+\author{
+    Dan Hendry, 301133878\\
+    Timbo ?, Num\\
+    Yzan ?, Num\\
+}
+
+\prof{Professor Ljiljana Trajkovic}
+\date{March 14, 2010}
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\maketitle
+
+\cleardoublepage
+
+\setcounter{page}{2} % the table of contents will be shown as page iii
+
+\input{chapters/abstract}
+
+\cleardoublepage
+
+\addcontentsline{toc}{chapter}{\hspace{13pt} Contents}
+\tableofcontents
+
+\listoftables
+\addcontentsline{toc}{chapter}{\hspace{13pt} List of Tables}
+
+\listoffigures
+\addcontentsline{toc}{chapter}{\hspace{13pt} List of Figures}
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+% Main section
+
+\input{chapters/chapter1}
+
+%Add chapters as needed
+
+\addcontentsline{toc}{chapter}{\hspace{13pt} References}
+
+\bibliography{finalReport}
+
+%\appendix
+%\renewcommand{\thechapter}{\Alph{chapter}}
+%\input{chapters/appendix}
+
+\end{document}

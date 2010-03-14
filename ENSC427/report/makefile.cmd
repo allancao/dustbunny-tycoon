@@ -14,6 +14,8 @@ pdflatex --interaction nonstopmode %FILENAME%
 
 pdflatex --interaction nonstopmode %FILENAME%
 
+pause
 
 
-del *.dvi *.ps *.aux *.log *.bbl *.blg *.out *.lot *.lof *.toc
+
+::del *.dvi *.ps *.aux *.log *.bbl *.blg *.out *.lot *.lof *.toc

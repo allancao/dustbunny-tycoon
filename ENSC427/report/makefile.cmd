@@ -14,8 +14,9 @@ pdflatex --interaction nonstopmode %FILENAME%
 
 pdflatex --interaction nonstopmode %FILENAME%
 
+echo Done compile, going to clean
 pause
 
-
-
-::del *.dvi *.ps *.aux *.log *.bbl *.blg *.out *.lot *.lof *.toc
+call clean.cmd
+echo Done clean, going to exit
+pause

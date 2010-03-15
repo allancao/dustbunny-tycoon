@@ -1,17 +1,28 @@
 \chapter{Simulation Design} 
 
-Some sort of introduction
+Two stages
 
-\section{Basic Add-Hoc Network}
+\begin{enumerate}
+\item Simulate a basic, fully connected, ad-hoc network
+\item Simulate a partitioned ad-hoc network implementing message ferrying
+\end{enumerate}
 
-TODO
+Network topology: multiple clients and one server communication (duplex communication)
 
-\section{Partitioned Add-Hoc Network With Store Carry Forward}
+\section{Basic Ad-Hoc Network}
 
-Describing different scenarios being tested
+\begin{itemize}
+\item Ensure application and configuration profiles are working
+\item Obtain baseline statistics (delay, jitter and loss)
+\end{itemize}
+x
+\section{Partitioned Network With Message Ferrying}
 
-\subsection{Weakly Partitioned - Many Ferries}
+Also known as story-carry-forward
 
-\subsection{Strongly Partitioned - Few Ferries}
+Design scenarios based on two parameters:
 
-TODO: additional subsections?
+\begin{enumerate}
+\item Degree of partitioning (high and low) - how many partitions are there
+\item Number of ferries (few and many)
+\end{enumerate}

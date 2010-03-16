@@ -1,10 +1,15 @@
 \chapter{Simulation Design} 
 
-Two stages
+Stages - complete in order. 
+See how many can be completed
 
 \begin{enumerate}
 \item Simulate a basic, fully connected, ad-hoc network
-\item Simulate a partitioned ad-hoc network implementing message ferrying
+
+\item Simulate static and known partitions with one ferry on a well known route. 
+For example, two partitions with a fixed number of nodes and one ferry traveling between the partitions on a known route.
+This simplifies the packet routing algorithms.
+\item Simulate a partitioned ad-hoc with dynamic topology (change partition boundaries, nodes) and random ferry paths.
 \end{enumerate}
 
 Network topology: multiple clients and one server communication (duplex communication)
@@ -15,14 +20,17 @@ Network topology: multiple clients and one server communication (duplex communic
 \item Ensure application and configuration profiles are working
 \item Obtain baseline statistics (delay, jitter and loss)
 \end{itemize}
-x
+
 \section{Partitioned Network With Message Ferrying}
 
 Also known as story-carry-forward
 
-Design scenarios based on two parameters:
+Design scenarios based on parameters:
 
 \begin{enumerate}
 \item Degree of partitioning (high and low) - how many partitions are there
+\item Distance - how many partitions data must cross
 \item Number of ferries (few and many)
+\item Ferry paths - random or defined to assist data transfer
+\item Known network topology (partition locations, number of nodes, etc)
 \end{enumerate}

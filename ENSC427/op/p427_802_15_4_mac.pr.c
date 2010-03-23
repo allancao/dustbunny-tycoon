@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char p427_802_15_4_mac_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BA8D8AF 4BA8D8AF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char p427_802_15_4_mac_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BA92B63 4BA92B63 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -301,7 +301,8 @@ void wpan_mac_init ()
 	double rx_power_threshold_dbm = 0.0;
 	int data_rate;
 	Packet * pk;
-	
+	char message_str [255];
+
 	/* The purpose of this function is to: 			*/
 	/* 		- Register statistics					*/
 	/* 		- Initialize channels for scanning		*/
@@ -311,6 +312,9 @@ void wpan_mac_init ()
 	/* 		- Initialize module-wide memory			*/
 	
 	FIN (wpan_mac_init ());
+	
+	sprintf (message_str, "[%d] wpan_mac_init\n", self_id); 
+	printf (message_str);
 	
 	/* Initialize packet index variables. */
 	pk = op_pk_create_fmt ("427_zigbee_network_pdu");
@@ -359,7 +363,7 @@ void wpan_mac_init ()
 	/* Initialize state variables */
 	beacon_scan_list 	= OPC_NIL;
 	//my_pan_id 			= -1;
-	my_network_address 	= -1;
+	//my_network_address 	= -1;
 	my_parent_address 	= -1;
 	my_channel 			= -1;
 	stat_dim_index 		= 0;
@@ -379,6 +383,9 @@ void wpan_mac_init ()
 	op_ima_obj_attr_get (ack_info_objid, "Status", &ack_enabled);
 	op_ima_obj_attr_get (ack_info_objid, "ACK Wait Duration", &ack_duration);
 	op_ima_obj_attr_get (ack_info_objid, "Number of Retransmissions", &max_retrans);
+
+	//ADDED
+	op_ima_obj_attr_get (self_id, "MAC Address", &my_network_address);
 	
 	/* Convert the power threshold (receiver sensitivity) value from dBm to	*/
 	/* Watts.																*/
@@ -457,11 +464,15 @@ void wpan_mac_drop_pk ()
 {
 	Packet *pk, * encap_pk;
 	Stathandle_Bundle * stat_bun_ptr;
+	char message_str [255];
 	
 	/** Destroy the packet and write the Application Data Dropped statisitics. **/
 	
 	FIN (wpan_mac_drop_pk ());
 
+	sprintf (message_str, "[%d] wpan_mac_drop_pk\n", self_id); 
+	printf (message_str);
+	
 	pk = op_pk_get (op_intrpt_strm ());
 	
 	if (wpan_network_pk_is_app_data (pk))
@@ -496,6 +507,9 @@ void wpan_mac_record_beacon ()
 	
 	FIN (wpan_mac_record_beacon ());
 		
+	sprintf (message_str, "[%d] wpan_mac_record_beacon\n", self_id); 
+	printf (message_str);
+	
 	pk = op_pk_get (op_intrpt_strm ());
 	op_pk_format (pk, format_name);
 	
@@ -526,8 +540,8 @@ void wpan_mac_record_beacon ()
 		//op_pk_fd_get_int32 (pk, WPANC_BEACON_PAN_ID_FIELD_INDEX, &temp);
 		//entry_ptr->pan_id = temp;
 
-		//op_pk_fd_get_int32 (pk, WPANC_BEACON_SRC_ADDR_FIELD_INDEX, &temp);
-		//entry_ptr->source_address = temp;  	   
+		op_pk_fd_get_int32 (pk, WPANC_BEACON_SRC_ADDR_FIELD_INDEX, &temp);
+		entry_ptr->source_address = temp;  	   
 
 		//op_pk_fd_get_int32 (pk, WPANC_BEACON_RTR_CAP_FIELD_INDEX, &temp);
 		//entry_ptr->router_capacity = temp; 	   	
@@ -562,10 +576,11 @@ void wpan_mac_record_beacon ()
 		
 		op_prg_list_insert (beacon_scan_list, entry_ptr, OPC_LISTPOS_TAIL);
 			
-		if (op_prg_odb_ltrace_active ("wpan_mac") || op_prg_odb_ltrace_active ("wpan_mac_join"))
+		//if (op_prg_odb_ltrace_active ("wpan_mac") || op_prg_odb_ltrace_active ("wpan_mac_join"))
 		{
 			sprintf (message_str, "Recorded a beacon.\n"); 
-			op_prg_odb_print_major (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
+			//op_prg_odb_print_major (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
+			printf(message_str);
 		}			
 	}
 	
@@ -593,6 +608,9 @@ void wpan_mac_handle_wireless_pk ()
 	
 	pk = op_pk_get (op_intrpt_strm ());	
 	pk_size = (double) op_pk_total_size_get (pk);
+	
+	sprintf (message_str, "[%d] wpan_mac_handle_wireless_pk\n", self_id); 
+	printf (message_str);
 	
 	/* If packet is node's own transmission then drop the packet. */
 	if (op_pk_stamp_mod_get (pk) == self_id)
@@ -1165,7 +1183,7 @@ void wpan_mac_set_vars ()
 	addr_info_ptr = (Address_Info *) op_intrpt_state_ptr_get ();
 	
 	//my_pan_id 			= addr_info_ptr->pan_id;
-	my_network_address 	= addr_info_ptr->network_address;
+	//my_network_address 	= addr_info_ptr->network_address;
 	
 	//*********************************
 	//TODO: Remove?
@@ -1245,7 +1263,7 @@ void wpan_mac_unset_vars ()
 	}
 	
 	//my_pan_id 			= -1;
-	my_network_address 	= -1;
+	//my_network_address 	= -1; //AS INPUT
 	my_parent_address 	= -1;
 	my_channel 			= -1;
 	my_beacon_order     = -1;
@@ -1270,7 +1288,7 @@ void wpan_start_scan ()
 	FIN (wpan_start_scan ());
 	
 	temp_net_addr = (int *) op_intrpt_state_ptr_get ();
-	my_network_address = *temp_net_addr;
+	//my_network_address = *temp_net_addr;
 	
 	/* Reset the channel_index and beacon list from any prior scan. */
 	channel_index = 0;	
@@ -1280,11 +1298,14 @@ void wpan_start_scan ()
 	else
 		beacon_scan_list = op_prg_list_create ();	
 	
-	if (op_prg_odb_ltrace_active ("wpan_mac") || op_prg_odb_ltrace_active ("wpan_mac_join"))
-	{
-		sprintf (message_str, "Starting the scan.\n"); 
-		op_prg_odb_print_major (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
-	}
+	//if (op_prg_odb_ltrace_active ("wpan_mac") || op_prg_odb_ltrace_active ("wpan_mac_join"))
+	//{
+
+	sprintf (message_str, "[%d] Starting the scan\n", self_id); 
+	printf (message_str);
+		//sprintf (message_str, "Starting the scan.\n"); 
+		//op_prg_odb_print_major (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
+	//}
 		
 	wpan_perform_scan ();
 	
@@ -1438,6 +1459,17 @@ void wpan_mac_initialize_channels (Objid my_node_id, int data_rate)
 		op_ima_obj_attr_get_toggle (trans_info_objid, "915 MHz Band", &band_id_2);
 		op_ima_obj_attr_get_toggle (trans_info_objid, "868 MHz Band", &band_id_1);
 	}
+	
+	band_id_3 = 1;
+	
+	sprintf (message_str, "[%d] Band 3 %d.\n", self_id, band_id_3);
+	op_prg_odb_print_minor (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
+	
+	sprintf (message_str, "[%d] Band 2 %d.\n", self_id, band_id_2);
+	op_prg_odb_print_minor (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
+	
+	sprintf (message_str, "[%d] Band 1 %d.\n", self_id, band_id_1);
+	op_prg_odb_print_minor (message_str, OPC_NIL, OPC_NIL, OPC_NIL);
 	
 	channel_info_lptr = op_prg_list_create ();
 	
@@ -1753,7 +1785,7 @@ Boolean wpan_network_pk_is_app_data (Packet *pk)
 
 
 Boolean wpan_network_pk_is_join_response (Packet *pk)
-	{
+{
 	int pk_type;
 	char format_name[100];
 	
@@ -1775,9 +1807,14 @@ Boolean wpan_network_pk_is_join_response (Packet *pk)
 
 void wpan_mac_hash_initialize ()
 {
+	char message_str[255];
+	
 	/* If ACK is enabled create a hash table to store the packets using key as their sequence numbers. */
 	
 	FIN (wpan_mac_hash_initialize ());
+	
+	sprintf (message_str, "[%d] wpan_mac_hash_initialize\n", self_id); 
+	printf (message_str);
 	
 	/* This is the old hash table that is not freed up beacuse the node never successfully joined a PAN */
 	if (ack_outstanding_htable_ptr)
@@ -1883,6 +1920,14 @@ p427_802_15_4_mac (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (idle) enter executives **/
 			FSM_STATE_ENTER_UNFORCED (1, "idle", state1_enter_exec, "p427_802_15_4_mac [idle enter execs]")
+				FSM_PROFILE_SECTION_IN ("p427_802_15_4_mac [idle enter execs]", state1_enter_exec)
+				{
+				char message_str[255];
+				
+				sprintf (message_str, "[%d] STATE: idle\n", self_id); 
+				printf (message_str);
+				}
+				FSM_PROFILE_SECTION_OUT (state1_enter_exec)
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (3,"p427_802_15_4_mac")
@@ -1910,6 +1955,14 @@ p427_802_15_4_mac (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (active) enter executives **/
 			FSM_STATE_ENTER_UNFORCED (2, "active", state2_enter_exec, "p427_802_15_4_mac [active enter execs]")
+				FSM_PROFILE_SECTION_IN ("p427_802_15_4_mac [active enter execs]", state2_enter_exec)
+				{
+				char message_str[255];
+				
+				sprintf (message_str, "[%d] STATE: active\n", self_id); 
+				printf (message_str);
+				}
+				FSM_PROFILE_SECTION_OUT (state2_enter_exec)
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (5,"p427_802_15_4_mac")
@@ -1953,6 +2006,14 @@ p427_802_15_4_mac (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (scanning) enter executives **/
 			FSM_STATE_ENTER_UNFORCED (3, "scanning", state3_enter_exec, "p427_802_15_4_mac [scanning enter execs]")
+				FSM_PROFILE_SECTION_IN ("p427_802_15_4_mac [scanning enter execs]", state3_enter_exec)
+				{
+				char message_str[255];
+				
+				sprintf (message_str, "[%d] STATE: scanning\n", self_id); 
+				printf (message_str);
+				}
+				FSM_PROFILE_SECTION_OUT (state3_enter_exec)
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (7,"p427_802_15_4_mac")
@@ -1988,6 +2049,11 @@ p427_802_15_4_mac (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_UNFORCED (4, "failure", state4_enter_exec, "p427_802_15_4_mac [failure enter execs]")
 				FSM_PROFILE_SECTION_IN ("p427_802_15_4_mac [failure enter execs]", state4_enter_exec)
 				{
+				char message_str[255];
+				
+				sprintf (message_str, "[%d] STATE: failure\n", self_id); 
+				printf (message_str);
+				
 				if (op_intrpt_type() == OPC_INTRPT_FAIL)
 				{
 					op_intrpt_clear_self ();

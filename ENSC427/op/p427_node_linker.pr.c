@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char p427_node_linker_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BA8EEAD 4BA8EEAD 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char p427_node_linker_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BA92E87 4BA92E87 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
 #include <string.h>
 
 
@@ -25,14 +25,17 @@ const char p427_node_linker_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BA8EEA
 #define MAC_STRM_OUT 0
 
 //Interrupt Codes
-#define IRQ_START_NODE_SEARCH 10
+#define IRC_START_NODE_SEARCH 10
 
 //Events
 #define RX_MAC_PKT (op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == MAC_STRM_IN)
-#define START_NODE_SEARCH (op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IRQ_START_NODE_SEARCH)
+#define START_NODE_SEARCH (op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IRC_START_NODE_SEARCH)
 
 void rx_mac_pkt(void);
 void send_becon_request(void);
+void schedule_becon_request(void);
+
+void default_intrpt(void);
 
 /* End of Header Block */
 
@@ -56,10 +59,14 @@ typedef struct
 	/* State Variables */
 	int	                    		node_search_counter                             ;
 	Objid	                  		mac_id                                          ;
+	int	                    		send_becons                                     ;
+	int	                    		num_becons                                      ;
 	} p427_node_linker_state;
 
 #define node_search_counter     		op_sv_ptr->node_search_counter
 #define mac_id                  		op_sv_ptr->mac_id
+#define send_becons             		op_sv_ptr->send_becons
+#define num_becons              		op_sv_ptr->num_becons
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -78,36 +85,62 @@ typedef struct
 enum { _op_block_origin = __LINE__ + 2};
 #endif
 
-void rx_max_pkt(void)
+void rx_mac_pkt(void)
 {
 	Packet *pk;
+	char message_str[255];
 	
-	FIN(rx_max_pkt(void));
-	
-	printf("rx_max_pkt");
+	FIN(rx_mac_pkt(void));
+
+	sprintf (message_str, "[%d] NL rx_mac_pkt\n", op_id_self()); 
+	printf (message_str);
 
 	pk = op_pk_get (op_intrpt_strm ());
 	
-	op_pk_send (pk, MAC_STRM_OUT);
+	op_pk_send (pk, 1); //To sink
 	
 	FOUT;
 }
 
 void send_becon_request(void)
 {
+	char message_str[255];
+
 	FIN(send_becon_request(void));
-	printf("send_becon_request");
 	
-	if(node_search_counter >= 10)
+	sprintf (message_str, "[%d] NL send_becon_request\n", op_id_self()); 
+	printf (message_str);
+	
+	if(node_search_counter >= num_becons)
 	{
-		printf("send_becon_request - max counter");
+		printf("send_becon_request - max counter\n");
 		FOUT;
 	}
 	
 	node_search_counter++;
-
+	schedule_becon_request();
 	op_intrpt_schedule_remote (op_sim_time (), 0, mac_id); //SCAN_REQUEST
-	op_intrpt_schedule_self (op_sim_time () + 10, IRQ_START_NODE_SEARCH);
+
+	FOUT;
+}
+
+void schedule_becon_request(void)
+{
+	FIN(schedule_becon_request(void));
+	printf("schedule_becon_request\n");
+	
+	op_intrpt_schedule_self (op_sim_time () + 10, IRC_START_NODE_SEARCH);
+	
+	FOUT;
+}
+
+void default_intrpt(void)
+{
+	FIN(schedule_becon_request(void));
+	printf("default_intrpt\n");
+	
+	//op_intrpt_schedule_self (op_sim_time () + 0.1, IRC_START_NODE_SEARCH);
+	
 	FOUT;
 }
 
@@ -163,10 +196,19 @@ p427_node_linker (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED_NOLABEL (0, "init", "p427_node_linker [init enter execs]")
 				FSM_PROFILE_SECTION_IN ("p427_node_linker [init enter execs]", state0_enter_exec)
 				{
-				printf("Node linker init");
+				char message_str[255];
+				
+				sprintf (message_str, "[%d] NL STATE: init\n", op_id_self()); 
+				printf (message_str);
 				
 				node_search_counter = 0;
 				mac_id = op_id_from_name (op_topo_parent (op_id_self ()), OPC_OBJTYPE_PROC, "802_15_4_mac");
+				
+				op_ima_obj_attr_get (op_id_self(), "Send Becons", &send_becons);
+				op_ima_obj_attr_get (op_id_self(), "Num Becons", &num_becons);
+				
+				if(send_becons)
+					schedule_becon_request();
 				}
 				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
 
@@ -184,7 +226,7 @@ p427_node_linker (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_UNFORCED (1, "idle", state1_enter_exec, "p427_node_linker [idle enter execs]")
 				FSM_PROFILE_SECTION_IN ("p427_node_linker [idle enter execs]", state1_enter_exec)
 				{
-				printf("Node linker idle enter");
+				printf("Node linker idle enter\n");
 				}
 				FSM_PROFILE_SECTION_OUT (state1_enter_exec)
 
@@ -206,9 +248,9 @@ p427_node_linker (OP_SIM_CONTEXT_ARG_OPT)
 
 			FSM_TRANSIT_SWITCH
 				{
-				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, rx_mac_pkt;, "RX_MAC_PKT", "rx_mac_pkt", "idle", "idle", "tr_1", "p427_node_linker [idle -> idle : RX_MAC_PKT / rx_mac_pkt]")
-				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, send_becon_request;, "START_NODE_SEARCH", "send_becon_request", "idle", "idle", "tr_4", "p427_node_linker [idle -> idle : START_NODE_SEARCH / send_becon_request]")
-				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, ;, "default", "", "idle", "idle", "default", "p427_node_linker [idle -> idle : default / ]")
+				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, rx_mac_pkt();, "RX_MAC_PKT", "rx_mac_pkt()", "idle", "idle", "tr_1", "p427_node_linker [idle -> idle : RX_MAC_PKT / rx_mac_pkt()]")
+				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, send_becon_request();, "START_NODE_SEARCH", "send_becon_request()", "idle", "idle", "tr_4", "p427_node_linker [idle -> idle : START_NODE_SEARCH / send_becon_request()]")
+				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, default_intrpt();, "default", "default_intrpt()", "idle", "idle", "default", "p427_node_linker [idle -> idle : default / default_intrpt()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -253,6 +295,8 @@ _op_p427_node_linker_terminate (OP_SIM_CONTEXT_ARG_OPT)
 /* local variable prs_ptr in _op_p427_node_linker_svar function. */
 #undef node_search_counter
 #undef mac_id
+#undef send_becons
+#undef num_becons
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -317,6 +361,16 @@ _op_p427_node_linker_svar (void * gen_ptr, const char * var_name, void ** var_p_
 	if (strcmp ("mac_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->mac_id);
+		FOUT
+		}
+	if (strcmp ("send_becons" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->send_becons);
+		FOUT
+		}
+	if (strcmp ("num_becons" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->num_becons);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

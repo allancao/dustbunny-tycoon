@@ -8,7 +8,11 @@
 \usepackage{amsmath,amssymb}
 \usepackage[utf8]{inputenc}
 
-\title{Message Ferrying in Partitioned Ad Hoc Networks}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title Page Info
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Message Ferrying}
 
 \coursecode{427}
 
@@ -20,7 +24,9 @@
 }
 
 \prof{Professor Ljiljana Trajkovic}
-\date{March 14, 2010}
+
+\date{March 24, 2010}
+
 
 \begin{document}
 
@@ -32,30 +38,35 @@
 
 \setcounter{page}{2} % the table of contents will be shown as page iii
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Abstract
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \input{chapters/abstract}
 
 \cleardoublepage
 
-\addcontentsline{toc}{chapter}{\hspace{13pt} Contents}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tables
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \tableofcontents
+\addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
 
 \listoftables
-\addcontentsline{toc}{chapter}{\hspace{13pt} List of Tables}
+\addcontentsline{toc}{chapter}{\hspace{13pt}List of Tables}
 
 \listoffigures
-\addcontentsline{toc}{chapter}{\hspace{13pt} List of Figures}
+\addcontentsline{toc}{chapter}{\hspace{13pt}List of Figures}
 
 \cleardoublepage
 \pagenumbering{arabic}
 
-%TEMP - to remove
-%\input{chapters/latexExamples} %asdfasd
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main Section
+%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%adfgsa
-
-% Main section
-
-%Citation test (remove) ~\cite{wearable}
+%Add chapters as needed
 
 \input{chapters/introduction}
 
@@ -65,14 +76,20 @@
 
 \input{chapters/conclusion}
 
-%Add chapters as needed
-
-\addcontentsline{toc}{chapter}{\hspace{13pt} References}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% References
+%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \bibliography{finalReport}
+\addcontentsline{toc}{chapter}{\hspace{13pt}References}
 
-%\appendix
-\renewcommand{\thechapter}{\Alph{chapter}}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+%\renewcommand{\thechapter}{\Alph{chapter}}
+
 \input{chapters/appendix}
 
 \end{document}

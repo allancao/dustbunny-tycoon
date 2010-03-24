@@ -31,16 +31,17 @@ if exist %FILENAME%.pdf (
 :: Compile
 ::###########################################
 
-pdflatex --interaction nonstopmode %FILENAME%
+::pdflatex --interaction nonstopmode %FILENAME%
+pdflatex %FILENAME%
 
 
-pause
+::pause
 
 bibtex %FILENAME%
 
 pdflatex --interaction nonstopmode %FILENAME% 
 
-pdflatex --interaction nonstopmode %FILENAME%
+pdflatex %FILENAME%
 
 if not exist %FILENAME%.pdf (
   echo Not generate PDF, please look up to see if there were any errors

@@ -6,7 +6,8 @@ When simulating each scenario, the following metrics will be measured:
 \begin{enumerate}
 \item Time to update state in central repository (delay)
 \item Variation in time to update state (delay jitter)
-\item Number of state updates lost 
+\item Number of state updates lost. Roughly corresponds to packet loss.
+\item Memory utilization and packet dropping threshold within ferries.
 \end{enumerate}
 
 \section{Scenarios}
@@ -14,17 +15,23 @@ When simulating each scenario, the following metrics will be measured:
 
 \subsection{Scenario Considerations}
 
+The following should be considered when designing scenarios
+\begin{itemize}
+\item Number of sources to ferries to gateways (various ratios)
+\item Speed and trajectories of ferries (random vs set path)
+\item Rate of source node state changes
+\item Buffer size of ferries and size of property values (affects packet sizes)
+\item Distances and distributions of ferries and gateways
+\end{itemize}
+
 \subsection{Scenario 1: x}
+
+What is the scenario features. 
+What specifically is it trying to test or measure.
+
 List other scenarios
 
 \section{Results}
 
 Show result tables and graphs.
-
-%\begin{enumerate}
-%\item Degree of partitioning (high and low) - how many partitions are there
-%\item Distance - how many partitions data must cross
-%\item Number of ferries (few and many)
-%\item Ferry paths - random or defined to assist data transfer
-%\item Known network topology (partition locations, number of nodes, etc)
-%\end{enumerate}
+Discuss implications.

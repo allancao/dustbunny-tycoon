@@ -11,7 +11,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{enscStyle}
-\LoadClass[11pt]{report}
+\LoadClass[12pt]{report}
 
 \usepackage{textcase}
 \usepackage{setspace}
@@ -73,7 +73,7 @@
 \newcounter{figs}
 \newcounter{eqns}
 \newcounter{tabs}
-\setcounter{secnumdepth}{1}
+\setcounter{secnumdepth}{2}
 
 \renewcommand\bibname{References}
 \bibliographystyle{IEEEtran}

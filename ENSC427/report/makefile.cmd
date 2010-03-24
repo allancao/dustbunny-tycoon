@@ -26,6 +26,15 @@ if exist %FILENAME%.pdf (
   )
 )
 
+::###########################################
+:: Clean 
+::###########################################
+
+echo.
+echo Going to clean
+
+echo.
+call clean.cmd
 
 ::###########################################
 :: Compile
@@ -52,11 +61,13 @@ if not exist %FILENAME%.pdf (
 :: Clean
 ::###########################################
 
-echo.
-echo Done compile, going to clean
+::DISABLED
 
-echo.
-call clean.cmd
+::echo.
+::echo Done compile, going to clean
+
+::echo.
+::call clean.cmd
 
 
 ::###########################################

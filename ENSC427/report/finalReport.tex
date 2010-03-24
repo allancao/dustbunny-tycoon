@@ -1,3 +1,4 @@
+%\documentclass[twoside]{enscStyle}
 \documentclass{enscStyle}
 \usepackage{booktabs}
 \usepackage{hyperref}
@@ -33,9 +34,12 @@
 
 \maketitle
 
+%Needed for twoside option:
+%\thispagestyle{empty}
+
 \cleardoublepage
 
-\setcounter{page}{2} % the table of contents will be shown as page iii
+\setcounter{page}{1} % the table of contents will be shown as page iii
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Abstract
@@ -52,13 +56,18 @@
 \tableofcontents
 \addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
 
+\cleardoublepage
+
 \listoftables
 \addcontentsline{toc}{chapter}{\hspace{13pt}List of Tables}
+
+\cleardoublepage
 
 \listoffigures
 \addcontentsline{toc}{chapter}{\hspace{13pt}List of Figures}
 
 \cleardoublepage
+
 \pagenumbering{arabic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%

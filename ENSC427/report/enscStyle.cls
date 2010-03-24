@@ -11,6 +11,10 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{enscStyle}
+
+\DeclareOption{twoside}{\PassOptionsToClass{twoside}{report}}
+\ProcessOptions
+
 \LoadClass[12pt]{report}
 
 \usepackage{textcase}
@@ -19,6 +23,10 @@
 \usepackage{url}
 \usepackage{graphicx}
 \usepackage{lscape}
+
+%Ensure chapters start on even pages
+\let\Oldchapter\chapter
+\renewcommand{\chapter}{\cleardoublepage\Oldchapter}
 
 \newcommand{\degree}{\ensuremath{^\circ}}
 

@@ -12,20 +12,19 @@ In a partitioned network, nodes may remain fully disconnected or they may \emph{
 All current used routing algorithms used in MANETs %TODO: list algorithms?
 fail in the presence of partitioning ~\cite{Routing}.
 
-\subsection{Delay and Loss Tolerant Networks}
+\subsection{Delay Tolerant Networks}
 \label{sec:delay_loss_tolerant}
 %This section is pretty lame
-A delay tolerant network is one in which there may be significant delay delivering packets.
+A delay tolerant network is one in which routing strategies and applications must tolerate significant delays delivering packets.
 This delay may range from a few minutes up to hours or even days. %cite
-%TODO: reason - intermittently connected
-Loss tolerant networks are networks in which a significant number of packets may be lost.
+
+%something more?
 
 \subsection{Message Ferrying \& Store-Carry-Forward Routing}
 \label{sec:ferrying_overview}
-Message ferrying is the concept of making use of mobile nodes in a MANET networks to deliver data ~\cite{adhocmsgferry}.
-Store-carry-forward routing is a strategy which makes use of known or assigned trajectories of these mobile nodes, known as message ferries, collect and deliver data.
+Message ferrying is a technique where mobile nodes in a MANET buffer data and physically carry it between nodes which are unable to communicate ~\cite{adhocmsgferry}.
+Store-carry-forward routing is a strategy which makes use of, typically, known or assigned trajectories of these mobile nodes, known as message ferries.
 Some messages are dropped if no route to the destination can be found.  
-Message ferrying allows the message to buffer and carry messages until the connection is available to forward.
 
 %TODO: include
 %	- task vs message oriented ferries
@@ -34,28 +33,26 @@ Message ferrying allows the message to buffer and carry messages until the conne
 
 \section{Motivations and Potential Applications}
 
-%TODO: redo
-%Main idea
-%	- Many mobile devices - potentially many ferries
-%	- Non-essential monitoring applications are delay and loss tolerant
+With the increasing numbers of mobile devices today, such as smartphones, laptops, tablets, netbooks, and more, there are many devices which could be potentially used as message ferries. 
+This project proposes one way to make use of the significant amount of technology we transport with us on a daily basis.
+A message ferrying network could potentially transport small amounts of data over large distances essentially for free.
+Beyond the use of message ferrying in remote sensor networks, discussed throughout this report, other applications of this technique might include tracking road traffic conditions, in-house utility management, automation for home devices, industrial monitoring, robot to robot communication and more.  
 
-With the continuous growth of today's mobile devices, such as smartphones, laptops, tablets, netbooks, and more, demands for different services are prominent. 
-%The idea is to implement integrated intelligence for networked machine monitoring and controlling.
-Some of these applications are integrated intelligence for networked monitoring and controllability between machines, track road traffic conditions, in-house utility management, automation for home devices, industrial monitoring applications, robot to robot communication and more.  
-The use of these mesh networks must have low-cost, very low power consumption,low data rate, cheap installation, flexibility, and increase connectivity to make it worthwhile in most cases.
+%Some of these ideas are good but dont really fit in this section:
+%The use of these mesh networks must have low-cost, very low power consumption,low data rate, cheap installation, flexibility, and increase connectivity to make it worthwhile in most cases.
 
 \section{Project Goals}
 
-Message ferrying has typically been examined within the context of improving throughput, reducing delay and increasing reliability within a ad hoc network.
-Due to the complexity of incorporating message ferrying into existing ad hoc routing algorithms, this project will focus on a network in which data is transported strictly using ferries.
+Message ferrying has typically been examined within the context of improving throughput, reducing delay and increasing reliability within an ad hoc network.
+Due to the complexity of incorporating message ferrying into existing ad hoc and MANET routing algorithms, this project will focus on a network in which data is transported strictly using ferries.
 No clustering of network nodes and routing within subnetworks will be considered.
 Surprisingly, very little research has been found for a network with these characteristics.
 The goals of this project may be listed as follows.
 
 \begin{itemize}
 \item Design and implement a message ferrying algorithm.
-\item Simulate this algorithm in a highly partitioned network.
-\item Evaluate the network based on delay and loss.
+\item Simulate this algorithm in a highly partitioned network without node clustering or subnetworks.
+\item Evaluate the network considering topology and the message ferrying algorithm.
 \item Examine the impact of node density and ferry count on the network.
 \end{itemize}
 

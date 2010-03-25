@@ -46,6 +46,7 @@ latex %FILENAME%
 ::pause
 
 bibtex %FILENAME%
+latex %FILENAME%
 
 
 htlatex %FILENAME%

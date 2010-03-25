@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
+  "http://www.w3.org/TR/html4/loose.dtd">  
+<html > 
+<head><title>Message Ferrying</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<!-- html --> 
+<meta name="src" content="finalReport.tex"> 
+<meta name="date" content="2010-03-25 09:47:00"> 
+<link rel="stylesheet" type="text/css" href="interimreport.css"> 
+</head><body 
+>
+   <div class="maketitle">
+
+
+<h2 class="titleHead">Message Ferrying</h2>
+A Report Submitted in Partial Fulfillment<br />
+of the Requirements for ENSC 427
+   <br/> <br/>
+<div class="author" > Group 9<br />
+Dan Hendry (danh@sfu.ca), 301133878<br />
+Yazan Shehadeh (ysa5@sfu.ca), 301028275<br />
+Timbo Yuen (tty2@sfu.ca), 301023080<br />
+</div>
+   <br/>
+Simon Fraser University<br />
+School of Engineering Science
+
+   <br/>
+<div class="date" >March 25, 2010</div><br />
+Course Instructor: Professor Ljiljana Trajkovic
+
+   <hr/> </div>
+
+<!--l. 40--><p class="indent" >
+
+<div class="center" 
+>
+<!--l. 1--><p class="noindent" >
+<!--l. 2--><p class="noindent" ><span 
+class="cmbx-12">Abstract</span></div>
+<!--l. 5--><p class="indent" >   Machine to machine communication has long been considered a feature of the next
+technological age. Networking options available today are either too expensive or
+cumbersome to justify the information they are able to provide (such as dedicated
+wired Ethernet or cellular data modems), or do not provide uniform connectivity
+(such as WiFi). An alternate solution is to use ad-hoc mesh networking. Such
+networks however, require every node to be connect to another and fail when the
+network is sparse or becomes partitioned. Message ferrying is a technique which uses
+physical mobile devices, known as message ferries, as data transport mechanisms
+between disconnected network nodes or partitioned subnetworks. This project will
+implement and simulate a message ferrying algorithm applicable to a specialized
+remote sensor network in which a central repository maintains current sensor
+state.
+<!--l. 12--><p class="indent" >   <span 
+class="cmti-12">References for interim report: </span>&#x00A0;<span class="cite">[<a 
+href="#Xadhocmsgferry">1</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#Xhybrid">2</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#XRouting">3</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#Xwearable">4</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#XQoSrouting">5</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#Xefficientrouting">6</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#Ximplement">7</a>]</span> &#x00A0;<span class="cite">[<a 
+href="#Xbook1">8</a>]</span>
+
+<!--l. 50--><p class="indent" >
+
+<!--l. 56--><p class="indent" >   <hr/>
+
+   <h2 class="likechapterHead"><a 
+ id="x1-1000"></a>Contents</h2> <div class="tableofcontents">
+   <span class="chapterToc" > <a 
+href="#Q1-1-2">&#x00A0;   Contents</a></span>
+<br />   <span class="chapterToc" > <a 
+href="#Q1-1-4">&#x00A0;   List of Tables</a></span>
+<br />   <span class="chapterToc" > <a 
+href="#Q1-1-6">&#x00A0;   List of Figures</a></span>
+<br />   <span class="chapterToc" >1 <a 
+href="#x1-40001" id="QQ2-1-7">Introduction</a></span>
+<br />   &#x00A0;<span class="sectionToc" >1.1 <a 
+href="#x1-50001.1" id="QQ2-1-8">Background</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >1.1.1 <a 
+href="#x1-60001.1.1" id="QQ2-1-9">Mobile Ad Hoc Networks</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >1.1.2 <a 
+href="#x1-70001.1.2" id="QQ2-1-10">Partitioned Networks</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >1.1.3 <a 
+href="#x1-80001.1.3" id="QQ2-1-11">Delay Tolerant Networks</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >1.1.4 <a 
+href="#x1-90001.1.4" id="QQ2-1-12">Message Ferrying &amp; Store-Carry-Forward Routing</a></span>
+<br />   &#x00A0;<span class="sectionToc" >1.2 <a 
+href="#x1-100001.2" id="QQ2-1-13">Motivations and Potential Applications</a></span>
+<br />   &#x00A0;<span class="sectionToc" >1.3 <a 
+href="#x1-110001.3" id="QQ2-1-14">Project Goals</a></span>
+<br />   <span class="chapterToc" >2 <a 
+href="#x1-120002" id="QQ2-1-15">Project Premise &amp; Model Design</a></span>
+<br />   &#x00A0;<span class="sectionToc" >2.1 <a 
+href="#x1-130002.1" id="QQ2-1-16">State Monitoring Network</a></span>
+<br />   &#x00A0;<span class="sectionToc" >2.2 <a 
+href="#x1-140002.2" id="QQ2-1-17">Network Elements</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.2.1 <a 
+href="#x1-150002.2.1" id="QQ2-1-18">Physical Network Entities</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.2.2 <a 
+href="#x1-160002.2.2" id="QQ2-1-19">Inter-Node Communication</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.2.3 <a 
+href="#x1-170002.2.3" id="QQ2-1-20">Packets</a></span>
+<br />   <span class="chapterToc" >3 <a 
+href="#x1-180003" id="QQ2-1-21">Simulation</a></span>
+<br />   &#x00A0;<span class="sectionToc" >3.1 <a 
+href="#x1-190003.1" id="QQ2-1-22">Scenarios</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.1.1 <a 
+href="#x1-200003.1.1" id="QQ2-1-23">Scenario Considerations</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.1.2 <a 
+href="#x1-210003.1.2" id="QQ2-1-24">Scenario 1: x</a></span>
+<br />   &#x00A0;<span class="sectionToc" >3.2 <a 
+href="#x1-220003.2" id="QQ2-1-25">Results</a></span>
+<br />   <span class="chapterToc" >4 <a 
+href="#x1-230004" id="QQ2-1-26">Conclusion</a></span>
+<br />   &#x00A0;<span class="sectionToc" >4.1 <a 
+href="#x1-240004.1" id="QQ2-1-27">Results</a></span>
+
+<br />   &#x00A0;<span class="sectionToc" >4.2 <a 
+href="#x1-250004.2" id="QQ2-1-28">Future Work</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.2.1 <a 
+href="#x1-260004.2.1" id="QQ2-1-29">Fountain Codes</a></span>
+<br />   <span class="chapterToc" > <a 
+href="#Q1-1-31">&#x00A0;   References</a></span>
+<br />   <span class="appendixToc" >A <a 
+href="#x1-28000A" id="QQ2-1-32">Code</a></span>
+<br />   &#x00A0;<span class="sectionToc" >A.1 <a 
+href="#x1-29000A.1" id="QQ2-1-33">Message Ferrying</a></span>
+<br />   &#x00A0;<span class="sectionToc" >A.2 <a 
+href="#x1-30000A.2" id="QQ2-1-34">MAC and other stuff here</a></span>
+   </div><a 
+ id="Q1-1-2"></a>
+
+<!--l. 59--><p class="indent" >
+
+<!--l. 61--><p class="indent" >   <hr/>
+
+   <h2 class="likechapterHead"><a 
+ id="x1-2000"></a>List of Tables</h2><div class="tableofcontents">
+   </div><a 
+ id="Q1-1-4"></a>
+
+<!--l. 66--><p class="indent" >   <hr/>
+
+   <h2 class="likechapterHead"><a 
+ id="x1-3000"></a>List of Figures</h2><div class="tableofcontents">
+   </div><a 
+ id="Q1-1-6"></a>
+
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;1</span><br /><a 
+ id="x1-40001"></a>Introduction</h2>
+   <h3 class="sectionHead"><span class="titlemark">1.1   </span> <a 
+ id="x1-50001.1"></a>Background</h3>
+<!--l. 5--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">1.1.1   </span> <a 
+ id="x1-60001.1.1"></a>Mobile Ad Hoc Networks</h4>
+<!--l. 6--><p class="noindent" >A mobile ad hoc network (MANET), is a self-configuring mesh network of mobile devices
+connected by wireless links. These mobile devices are free to move independently in any
+direction and it acts as a router, where it must forward traffic unrelated to its own
+use.
+<!--l. 9--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">1.1.2   </span> <a 
+ id="x1-70001.1.2"></a>Partitioned Networks</h4>
+<!--l. 10--><p class="noindent" >Partitioned networks are networks with no single hop or multiple hop route between some
+or even all node pairs. In a partitioned network, nodes may remain fully disconnected or
+they may <span 
+class="cmti-12">cluster</span>, forming subnetworks in which all nodes are connected. All current
+used routing algorithms used in MANETs fail in the presence of partitioning
+&#x00A0;<span class="cite">[<a 
+href="#XRouting">3</a>]</span>.
+<!--l. 15--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">1.1.3   </span> <a 
+ id="x1-80001.1.3"></a>Delay Tolerant Networks</h4>
+<!--l. 18--><p class="noindent" >A delay tolerant network is one in which routing strategies and applications must tolerate
+significant delays delivering packets. This delay may range from a few minutes up to hours
+or even days.
+
+<!--l. 23--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">1.1.4   </span> <a 
+ id="x1-90001.1.4"></a>Message Ferrying &amp; Store-Carry-Forward Routing</h4>
+<!--l. 25--><p class="noindent" >Message ferrying is a technique where mobile nodes in a MANET buffer data
+and physically carry it between nodes which are unable to communicate &#x00A0;<span class="cite">[<a 
+href="#Xadhocmsgferry">1</a>]</span>.
+Store-carry-forward routing is a strategy which makes use of, typically, known or assigned
+trajectories of these mobile nodes, known as message ferries. Some messages are dropped if
+no route to the destination can be found.
+<!--l. 34--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">1.2   </span> <a 
+ id="x1-100001.2"></a>Motivations and Potential Applications</h3>
+<!--l. 36--><p class="noindent" >With the increasing numbers of mobile devices today, such as smartphones, laptops,
+tablets, netbooks, and more, there are many devices which could be potentially used as
+message ferries. This project proposes one way to make use of the significant amount of
+technology we transport with us on a daily basis. A message ferrying network could
+potentially transport small amounts of data over large distances essentially for free. Beyond
+the use of message ferrying in remote sensor networks, discussed throughout this report,
+other applications of this technique might include tracking road traffic conditions, in-house
+utility management, automation for home devices, industrial monitoring, robot to robot
+communication and more.
+<!--l. 44--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">1.3   </span> <a 
+ id="x1-110001.3"></a>Project Goals</h3>
+<!--l. 46--><p class="noindent" >Message ferrying has typically been examined within the context of improving
+throughput, reducing delay and increasing reliability within an ad hoc network. Due
+to the complexity of incorporating message ferrying into existing ad hoc and
+MANET routing algorithms, this project will focus on a network in which data is
+transported strictly using ferries. No clustering of network nodes and routing within
+
+subnetworks will be considered. Surprisingly, very little research has been found for a
+network with these characteristics. The goals of this project may be listed as
+follows.
+      <ul class="itemize1">
+      <li class="itemize">Design and implement a message ferrying algorithm.
+      </li>
+      <li class="itemize">Simulate this algorithm in a highly partitioned network without node clustering
+      or subnetworks.
+      </li>
+      <li class="itemize">Evaluate the network considering topology and the message ferrying algorithm.
+      </li>
+      <li class="itemize">Examine the impact of node density and ferry count on the network.</li></ul>
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;2</span><br /><a 
+ id="x1-120002"></a>Project Premise &amp; Model Design</h2>
+<!--l. 5--><p class="noindent" >Any application running over a message ferrying network must have the following
+characteristics.
+      <dl class="description"><dt class="description">
+<span 
+class="cmbx-12">Delay Tolerance:</span>  </dt><dd 
+class="description">Since data is transported by a physical device, significant delays
+      of minutes to hours must be expected.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Loss Tolerance:</span>  </dt><dd 
+class="description">Given  that  ferries  have  limited  memory,  loss  of  data  must  be
+      expected.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Small and Independent Messages:</span>  </dt><dd 
+class="description">Following from the limited memory capacity
+      of  ferries  and  the  high  probability  of  packet  loss,  a  reliable  method  for
+      segmentation and reassembly of messages should not be expected. Applications
+      should limit the size of messages such that the can be transmitted in their
+      entirety using one network packet. (See section <a 
+href="#x1-260004.2.1">4.2.1<!--tex4ht:ref: sec:fountain_codes --></a> for future work)</dd></dl>
+<!--l. 18--><p class="indent" >   Given these criteria, a message ferrying network is unsuitable for many classic
+networking applications including web browsing, real-time voice or text communication and
+file transfer. As such, a very specialized &#8217;state monitoring&#8217; network designed for non-critical
+monitoring of remote sensors is considered.
+   <h3 class="sectionHead"><span class="titlemark">2.1   </span> <a 
+ id="x1-130002.1"></a>State Monitoring Network</h3>
+<!--l. 23--><p class="noindent" >The general premise for this project consists of a network containing numerous, uniquely
+identifiable source nodes. Each source node has a limited number of properties, in the form
+of key/value pairs, specifying a property name (the key) and its current value. Properties
+may change overtime and each change defines a new state for the source node. A
+temperature sensor for example, might support a &#8217;temperature&#8217; property, the value of
+which is the current temperature updated every hour. Properties do not have to
+contain a single value and each may be as large as the payload limit of network
+
+packets.
+<!--l. 31--><p class="indent" >   The network and message ferrying algorithm is designed to synchronize a central
+repository with the current state of every source node. Only the most recent state (or
+most recent value) for each property is important, not the history of how that
+property has changed. This limits the number of packets which can exist in the
+network as only the most recent update must be reported. The message ferries
+collect data from source nodes when they are in range and transport it to the
+central repository. The central repository is assumed to be a server connected
+to the Internet. Ferries pass updates they have collected from source nodes to
+special gateway nodes. These gateway nodes are then responsible for using a
+reliable delivery mechanism over a standard IP network to update the central
+repository.
+<!--l. 40--><p class="indent" >   <span 
+class="cmti-12">Insert image showing this process.</span>
+<!--l. 42--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">2.2   </span> <a 
+ id="x1-140002.2"></a>Network Elements</h3>
+<!--l. 44--><p class="noindent" >This section describes the elements present in the network.
+<!--l. 46--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.2.1   </span> <a 
+ id="x1-150002.2.1"></a>Physical Network Entities</h4>
+<!--l. 48--><p class="noindent" >The network is comprised of four types of nodes.
+      <dl class="description"><dt class="description">
+<span 
+class="cmbx-12">Source Node:</span>  </dt><dd 
+class="description">Static nodes in the network which have a set of properties (key/value
+      pairs). After a property of a source changes, known as a state change, it attempt
+      to notify the central repository by transferring update packets to message ferries.
+      A source node could be, for example, a remote temperature sensor.
+
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Message Ferry:</span>  </dt><dd 
+class="description">A mobile node which collects updates from source nodes when
+      they are in range. Message ferries store update packets from source nodes within
+      a buffer. When in range, these update packets are forwarded to gateway nodes.
+      A source node could be, for example, a specially equipt cell phone or a small
+      computer attached to a vehicle.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Gateway:</span>  </dt><dd 
+class="description">Gateway  nodes  download  update  packets  form  message  ferries  and
+      forward them to the central repository over the Internet. Transfer of updates
+      between the gateway and central repository is assumed to be reliable.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Central Repository:</span>  </dt><dd 
+class="description">The central repository is a server and the final destination
+      for updates sent from source nodes. It maintains a list of the current state of
+      all source nodes. There is only one central repository node.</dd></dl>
+<!--l. 69--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.2.2   </span> <a 
+ id="x1-160002.2.2"></a>Inter-Node Communication</h4>
+<!--l. 71--><p class="noindent" >Nodes communicate with each other using the ZigBee (802.15.4) MAC layer at 2.4
+<span 
+class="cmmi-12">GHz</span>.
+<!--l. 76--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.2.3   </span> <a 
+ id="x1-170002.2.3"></a>Packets</h4>
+<!--l. 78--><p class="noindent" >The ZigBee MAC layer uses special packets to establish and acknowledge inter-node
+communication. At the network layer, two types of packets are used as follows:
+      <dl class="description"><dt class="description">
+
+<span 
+class="cmbx-12">Update Packet:</span>  </dt><dd 
+class="description">Update packets are generated by source nodes when a message
+      ferry is in range and their state has changed. Source nodes will continue to
+      generate update packets until the state change is acknowledged by the central
+      repository (using an acknowledgment packet).
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Acknowledgment Packet:</span>  </dt><dd 
+class="description">Packets  sent  from  the  central  repository  to  source
+      nodes acknowledging that the state update has been recorded.</dd></dl>
+<!--l. 89--><p class="indent" >   <span 
+class="cmti-12">Interim Report: There is more to this which I have not included.</span>
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;3</span><br /><a 
+ id="x1-180003"></a>Simulation</h2>
+<!--l. 3--><p class="noindent" >Various scenarios are to be tested as discussed in section <a 
+href="#x1-190003.1">3.1<!--tex4ht:ref: sec:scenarios --></a>.
+<!--l. 5--><p class="indent" >   When simulating each scenario, the following metrics will be measured:
+      <ol  class="enumerate1" >
+      <li 
+  class="enumerate" id="x1-18002x1">Time to update state in central repository (delay)
+      </li>
+      <li 
+  class="enumerate" id="x1-18004x2">Variation in time to update state (delay jitter)
+      </li>
+      <li 
+  class="enumerate" id="x1-18006x3">Number of state updates lost. Roughly corresponds to packet loss.
+      </li>
+      <li 
+  class="enumerate" id="x1-18008x4">Memory utilization and packet dropping threshold within ferries.</li></ol>
+   <h3 class="sectionHead"><span class="titlemark">3.1   </span> <a 
+ id="x1-190003.1"></a>Scenarios</h3>
+<!--l. 16--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">3.1.1   </span> <a 
+ id="x1-200003.1.1"></a>Scenario Considerations</h4>
+<!--l. 18--><p class="noindent" >The following should be considered when designing scenarios
+      <ul class="itemize1">
+      <li class="itemize">Number of sources to ferries to gateways (various ratios)
+      </li>
+      <li class="itemize">Speed and trajectories of ferries (random vs set path)
+      </li>
+      <li class="itemize">Rate of source node state changes
+      </li>
+      <li class="itemize">Buffer size of ferries and size of property values (affects packet sizes)
+
+      </li>
+      <li class="itemize">Distances and distributions of ferries and gateways</li></ul>
+<!--l. 27--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">3.1.2   </span> <a 
+ id="x1-210003.1.2"></a>Scenario 1: x</h4>
+<!--l. 29--><p class="noindent" >What is the scenario features. What specifically is it trying to test or measure.
+<!--l. 32--><p class="indent" >   List other scenarios
+<!--l. 34--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">3.2   </span> <a 
+ id="x1-220003.2"></a>Results</h3>
+<!--l. 36--><p class="noindent" >Show result tables and graphs. Discuss implications.
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;4</span><br /><a 
+ id="x1-230004"></a>Conclusion</h2>
+   <h3 class="sectionHead"><span class="titlemark">4.1   </span> <a 
+ id="x1-240004.1"></a>Results</h3>
+<!--l. 5--><p class="noindent" >An general discussion of results. Include a discussion on the feasibility of a practical
+implementation and what adoption threshold would be needed.
+<!--l. 8--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">4.2   </span> <a 
+ id="x1-250004.2"></a>Future Work</h3>
+<!--l. 10--><p class="noindent" >General discussion on future possibilities.
+<!--l. 12--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">4.2.1   </span> <a 
+ id="x1-260004.2.1"></a>Fountain Codes</h4>
+<!--l. 15--><p class="noindent" >An assumption of the scenario was that application messages can be transmitted in a single
+network packet. A possible solution overcome this limitation without using an ARQ scheme
+(poorly suited to a delay tolerant network) is the use of fountain error correcting codes (aka
+rateless erasure codes). See <a 
+href="http://en.wikipedia.org/wiki/Fountain_codes" class="url" ><span 
+class="cmtt-12">http://en.wikipedia.org/wiki/Fountain_codes</span></a>.
+   <hr/>
+
+   <h2 class="likechapterHead"><a 
+ id="x1-270004.2.1"></a>References</h2>
+   <div class="thebibliography">
+   <p class="bibitem" ><span class="biblabel">
+ [1]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xadhocmsgferry"></a>W.&#x00A0;Zhao, M.&#x00A0;Ammar, and E.&#x00A0;Zegura, &#8220;A message ferrying approach for data
+   delivery  in  sparse  mobile  ad  hoc  networks,&#8221;  in  <span 
+class="cmti-12">Proceedings  of  the  5th  ACM</span>
+   <span 
+class="cmti-12">international symposium on Mobile ad hoc networking and computing</span>, College of
+   Computing, Georgia Institute of Technology, Atlanta, Georgia 30332, 2004.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [2]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xhybrid"></a>Y.&#x00A0;Chen, W.&#x00A0;Zhao, M.&#x00A0;Ammar, and E.&#x00A0;Zegura, &#8220;Hybrid routing in clustered
+   DTNs with message ferrying,&#8221; in <span 
+class="cmti-12">Proceedings of the 1st international MobiSys</span>
+   <span 
+class="cmti-12">workshop on Mobile opportunistic networking</span>,  College  of  Computing,  Georgia
+   Institute of Technology, Atlanta, GA, 30332, 2007.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [3]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="XRouting"></a>R.&#x00A0;Patra, K.&#x00A0;Fall, and S.&#x00A0;Jain, &#8220;Routing in a delay tolerant network,&#8221; in
+   <span 
+class="cmti-12">Proceedings of the 2004 conference on Applications, technologies, architectures,</span>
+   <span 
+class="cmti-12">and protocols for computer communications</span>, 2004.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [4]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xwearable"></a>J.&#x00A0;A.  Davis,  A.&#x00A0;H.  Fagg,  and  B.&#x00A0;N.  Levine,  &#8220;Wearable  Computers  as
+   Packet Transport Mechanisms in Highly-Partitioned Ad-Hoc Networks,&#8221; in <span 
+class="cmti-12">In</span>
+
+   <span 
+class="cmti-12">Proceedings of the 5th IEEE international Symposium on Wearable Computers</span>,
+   IEEE Computer Society, Washington, DC, 141, October 2001.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [5]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="XQoSrouting"></a>R.&#x00A0;Patra, K.&#x00A0;Fall, and S.&#x00A0;Jain, &#8220;Comparison of QoS routing approaches for
+   intermittently connected Mobile Ad Hoc Networks,&#8221; in <span 
+class="cmti-12">Proceedings of the 2004</span>
+   <span 
+class="cmti-12">conference on Applications, technologies, architectures, and protocols for computer</span>
+   <span 
+class="cmti-12">communications</span>, 2004.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [6]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xefficientrouting"></a>R.C.Suganthe and P.Balasubramanie, &#8220;Efficient Routing For Intermittently
+   Connected  Mobile  Ad  hoc  Network,&#8221;  in  <span 
+class="cmti-12">IJCSNS  International  Journal  of</span>
+   <span 
+class="cmti-12">Computer Science and Network Security, 184 VOL.8 No.11, November 2008</span>, 2008,
+   <a 
+href="http://paper.ijcsns.org/07_book/200811/20081126.pdf" class="url" >http://paper.ijcsns.org/07_book/200811/20081126.pdf</a>.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [7]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Ximplement"></a>T.&#x00A0;Massey,                                                                          &#8220;Message
+   Ferry Architecture and Implementation,&#8221; in <span 
+class="cmti-12">Georgia Institute of Technology</span>, 2004,
+   <a 
+href="http://www.cs.ucla.edu/~tmassey/MF_Master_Proj.pdf" class="url" >http://www.cs.ucla.edu/<span 
+class="cmsy-8">~</span>tmassey/MF_Master_Proj.pdf</a>.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [8]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xbook1"></a>S.-L.  Wu  and  Y.-C.  Tseng,  <span 
+class="cmti-12">Wireless  Ad  Hoc  Networking</span>.      Auerbach
+   Publications, 2007, pp. 439&#8211;459.
+</p>
+   </div>
+<a 
+ id="Q1-1-31"></a>
+<!--l. 1--><p class="indent" >   <hr/>
+
+<a 
+ id="x1-27009r26"></a>
+   <h2 class="appendixHead"><span class="titlemark">Appendix&#x00A0;A</span><br /><a 
+ id="x1-28000A"></a>Code</h2>
+   <h3 class="sectionHead"><span class="titlemark">A.1   </span> <a 
+ id="x1-29000A.1"></a>Message Ferrying</h3>
+<!--l. 5--><p class="noindent" >Coding goes here Remember to comment code and explain process
+<!--l. 8--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">A.2   </span> <a 
+ id="x1-30000A.2"></a>MAC and other stuff here</h3>
+<!--l. 10--><p class="noindent" >Coding goes here Remember to comment code and explain process
+    
+</body></html> 
+
+
+

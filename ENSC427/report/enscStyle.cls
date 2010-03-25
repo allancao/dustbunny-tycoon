@@ -12,8 +12,37 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{enscStyle}
 
-\DeclareOption{twoside}{\PassOptionsToClass{twoside}{report}}
+%##################################
+%   Internal Variables
+%##################################
+
+\newif\iftwoside
+
+% Ensure the ifHtml variable is set
+%\usepackage{ifpdf}
+\ifx\ifHtml\undefined
+	\newif\ifHtml
+\fi
+%\ifpdf
+%	\ifx\ifHtml\undefined
+%		\newif\Html
+%	\fi
+%\else
+%	\ifx\ifHtml\undefined
+%		\newif\Html
+%	\fi
+%\fi
+
+%##################################
+%   Options for class
+%##################################
+
+\DeclareOption{twoside}{\PassOptionsToClass{twoside}{report}\twosidetrue}
 \ProcessOptions
+
+%##################################
+%   Main Packages
+%##################################
 
 \LoadClass[12pt]{report}
 
@@ -22,31 +51,27 @@
 \usepackage{scalefnt}
 \usepackage{url}
 \usepackage{graphicx}
-\usepackage{hyperref}
 
-%Ensure chapters start on even pages
-\let\Oldchapter\chapter
-\renewcommand{\chapter}{\cleardoublepage\Oldchapter}
+\usepackage{ifpdf}
+%Note ifpdf package loaded above
 
-\newcommand{\degree}{\ensuremath{^\circ}}
+% Conditional package loading
+% tex4ht fucks with pdflatex
+\ifHtml
+	\usepackage{tex4ht}
+	%\usepackage[tex4ht]{hyperref}
+\else
+	\ifpdf
+		\usepackage{hyperref}
+	\fi
+\fi
 
-\newif\if@workreport \@workreportfalse
-\DeclareOption{workreport}{\@workreporttrue}
-\ProcessOptions\relax
+\relax %TODO: what is this? - Needed?
 
-% Define new variables
-\newcommand{\@authortwo} {}
-\newcommand{\authortwo}[1]{
-	\renewcommand{\@authortwo}{#1}
-}
-\newcommand{\@authorthree} {}
-\newcommand{\authorthree}[1]{
-	\renewcommand{\@authorthree}{#1}
-}
-\newcommand{\@authorfour} {}
-\newcommand{\authorfour}[1]{
-	\renewcommand{\@authorfour}{#1}
-}
+%##################################
+%   Variables for class
+%##################################
+
 \newcommand{\@coursecode} {}
 \newcommand{\coursecode}[1]{
 	\renewcommand{\@coursecode}{#1}
@@ -55,15 +80,29 @@
 \newcommand{\prof}[1]{
 	\renewcommand{\@prof}{#1}
 }
-\newcommand{\@company} {}
-\newcommand{\company}[1]{
-	\renewcommand{\@company}{#1}
-}
-\newcommand{\@companyaddress} {}
-\newcommand{\companyaddress}[1]{
-	\renewcommand{\@companyaddress}{#1}
+
+%##################################
+%   Commands
+%##################################
+
+\let\Oldchapter\chapter
+\renewcommand{\chapter}
+{
+	\ifHtml
+		\HCode{<hr/>}
+	\else
+		\iftwoside
+			\cleardoublepage
+		\fi		
+	\fi
+	\Oldchapter
 }
 
+\newcommand{\degree}{\ensuremath{^\circ}}
+
+%##################################
+%   Page layout and formatting
+%##################################
 
 \renewcommand{\chaptername}{}
 \renewcommand{\baselinestretch}{1.5}
@@ -85,48 +124,15 @@
 
 \renewcommand\bibname{References}
 \bibliographystyle{IEEEtran}
-  
-% TODO
-% 1. Fix the width of the title so the line breaks sooner
-% 2. Allow multiple authors somehow
-% 3. Make the vertical spacing look like the example.
-% 4. Figure out mandatory/optional arguments for each type of report
-% 5. Fix typeout messages
 
-\newcommand{\worktitlepage}
-{
-	\renewcommand{\maketitle}
-	{
-		\begin{titlepage}
-			\vspace*{2em}
-			\begin{center}
-				Simon Fraser University\\
-				School of Engineering Science
-			\end{center}
-			\null\vfill
+%##################################
+%   Title Page
+%##################################
 
-			\begin{center}
-				\Huge\@title
-			\end{center}
-			\null\vfill
-
-			\begin{center}
-				\@company\\
-				\@companyaddress
-			\end{center}
-			\vspace{2em}
-
-			\begin{center}
-				\@author\\
-				\@date.
-			\end{center}
-		\end{titlepage}
-	}
-}
-
-\newcommand{\designtitlepage}{
 \renewcommand{\maketitle}{
-\hypersetup{pdftitle={\@title}, pdfauthor={\@author}}
+\ifpdf
+	\hypersetup{pdftitle={\@title}, pdfauthor={\@author}}
+\fi
 \begin{titlepage}
 	\vspace*{2em}
 	\begin{center}
@@ -138,34 +144,39 @@
 		{A Report Submitted in Partial Fulfillment\\
 		of the Requirements for ENSC \@coursecode}
 	\end{center}
-	\vspace{2em}
+	\vskip 2em
+
+	\ifHtml
+		\HCode{<br/>}
+		\HCode{<br/>}
+	\fi
 
 	\begin{center}
 		\@author\par
-		\@authortwo\par
-		\@authorthree\par
-		\@authorfour\par
 	\end{center}
 	\vskip 2em
-
+	
+	\ifHtml
+		\HCode{<br/>}
+	\fi
+	
 	\begin{center}
 		{Simon Fraser University \\
 		School of Engineering Science}
 	\end{center}
 	\vskip 2em
 
+	\ifHtml
+		\HCode{<br/>}
+	\fi
+
 	\begin{center}
-		{\@date.\\
+		{\@date\\
 		Course Instructor: \@prof}
 	\end{center}
 \end{titlepage}
-}
-}
-
-\if@workreport
-	\worktitlepage
-	\typeout{ENSC: Creating work report}
-\else
-	\designtitlepage
-	\typeout{ENSC: Creating design report}
+\ifHtml
+	\HCode{<hr/>}
 \fi
+}
+%}

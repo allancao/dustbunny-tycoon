@@ -22,7 +22,7 @@
 \usepackage{scalefnt}
 \usepackage{url}
 \usepackage{graphicx}
-\usepackage{lscape}
+\usepackage{hyperref}
 
 %Ensure chapters start on even pages
 \let\Oldchapter\chapter
@@ -126,6 +126,7 @@
 
 \newcommand{\designtitlepage}{
 \renewcommand{\maketitle}{
+\hypersetup{pdftitle={\@title}, pdfauthor={\@author}}
 \begin{titlepage}
 	\vspace*{2em}
 	\begin{center}

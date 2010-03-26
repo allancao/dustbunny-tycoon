@@ -19,19 +19,9 @@
 \newif\iftwoside
 
 % Ensure the ifHtml variable is set
-%\usepackage{ifpdf}
 \ifx\ifHtml\undefined
 	\newif\ifHtml
 \fi
-%\ifpdf
-%	\ifx\ifHtml\undefined
-%		\newif\Html
-%	\fi
-%\else
-%	\ifx\ifHtml\undefined
-%		\newif\Html
-%	\fi
-%\fi
 
 %##################################
 %   Options for class
@@ -53,13 +43,11 @@
 \usepackage{graphicx}
 
 \usepackage{ifpdf}
-%Note ifpdf package loaded above
 
 % Conditional package loading
 % tex4ht fucks with pdflatex
 \ifHtml
 	\usepackage{tex4ht}
-	%\usepackage[tex4ht]{hyperref}
 \else
 	\ifpdf
 		\usepackage{hyperref}
@@ -85,6 +73,7 @@
 %   Commands
 %##################################
 
+%Chapter heading modifications
 \let\Oldchapter\chapter
 \renewcommand{\chapter}
 {
@@ -97,6 +86,9 @@
 	\fi
 	\Oldchapter
 }
+
+%HTML only
+\newcommand{\nothtml}[1]{\ifHtml\else{#1}\fi}
 
 \newcommand{\degree}{\ensuremath{^\circ}}
 

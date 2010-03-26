@@ -1,5 +1,5 @@
-\documentclass[twoside]{enscStyle}
-%\documentclass{enscStyle}
+%\documentclass[twoside]{enscStyle}
+\documentclass{enscStyle}
 
 %\usepackage{booktabs}
 %\usepackage{multirow}
@@ -19,9 +19,9 @@
 
 \author{
     Group 9\\
-    Dan Hendry (danh@sfu.ca), 301133878\\
-    Yazan Shehadeh (ysa5@sfu.ca),  301028275\\
-    Timbo Yuen (tty2@sfu.ca), 301023080\\
+    Dan Hendry (danh@sfu.ca)\nothtml{, 301133878}\\
+    Yazan Shehadeh (ysa5@sfu.ca)\nothtml{,  301028275}\\
+    Timbo Yuen (tty2@sfu.ca)\nothtml{, 301023080}\\
 }
 
 \prof{Professor Ljiljana Trajkovic}
@@ -53,10 +53,13 @@
 % Tables
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \tableofcontents
 \addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
 
 \cleardoublepage
+
+\nothtml{
 
 \listoftables
 \addcontentsline{toc}{chapter}{\hspace{13pt}List of Tables}
@@ -67,6 +70,8 @@
 \addcontentsline{toc}{chapter}{\hspace{13pt}List of Figures}
 
 \cleardoublepage
+
+}
 
 \pagenumbering{arabic}
 
@@ -84,6 +89,7 @@
 
 \input{chapters/conclusion}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % References
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,9 +101,25 @@
 % Appendix
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
+\nothtml{
 \appendix
 %\renewcommand{\thechapter}{\Alph{chapter}}
 
 \input{chapters/appendix}
+}
+
+\ifHtml
+\HCode{
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("\%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'\%3E\%3C/script\%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-12568598-3");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+}
+\fi
 
 \end{document}

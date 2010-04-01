@@ -18,7 +18,7 @@ KeyWait, LButton, D
 KeyWait, LButton
 
 Sleep, 100
-InputBox, Name, "Enter Cliping Name"
+InputBox, Name, Enter Cliping Name
 
 IfWinExist Snipping Tool
 {
@@ -29,7 +29,7 @@ IfWinExist Snipping Tool
 	;WinWait,"Save As",,1
 	Sleep, 1200
 
-	Send %Name%
+	Send %A_ScriptDir%\%Name%
 	Send {Enter}
 	Sleep, 500
 	WinClose
@@ -41,7 +41,7 @@ else
 	return
 }
 
-sleep, 400
+sleep, 300
 
 IfWinActive Microsoft Excel
 {
@@ -53,7 +53,7 @@ IfWinActive Microsoft Excel
 }
 else
 {
-	MsgBox "No Excel"
+	MsgBox No Excel
 }
 
 return

@@ -1,3 +1,5 @@
+import win32com.client
+
 import os
 import sys
 import ftplib
@@ -27,69 +29,107 @@ currentDirListing = []
 for randomFile in os.listdir(os.curdir):
     if os.path.isfile(randomFile):
         currentDirListing.append(randomFile)
-assert len(currentDirListing) #Should never be the case as at least this file should be in the directory
+assert len(currentDirListing) > 0 #Should never be the case as at least this file should be in the directory
 
 image_extractor_regex = re.compile("img\\:(?P<img>[\\w-]+)")
+image_replacement_regex = "<img src=\"" + WEB_ROOT + WEB_DECK_DIR + "/\\g<img>.PNG\"/>"
 imagesUsed = [] #List of images used in the csvs
 
 ###################################################
-#### CSV processing
+#### Excel processing
 ###################################################
 
 print ""
-print "Processing CSVs into " + DECK_FILE
+print "Processing Excel files"
+
+#Get a list of .xlsx files in the current directory
+srcXls = []
+for srcFile in currentDirListing:
+        #TODO: Handle standard .xls
+        if srcFile.startswith("~"):
+            #Excel backups
+            continue
+        if srcFile.lower().endswith(".xlsx"):
+            srcXls.append(srcFile)
+#Make sure there are sources
+assert len(srcXls) > 0, "No source CSVs in the current directory"
+
+excel = None
+cards = [] #List of tuples
+try:
+    excel = win32com.client.DispatchEx("Excel.Application")
+    for srcXl in srcXls:
+        print "   Processing " + srcXl
+        wb = None
+        ws = None
+        try:
+            wb = excel.Workbooks.Open(os.path.abspath(srcXl), ReadOnly=True)
+            ws = wb.Worksheets[0]
+            i = 1
+            while i < 1000:
+                newCardSide1 = ws.Range("A" + str(i)).Value
+                newCardSide2 = ws.Range("B" + str(i)).Value
+                
+                if (newCardSide1 is None and newCardSide2 is None):
+                    print "     Got %s cards from %s" % (i-1, srcXl)
+                    break
+                
+                if not newCardSide1.startswith("#"):
+                    cards.append((newCardSide1, newCardSide2))
+                
+                i += 1
+        finally:
+            ws = None
+            if not wb is None:
+                wb.Close()
+                wb = None
+finally:
+    if not excel is None:
+        excel.Quit()
+        excel = None
+
+print "Excel files processed"
+
+###################################################
+#### Output Processing 
+###################################################
+
+print ""
+print "Creating output " + DECK_FILE
 
 if os.path.exists(DECK_FILE):
     os.remove(DECK_FILE)
 
-#Regexes used to process the csvs
-csv_regex = [ (re.compile("^,\\n", re.MULTILINE), "", "Empty lines"),
-        (re.compile("^\s*#.*\\n", re.MULTILINE),"", "Comment lines"),
-        (re.compile("[,](?=(([^\"]*)|([^\"]*([\"][^\"]*){2}))$)", re.MULTILINE), "\t", "Comma -> Tab"),
-        (re.compile("(?<=[\\t])[\"](?P<content>[^\"]*)[\"](?=[\\t]|($))", re.MULTILINE), "\\g<content>", "Quotation removal for commas"),
-        (image_extractor_regex,"<img src=\"" + WEB_ROOT + WEB_DECK_DIR + "/\\g<img>.PNG\"/>", "IMG Tag placement")]
-
-#Get a list of .csv files in the current directory
-srcCsvs = []
-for srcFile in currentDirListing:
-        if srcFile.lower().endswith(".csv"):
-            srcCsvs.append(srcFile)
-#Make sure there are sources
-assert len(srcCsvs) > 0, "No source CSVs in the current directory"
-
-src = None
 dest = None
+cardCount = 0
 try:
     dest = open(DECK_FILE, "w")
-    for srcCsv in srcCsvs:
-        print "   Processing " + srcCsv
-        #Open and read the src csv
-        src = open(srcCsv, "r")
-        txt = src.read()
-        src.close()
+    for card in cards:
+        cardCount += 1 
+        for cardSide in card:
+            if cardSide is None:
+                cardSide = ""
+            
+            #Get images
+            for match in re.finditer(image_extractor_regex, cardSide):
+                img = match.group("img")
+                assert len(img) > 0
+                if not img in imagesUsed:
+                    imagesUsed.append(img)
+            
+            #Text processing
+            cardSide = cardSide.replace("\t", "  ")
+            cardSide = re.sub(image_extractor_regex, image_replacement_regex, cardSide)
+            
+            #Write to output
+            dest.write(cardSide)
+            dest.write("\t")
         
-        #Get the list of images the source uses
-        for match in re.finditer(image_extractor_regex, txt):
-            img = match.group("img")
-            assert len(img) > 0
-            if not img in imagesUsed:
-                imagesUsed.append(img)
-        
-        #Process using the regular expressions listed above 
-        txt = txt.replace("\t", "   ") #Cant have tabs
-        for reToApply in csv_regex:
-            #print "         Process: " + reToApply[2]
-            txt = re.sub(reToApply[0], reToApply[1], txt)
-        
-        #Write to the destination
-        dest.write(txt+"\n")
+        dest.write("\n")
 finally:
-    if not src is None:
-        src.close()
-    if not dest is None:
-        dest.close()
+    dest.close()
 
-print "      CSVs processed"
+print "Done creating output, %s cards total" % cardCount
 
 ###################################################
 #### Image Checking
@@ -110,11 +150,18 @@ for pngFile in currentDirListing:
             print "  NOTE: Unused Img \'%s\'" % pngFile
 
 for dneImg in imagesUsed:
-    print "  WARNING: Used but does not exist \'%s.PNG\'" % dneImg
+    print "  WARNING: Image used but does not exist \'%s.PNG\'" % dneImg
+
+imagesUsed = None #No longer valid - imgs have been removed
+
+print "Done checking images"
 
 ###################################################
 #### FTP Upload
 ###################################################
+
+#print "DEBUG - breaking before FTP"
+#exit()
 
 print ""
 print "Connecting to FTP " + FTP_SERVER
@@ -174,6 +221,7 @@ try:
 finally:
     if not ftp is None:
         ftp.close()
+print "FTP upload done"
 
 print ""
 raw_input("Done. Press Enter...")

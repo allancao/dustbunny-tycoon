@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7C678 4BB7C678 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7D0D9 4BB7D0D9 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -21,7 +21,7 @@ const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7C678
 //Interrupt Codes (codes have no meaning and are random)
 #define IC_PROP_VAL_CHANGED 		39
 #define IC_UPDATES_DISABLE	 		83
-#define IC_UPDATES_ENABLE			61
+#define IC_UPDATES_ENABLE			84
 
 //Interrupts 
 #define PROP_VAL_CHANGED	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PROP_VAL_CHANGED)
@@ -228,6 +228,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_PROFILE_SECTION_IN ("source_property [active trans conditions]", state1_trans_conds)
 			FSM_INIT_COND (DISABLE_PROP_UPDATES)
 			FSM_TEST_COND (PROP_VAL_CHANGED)
+			FSM_DFLT_COND
 			FSM_TEST_LOGIC ("active")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
@@ -235,6 +236,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, ;, "DISABLE_PROP_UPDATES", "", "active", "disable", "tr_1", "source_property [active -> disable : DISABLE_PROP_UPDATES / ]")
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, new_val();, "PROP_VAL_CHANGED", "new_val()", "active", "active", "tr_2", "source_property [active -> active : PROP_VAL_CHANGED / new_val()]")
+				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, ;, "default", "", "active", "active", "tr_5", "source_property [active -> active : default / ]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -242,6 +244,11 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (disable) enter executives **/
 			FSM_STATE_ENTER_UNFORCED (2, "disable", state2_enter_exec, "source_property [disable enter execs]")
+				FSM_PROFILE_SECTION_IN ("source_property [disable enter execs]", state2_enter_exec)
+				{
+				printf("DISABLE");
+				}
+				FSM_PROFILE_SECTION_OUT (state2_enter_exec)
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (5,"source_property")
@@ -255,6 +262,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_PROFILE_SECTION_IN ("source_property [disable trans conditions]", state2_trans_conds)
 			FSM_INIT_COND (PROP_VAL_CHANGED)
 			FSM_TEST_COND (ENABLE_PROP_UPDATES)
+			FSM_DFLT_COND
 			FSM_TEST_LOGIC ("disable")
 			FSM_PROFILE_SECTION_OUT (state2_trans_conds)
 
@@ -262,6 +270,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, new_val();, "PROP_VAL_CHANGED", "new_val()", "disable", "disable", "tr_3", "source_property [disable -> disable : PROP_VAL_CHANGED / new_val()]")
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, ;, "ENABLE_PROP_UPDATES", "", "disable", "active", "tr_4", "source_property [disable -> active : ENABLE_PROP_UPDATES / ]")
+				FSM_CASE_TRANSIT (2, 2, state2_enter_exec, ;, "default", "", "disable", "disable", "tr_6", "source_property [disable -> disable : default / ]")
 				}
 				/*---------------------------------------------------------*/
 

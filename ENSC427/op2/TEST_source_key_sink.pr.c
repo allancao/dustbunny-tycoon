@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char TEST_source_key_sink_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7C63E 4BB7C63E 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char TEST_source_key_sink_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7D1AD 4BB7D1AD 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -126,24 +126,24 @@ TEST_source_key_sink (OP_SIM_CONTEXT_ARG_OPT)
 				op_pk_nfd_get(pPkt, "source_id", &source_id);
 				op_pk_nfd_get(pPkt, "key", &key);
 				
-				printf("\nGot pkt\n");
+				printf("Got pkt\n");
 				
 				if(source_id == 1)
 				{
-					printf("\tSource 1\n");
+					//printf("\tSource 1\n");
 					if(key == 1)
 					{
-						printf("\tKey 1\n");
+						//printf("\tKey 1\n");
 						op_stat_write (s1k1_stathandle, 	1.0);
 					}
 					else if(key == 2)
 					{
-						printf("\tKey 2\n");	
+						//printf("\tKey 2\n");	
 						op_stat_write (s1k2_stathandle, 	1.0);
 					}
 					else if(key == 3)
 					{
-						printf("\tKey 3\n");
+						//printf("\tKey 3\n");
 						op_stat_write (s1k3_stathandle, 	1.0);
 					}
 					else 

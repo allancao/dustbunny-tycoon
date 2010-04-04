@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char TEST_source_key_sink_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7DDAC 4BB7DDAC 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char TEST_source_key_sink_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB8F6BE 4BB8F6BE 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -51,6 +51,9 @@ typedef struct
 	Stathandle	             		s1k3_stathandle                                 ;
 	Stathandle	             		unknown_stathandle                              ;
 	Packet *	               		pktFromStream                                   ;
+	Stathandle	             		s2k1_stathandle                                 ;
+	Stathandle	             		s2k2_stathandle                                 ;
+	Stathandle	             		s2k3_stathandle                                 ;
 	} TEST_source_key_sink_state;
 
 #define s1k1_stathandle         		op_sv_ptr->s1k1_stathandle
@@ -58,6 +61,9 @@ typedef struct
 #define s1k3_stathandle         		op_sv_ptr->s1k3_stathandle
 #define unknown_stathandle      		op_sv_ptr->unknown_stathandle
 #define pktFromStream           		op_sv_ptr->pktFromStream
+#define s2k1_stathandle         		op_sv_ptr->s2k1_stathandle
+#define s2k2_stathandle         		op_sv_ptr->s2k2_stathandle
+#define s2k3_stathandle         		op_sv_ptr->s2k3_stathandle
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -130,6 +136,30 @@ void handle_update_pkt(void)
 		{
 			//printf("\tKey 3\n");
 			op_stat_write (s1k3_stathandle, 	1.0);
+		}
+		else 
+		{
+			printf("\tKey Unknown\n");	
+			op_stat_write (unknown_stathandle, 1.0);
+		}
+	}
+	else if(source_id == 2)
+	{
+		//printf("\tSource 1\n");
+		if(key == 1)
+		{
+			//printf("\tKey 1\n");
+			op_stat_write (s2k1_stathandle, 	1.0);
+		}
+		else if(key == 2)
+		{
+			//printf("\tKey 2\n");	
+			op_stat_write (s2k2_stathandle, 	1.0);
+		}
+		else if(key == 3)
+		{
+			//printf("\tKey 3\n");
+			op_stat_write (s2k3_stathandle, 	1.0);
 		}
 		else 
 		{
@@ -251,6 +281,11 @@ TEST_source_key_sink (OP_SIM_CONTEXT_ARG_OPT)
 				s1k1_stathandle 		= op_stat_reg ("S1K1 Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
 				s1k2_stathandle 		= op_stat_reg ("S1K2 Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
 				s1k3_stathandle 		= op_stat_reg ("S1K3 Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				
+				s2k1_stathandle 		= op_stat_reg ("S2K1 Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				s2k2_stathandle 		= op_stat_reg ("S2K2 Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				s2k3_stathandle 		= op_stat_reg ("S2K3 Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				
 				unknown_stathandle 		= op_stat_reg ("Unknown Received",		OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
 				}
 				FSM_PROFILE_SECTION_OUT (state1_enter_exec)
@@ -307,6 +342,9 @@ _op_TEST_source_key_sink_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef s1k3_stathandle
 #undef unknown_stathandle
 #undef pktFromStream
+#undef s2k1_stathandle
+#undef s2k2_stathandle
+#undef s2k3_stathandle
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -386,6 +424,21 @@ _op_TEST_source_key_sink_svar (void * gen_ptr, const char * var_name, void ** va
 	if (strcmp ("pktFromStream" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->pktFromStream);
+		FOUT
+		}
+	if (strcmp ("s2k1_stathandle" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->s2k1_stathandle);
+		FOUT
+		}
+	if (strcmp ("s2k2_stathandle" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->s2k2_stathandle);
+		FOUT
+		}
+	if (strcmp ("s2k3_stathandle" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->s2k3_stathandle);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

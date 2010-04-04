@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7D0D9 4BB7D0D9 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB8FAD5 4BB8FAD5 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -244,11 +244,6 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (disable) enter executives **/
 			FSM_STATE_ENTER_UNFORCED (2, "disable", state2_enter_exec, "source_property [disable enter execs]")
-				FSM_PROFILE_SECTION_IN ("source_property [disable enter execs]", state2_enter_exec)
-				{
-				printf("DISABLE");
-				}
-				FSM_PROFILE_SECTION_OUT (state2_enter_exec)
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (5,"source_property")

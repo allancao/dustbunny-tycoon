@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7D16C 4BB7D16C 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB90ED2 4BB90ED2 1 rfsip11 tty2 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -77,6 +77,7 @@ enum { _op_block_origin = __LINE__ + 2};
 
 void store_update(void)
 {
+//Dans  code sucks here
 	Packet *pkt;
 	char message_str [255];
 	Objid prop1_id;

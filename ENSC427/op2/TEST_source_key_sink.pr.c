@@ -4,13 +4,29 @@
 
 
 /* This variable carries the header into the object file */
-const char TEST_source_key_sink_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7D1AD 4BB7D1AD 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char TEST_source_key_sink_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7DDAC 4BB7DDAC 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
 
 /* OPNET system definitions */
 #include <opnet.h>
+
+
+
+/* Header Block */
+
+
+#define UPDATE_PKT (op_intrpt_type() == OPC_INTRPT_STRM && is_update != 0)
+#define UNKNOWN_PKT (op_intrpt_type() == OPC_INTRPT_STRM && is_update == 0)
+
+int is_update_pkt(void);
+
+
+void handle_update_pkt(void);
+void handle_unknown_pkt(void);
+
+/* End of Header Block */
 
 #if !defined (VOSD_NO_FIN)
 #undef	BIN
@@ -34,12 +50,14 @@ typedef struct
 	Stathandle	             		s1k2_stathandle                                 ;
 	Stathandle	             		s1k3_stathandle                                 ;
 	Stathandle	             		unknown_stathandle                              ;
+	Packet *	               		pktFromStream                                   ;
 	} TEST_source_key_sink_state;
 
 #define s1k1_stathandle         		op_sv_ptr->s1k1_stathandle
 #define s1k2_stathandle         		op_sv_ptr->s1k2_stathandle
 #define s1k3_stathandle         		op_sv_ptr->s1k3_stathandle
 #define unknown_stathandle      		op_sv_ptr->unknown_stathandle
+#define pktFromStream           		op_sv_ptr->pktFromStream
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -52,11 +70,96 @@ typedef struct
 		op_sv_ptr = ((TEST_source_key_sink_state *)(OP_SIM_CONTEXT_PTR->_op_mod_state_ptr));
 
 
-/* No Function Block */
+/* Function Block */
 
 #if !defined (VOSD_NO_FIN)
-enum { _op_block_origin = __LINE__ };
+enum { _op_block_origin = __LINE__ + 2};
 #endif
+
+
+int is_update_pkt(void)
+{
+	int ret;
+	char format_name[255];
+	
+	FIN(is_update_pkt());
+	//op_pk_format (op_pk_get (op_intrpt_strm ()), format_name);
+	op_pk_format (pktFromStream, format_name);
+	
+	if(strcmp (format_name, "keyupdate") == 0)
+	{
+		FRET(1);
+	}
+	else
+	{
+		FRET(0);
+	}
+}
+
+void handle_update_pkt(void)
+{	
+	Packet *pPkt;
+	int source_id;
+	int key;
+
+	char message[255];
+	
+	FIN(handle_update_pkt());
+
+	//pPkt = op_pk_get (op_intrpt_strm ());
+	pPkt = pktFromStream;
+	op_pk_nfd_get(pPkt, "source_id", &source_id);
+	op_pk_nfd_get(pPkt, "key", &key);
+
+	printf("Got pkt\n");
+
+	if(source_id == 1)
+	{
+		//printf("\tSource 1\n");
+		if(key == 1)
+		{
+			//printf("\tKey 1\n");
+			op_stat_write (s1k1_stathandle, 	1.0);
+		}
+		else if(key == 2)
+		{
+			//printf("\tKey 2\n");	
+			op_stat_write (s1k2_stathandle, 	1.0);
+		}
+		else if(key == 3)
+		{
+			//printf("\tKey 3\n");
+			op_stat_write (s1k3_stathandle, 	1.0);
+		}
+		else 
+		{
+			printf("\tKey Unknown\n");	
+			op_stat_write (unknown_stathandle, 1.0);
+		}
+	}
+	else 
+	{
+		printf("\tSource Unknown\n");
+		op_stat_write (unknown_stathandle, 1.0);
+	}
+	
+	op_pk_destroy (pPkt);
+
+	FOUT;
+}
+
+void handle_unknown_pkt(void)
+{
+	FIN(handle_unknown_pkt());
+	//op_pk_destroy (op_pk_get (op_intrpt_strm ()));
+	op_pk_destroy(pktFromStream);
+	printf("\tUnknown Format\n");
+	op_stat_write (unknown_stathandle, 1.0);
+	
+	FOUT;
+}
+
+/* End of Function Block */
 
 /* Undefine optional tracing in FIN/FOUT/FRET */
 /* The FSM has its own tracing code and the other */
@@ -97,9 +200,13 @@ TEST_source_key_sink (OP_SIM_CONTEXT_ARG_OPT)
 	FIN_MT (TEST_source_key_sink ());
 
 		{
+		/* Temporary Variables */
+		int is_update;
+		//Packet *pktFromStream;
+		/* End of Temporary Variables */
 
 
-		FSM_ENTER_NO_VARS ("TEST_source_key_sink")
+		FSM_ENTER ("TEST_source_key_sink")
 
 		FSM_BLOCK_SWITCH
 			{
@@ -115,56 +222,24 @@ TEST_source_key_sink (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_EXIT_UNFORCED (0, "DISCARD", "TEST_source_key_sink [DISCARD exit execs]")
 				FSM_PROFILE_SECTION_IN ("TEST_source_key_sink [DISCARD exit execs]", state0_exit_exec)
 				{
-				Packet *pPkt;
-				int source_id;
-				int key;
-				
-				char message[255];
-				
-				pPkt = op_pk_get (op_intrpt_strm ());
-				
-				op_pk_nfd_get(pPkt, "source_id", &source_id);
-				op_pk_nfd_get(pPkt, "key", &key);
-				
-				printf("Got pkt\n");
-				
-				if(source_id == 1)
-				{
-					//printf("\tSource 1\n");
-					if(key == 1)
-					{
-						//printf("\tKey 1\n");
-						op_stat_write (s1k1_stathandle, 	1.0);
-					}
-					else if(key == 2)
-					{
-						//printf("\tKey 2\n");	
-						op_stat_write (s1k2_stathandle, 	1.0);
-					}
-					else if(key == 3)
-					{
-						//printf("\tKey 3\n");
-						op_stat_write (s1k3_stathandle, 	1.0);
-					}
-					else 
-					{
-						printf("\tKey Unknown\n");	
-						op_stat_write (unknown_stathandle, 1.0);
-					}
-				}
-				else 
-				{
-					printf("\tSource Unknown\n");
-					op_stat_write (unknown_stathandle, 1.0);
-				}
-					
-				op_pk_destroy (pPkt);
+				pktFromStream = op_pk_get (op_intrpt_strm ());
+				is_update = is_update_pkt();
 				}
 				FSM_PROFILE_SECTION_OUT (state0_exit_exec)
 
 
 			/** state (DISCARD) transition processing **/
-			FSM_TRANSIT_FORCE (0, state0_enter_exec, ;, "default", "", "DISCARD", "DISCARD", " ", "TEST_source_key_sink [DISCARD -> DISCARD : default / ]")
+			FSM_PROFILE_SECTION_IN ("TEST_source_key_sink [DISCARD trans conditions]", state0_trans_conds)
+			FSM_INIT_COND (UPDATE_PKT)
+			FSM_TEST_COND (UNKNOWN_PKT)
+			FSM_TEST_LOGIC ("DISCARD")
+			FSM_PROFILE_SECTION_OUT (state0_trans_conds)
+
+			FSM_TRANSIT_SWITCH
+				{
+				FSM_CASE_TRANSIT (0, 0, state0_enter_exec, handle_update_pkt();, "UPDATE_PKT", "handle_update_pkt()", "DISCARD", "DISCARD", "tr_2", "TEST_source_key_sink [DISCARD -> DISCARD : UPDATE_PKT / handle_update_pkt()]")
+				FSM_CASE_TRANSIT (1, 0, state0_enter_exec, handle_unknown_pkt();, "UNKNOWN_PKT", "handle_unknown_pkt()", "DISCARD", "DISCARD", "tr_3", "TEST_source_key_sink [DISCARD -> DISCARD : UNKNOWN_PKT / handle_unknown_pkt()]")
+				}
 				/*---------------------------------------------------------*/
 
 
@@ -231,6 +306,7 @@ _op_TEST_source_key_sink_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef s1k2_stathandle
 #undef s1k3_stathandle
 #undef unknown_stathandle
+#undef pktFromStream
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -305,6 +381,11 @@ _op_TEST_source_key_sink_svar (void * gen_ptr, const char * var_name, void ** va
 	if (strcmp ("unknown_stathandle" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->unknown_stathandle);
+		FOUT
+		}
+	if (strcmp ("pktFromStream" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->pktFromStream);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

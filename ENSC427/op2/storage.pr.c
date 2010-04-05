@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB9101F 4BB9101F 1 rfsip11 tty2 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB93CFC 4BB93CFC 1 rfsip11 tty2 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -78,19 +78,25 @@ enum { _op_block_origin = __LINE__ + 2};
 void store_update(void)
 {
 	Packet *pkt;
+	Packet *lstPkt;
 	char message_str [255];
 	Objid prop1_id;
+	int key;
+	int newkey;
+	int sourceid;
+	int newsourceid;
+	int key_updnm;
+	int newkey_updnm;
+	int pos_index;
+	int listsize;
+	int srcloc;
+	int i;
 
+	
 	FIN (store_update ());
 	
 	//TODO: Search the list for old keys
 	
-	pkt = op_pk_get (op_intrpt_strm ());
-	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
-	
-	sprintf (message_str, "[%d] Store Update - List size: %d\n", op_id_self(), op_prg_list_size(pupdate_lst )); 
-	printf (message_str);
-			 
 	//DEBUG
 	if(intrptScheduled == 0)
 	{
@@ -98,23 +104,51 @@ void store_update(void)
 		op_intrpt_schedule_self (op_sim_time () + 10, IC_DUMP_UPDATES);
 	}
 	
-	//DEBUG TESTING
-	if(updatesSent==2 && test_isDisabled == 0)
+	
+	pkt = op_pk_get (op_intrpt_strm ());
+	
+	//op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
+	
+	sprintf (message_str, "[%d] Store Update - List size: %d\n", op_id_self(), op_prg_list_size(pupdate_lst )); 
+	printf (message_str);
+	
+	//get info
+	op_pk_nfd_get(pkt, "key", &newkey);
+	op_pk_nfd_get(pkt, "source_id", &newsourceid);
+	op_pk_nfd_get(pkt, "key_update_number", &newkey_updnm);
+	listsize = op_prg_list_size(pupdate_lst);
+	
+	//Search & Compare key_update_number
+	for(i = 0; i < listsize; i++)
 	{
-		test_isDisabled = 1;
-		sprintf (message_str, "[%d] Sending disable\n", op_id_self()); 
-		printf (message_str);
-		prop1_id = op_id_from_name (op_topo_parent (op_id_self ()), OPC_OBJTYPE_PROC, "prop1");
-		op_intrpt_schedule_remote (op_sim_time (), 83, prop1_id);
-	}
-	if(updatesSent==4 && test_isDisabled != 0)
-	{
-		test_isDisabled = 0;
-		sprintf (message_str, "[%d] Sending enable\n", op_id_self()); 
-		printf (message_str);
-		prop1_id = op_id_from_name (op_topo_parent (op_id_self ()), OPC_OBJTYPE_PROC, "prop1");
-		op_intrpt_schedule_remote (op_sim_time (), 84, prop1_id);
-	}
+		lstPkt = (Packet *)op_prg_list_access (pupdate_lst, i);
+		op_pk_nfd_get(lstPkt, "key", &key);
+		op_pk_nfd_get(lstPkt, "source_id", &sourceid);
+		op_pk_nfd_get(lstPkt, "key_update_number", &key_updnm);
+		
+		//COMPARE
+		if(newsourceid == sourceid)
+		{
+			if(newkey == key)
+			{
+				if(newkey_updnm > key_updnm)	//key is newer we update
+				{
+					op_prg_list_remove (pupdate_lst, i);
+					op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
+					op_pk_destroy(lstPkt);
+					FOUT;
+				}
+				else //(newkey_updnm <= key_updnm)
+				{
+					//do nothing
+				}
+			}
+		}
+	} //end forloop
+	
+	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
+	//op_pk_destroy(pkt);
+	
 	
 	FOUT;
 	
@@ -130,7 +164,7 @@ void tx_updates(void)
 	
 	FIN (tx_updates ());
 	
-	updatesSent++;
+	updatesSent++;			//increment counter
 	intrptScheduled = 0;
 
 	sprintf (message_str, "[%d] Sending Packets: size %d\n", op_id_self(), op_prg_list_size(pupdate_lst)); 
@@ -153,6 +187,7 @@ void tx_updates(void)
 			 
 	FOUT;
 }
+
 
 /* End of Function Block */
 

@@ -4,13 +4,87 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB7A0BF 4BB7A0BF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB95738 4BB95738 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
 
 /* OPNET system definitions */
 #include <opnet.h>
+
+
+
+/* Header Block */
+
+#include	<oms_dist_support.h>
+
+
+/***********************
+ * Streams
+ ***********************/
+#define STRM_IN_P1		0
+#define STRM_IN_P2		1
+#define STRM_IN_P3		2
+
+#define STRM_IN_STORE	3
+#define STRM_OUT_STORE	0
+
+#define STRM_IN_MAC		4
+#define STRM_OUT_MAC 	1
+
+/***********************
+ * Interrupt Codes
+ ***********************/
+#define IC_REQ_STORE_DUMP		83
+#define IC_STORE_DUMP_DONE		84
+
+#define IC_SEND_BEACON_TIMER	42
+
+#define IC_PK_UPDATEORACK		37
+#define IC_PK_BEACON			38
+
+/***********************
+ * Interrupts
+ ***********************/
+
+//Stream
+#define I_S_PROP_PKT	(op_intrpt_type() == OPC_INTRPT_STRM && (op_intrpt_strm() == STRM_IN_P1 || op_intrpt_strm() == STRM_IN_P2 || op_intrpt_strm() == STRM_IN_P3))
+#define I_S_STORE_PKT	(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_STORE)
+#define I_S_MAC_PKT		(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_MAC)
+
+//Packet op_intrpt_strm() == STRM_IN_P1
+#define I_PK_UPDATEORACK	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_UPDATEORACK)
+#define I_PK_BEACON			(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_BEACON)
+
+//Remote
+#define I_R_STORE_DUMP_DONE	(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_STORE_DUMP_DONE)
+
+//Local (self)
+#define I_L_SEND_BEACON_TIMER (op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_SEND_BEACON_TIMER)
+
+/***********************
+ * Prototypes
+ ***********************/
+ 
+//Beacon control
+void enable_beacon();
+void disable_beacon();
+void send_beacon();
+
+//Property control
+void enable_prop_updates();
+void disable_prop_updates();
+
+//Storage control
+void request_storage_dump();
+
+//Packet redirection 
+void send_to_store();
+void send_to_mac();
+
+void generate_mac_pk_interrupt();
+
+/* End of Header Block */
 
 #if !defined (VOSD_NO_FIN)
 #undef	BIN
@@ -29,8 +103,23 @@ typedef struct
 	{
 	/* Internal state tracking for FSM */
 	FSM_SYS_STATE
+	/* State Variables */
+	Objid	                  		storage_id                                      ;
+	int	                    		is_pkt_interrupt                                ;
+	Packet *	               		pPkt_interrupt                                  ;
+	Evhandle	               		evh_beacon_tmr                                  ;
+	OmsT_Dist_Handle	       		disth_beacon_timer                              ;
+	Objid	                  		self_id                                         ;
+	int	                    		source_id                                       ;
 	} update_manager_state;
 
+#define storage_id              		op_sv_ptr->storage_id
+#define is_pkt_interrupt        		op_sv_ptr->is_pkt_interrupt
+#define pPkt_interrupt          		op_sv_ptr->pPkt_interrupt
+#define evh_beacon_tmr          		op_sv_ptr->evh_beacon_tmr
+#define disth_beacon_timer      		op_sv_ptr->disth_beacon_timer
+#define self_id                 		op_sv_ptr->self_id
+#define source_id               		op_sv_ptr->source_id
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -43,11 +132,131 @@ typedef struct
 		op_sv_ptr = ((update_manager_state *)(OP_SIM_CONTEXT_PTR->_op_mod_state_ptr));
 
 
-/* No Function Block */
+/* Function Block */
 
 #if !defined (VOSD_NO_FIN)
-enum { _op_block_origin = __LINE__ };
+enum { _op_block_origin = __LINE__ + 2};
 #endif
+
+void schedule_beacon()
+{
+	double next_becon_time;
+	
+	FIN(schedule_beacon());
+	
+
+	next_becon_time = oms_dist_outcome (disth_beacon_timer);
+	if (next_becon_time <0)
+	{
+		next_becon_time = 0;
+	}
+	
+	evh_beacon_tmr = op_intrpt_schedule_self (op_sim_time () + next_becon_time, IC_SEND_BEACON_TIMER);
+	
+	FOUT;
+}
+
+void enable_beacon()
+{
+	FIN(enable_beacon());
+	
+	schedule_beacon();
+	
+	FOUT;
+}
+
+void disable_beacon()
+{
+	FIN(disable_beacon());
+	
+	if (op_ev_valid (evh_beacon_tmr) == OPC_TRUE)
+	{
+		op_ev_cancel (evh_beacon_tmr);
+	}
+
+	FOUT;
+}
+
+void send_beacon()
+{
+	char message_str[255];
+	Packet *pPkt;
+
+	FIN(send_beacon());
+	
+	//sprintf (message_str, "[%d] Send Beacon\n", op_id_self()); 
+	//printf (message_str);
+	
+	
+	pPkt = op_pk_create_fmt("beacon");
+	op_pk_nfd_set_int32(pPkt, "source_id", source_id);
+	
+	op_pk_send(pPkt, STRM_OUT_MAC);
+	
+	schedule_beacon();
+	
+	FOUT;
+}
+
+//Property control
+void enable_prop_updates()
+{
+	FIN(enable_prop_updates());
+	
+	FOUT;
+}
+	
+void disable_prop_updates()
+{
+	FIN(disable_prop_updates());
+	
+	FOUT;
+}
+
+
+void request_storage_dump()
+{
+	FIN(request_sotrage_dump());
+	
+	FOUT;
+}
+
+
+void send_to_store()
+{
+	Packet *pPktToForward;
+	
+	FIN(send_to_store());
+	
+	if(is_pkt_interrupt)
+	{
+		is_pkt_interrupt = 0;
+		
+		
+	}
+	
+	FOUT;
+}
+	
+void send_to_mac()
+{
+	FIN(send_to_mac());
+	
+	FOUT;
+}
+
+void generate_mac_pk_interrupt()
+{
+	char message_str[255];
+	FIN(generate_mac_pk_interrupt());
+
+	sprintf (message_str, "[%d] Received Mac Pkt\n", op_id_self()); 
+	printf (message_str);
+	
+	FOUT;
+}
+
+/* End of Function Block */
 
 /* Undefine optional tracing in FIN/FOUT/FRET */
 /* The FSM has its own tracing code and the other */
@@ -97,6 +306,43 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			/*---------------------------------------------------------*/
 			/** state (init) enter executives **/
 			FSM_STATE_ENTER_FORCED_NOLABEL (0, "init", "update_manager [init enter execs]")
+				FSM_PROFILE_SECTION_IN ("update_manager [init enter execs]", state0_enter_exec)
+				{
+				
+				char beacon_dist_str[128];
+				
+				self_id = op_id_self();
+				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
+				
+				op_ima_obj_attr_get (self_id, "Beacon Interval", beacon_dist_str);
+				disth_beacon_timer = oms_dist_load_from_string (beacon_dist_str);
+				
+				
+				
+				//Property stream priorities
+				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P1, 15);
+				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P2, 15);
+				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P3, 15);
+				
+				//Lower than property inputs
+				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_STORE, 10);
+				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_MAC, 10);
+				
+				//Absolute highest - controlled by stream interrupts
+				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_PK_BEACON, 20);
+				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_PK_UPDATEORACK, 20);
+				
+				//Lower than STRM_IN_STORE
+				op_intrpt_priority_set (OPC_INTRPT_REMOTE, IC_STORE_DUMP_DONE, 5);
+				
+				//Absolute lowest
+				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_SEND_BEACON_TIMER, 0);
+				
+				
+				
+				enable_beacon();
+				}
+				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
 
 			/** state (init) exit executives **/
 			FSM_STATE_EXIT_FORCED (0, "init", "update_manager [init exit execs]")
@@ -121,21 +367,23 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (idle) transition processing **/
 			FSM_PROFILE_SECTION_IN ("update_manager [idle trans conditions]", state1_trans_conds)
-			FSM_INIT_COND (RX_PROP)
-			FSM_TEST_COND (RX_STORAGE_PKT)
-			FSM_TEST_COND (SEND_BEACON_TIMER)
-			FSM_TEST_COND (RX_MAC_BEACONPKT)
-			FSM_TEST_COND (RX_MAC_UPDATEPKT)
+			FSM_INIT_COND (I_PK_BEACON)
+			FSM_TEST_COND (I_S_PROP_PKT)
+			FSM_TEST_COND (I_S_MAC_PKT)
+			FSM_TEST_COND (I_PK_UPDATEORACK)
+			FSM_TEST_COND ((I_S_STORE_PKT || I_R_STORE_DUMP_DONE))
+			FSM_TEST_COND (I_L_SEND_BEACON_TIMER)
 			FSM_TEST_LOGIC ("idle")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
 			FSM_TRANSIT_SWITCH
 				{
-				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, send_to_store();, "RX_PROP", "send_to_store()", "idle", "idle", "tr_5", "update_manager [idle -> idle : RX_PROP / send_to_store()]")
-				FSM_CASE_TRANSIT (1, 3, state3_enter_exec, ;, "RX_STORAGE_PKT", "", "idle", "error", "tr_7", "update_manager [idle -> error : RX_STORAGE_PKT / ]")
-				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, send_beacon();, "SEND_BEACON_TIMER", "send_beacon()", "idle", "idle", "tr_13", "update_manager [idle -> idle : SEND_BEACON_TIMER / send_beacon()]")
-				FSM_CASE_TRANSIT (3, 4, state4_enter_exec, ;, "RX_MAC_BEACONPKT", "", "idle", "tx_start", "tr_14", "update_manager [idle -> tx_start : RX_MAC_BEACONPKT / ]")
-				FSM_CASE_TRANSIT (4, 1, state1_enter_exec, send_to_store();, "RX_MAC_UPDATEPKT", "send_to_store()", "idle", "idle", "tr_16", "update_manager [idle -> idle : RX_MAC_UPDATEPKT / send_to_store()]")
+				FSM_CASE_TRANSIT (0, 4, state4_enter_exec, ;, "I_PK_BEACON", "", "idle", "tx_start", "tr_14", "update_manager [idle -> tx_start : I_PK_BEACON / ]")
+				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, send_to_store();, "I_S_PROP_PKT", "send_to_store()", "idle", "idle", "tr_19", "update_manager [idle -> idle : I_S_PROP_PKT / send_to_store()]")
+				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, generate_mac_pk_interrupt();, "I_S_MAC_PKT", "generate_mac_pk_interrupt()", "idle", "idle", "tr_20", "update_manager [idle -> idle : I_S_MAC_PKT / generate_mac_pk_interrupt()]")
+				FSM_CASE_TRANSIT (3, 1, state1_enter_exec, send_to_store();, "I_PK_UPDATEORACK", "send_to_store()", "idle", "idle", "tr_21", "update_manager [idle -> idle : I_PK_UPDATEORACK / send_to_store()]")
+				FSM_CASE_TRANSIT (4, 3, state3_enter_exec, ;, "(I_S_STORE_PKT || I_R_STORE_DUMP_DONE)", "", "idle", "error", "tr_22", "update_manager [idle -> error : (I_S_STORE_PKT || I_R_STORE_DUMP_DONE) / ]")
+				FSM_CASE_TRANSIT (5, 1, state1_enter_exec, send_beacon();, "I_L_SEND_BEACON_TIMER", "send_beacon()", "idle", "idle", "tr_23", "update_manager [idle -> idle : I_L_SEND_BEACON_TIMER / send_beacon()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -154,19 +402,19 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (tx) transition processing **/
 			FSM_PROFILE_SECTION_IN ("update_manager [tx trans conditions]", state2_trans_conds)
-			FSM_INIT_COND (RX_STORAGE_PKT)
-			FSM_TEST_COND (RX_MAC_UPDATEPKT)
-			FSM_TEST_COND (RX_PROP)
-			FSM_TEST_COND (STORAGE_DUMP_COMPLETE)
+			FSM_INIT_COND (I_S_STORE_PKT)
+			FSM_TEST_COND (I_R_STORE_DUMP_DONE)
+			FSM_TEST_COND (I_S_MAC_PKT || I_S_PROP_PKT)
+			FSM_DFLT_COND
 			FSM_TEST_LOGIC ("tx")
 			FSM_PROFILE_SECTION_OUT (state2_trans_conds)
 
 			FSM_TRANSIT_SWITCH
 				{
-				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, send_to_mac();, "RX_STORAGE_PKT", "send_to_mac()", "tx", "tx", "tr_6", "update_manager [tx -> tx : RX_STORAGE_PKT / send_to_mac()]")
-				FSM_CASE_TRANSIT (1, 3, state3_enter_exec, ;, "RX_MAC_UPDATEPKT", "", "tx", "error", "tr_9", "update_manager [tx -> error : RX_MAC_UPDATEPKT / ]")
-				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, ;, "RX_PROP", "", "tx", "error", "tr_12", "update_manager [tx -> error : RX_PROP / ]")
-				FSM_CASE_TRANSIT (3, 5, state5_enter_exec, ;, "STORAGE_DUMP_COMPLETE", "", "tx", "tx_done", "tr_17", "update_manager [tx -> tx_done : STORAGE_DUMP_COMPLETE / ]")
+				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, send_to_mac();, "I_S_STORE_PKT", "send_to_mac()", "tx", "tx", "tr_6", "update_manager [tx -> tx : I_S_STORE_PKT / send_to_mac()]")
+				FSM_CASE_TRANSIT (1, 5, state5_enter_exec, ;, "I_R_STORE_DUMP_DONE", "", "tx", "tx_done", "tr_17", "update_manager [tx -> tx_done : I_R_STORE_DUMP_DONE / ]")
+				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, ;, "I_S_MAC_PKT || I_S_PROP_PKT", "", "tx", "error", "tr_24", "update_manager [tx -> error : I_S_MAC_PKT || I_S_PROP_PKT / ]")
+				FSM_CASE_TRANSIT (3, 3, state3_enter_exec, ;, "default", "", "tx", "error", "tr_25", "update_manager [tx -> error : default / ]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -177,7 +425,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				FSM_PROFILE_SECTION_IN ("update_manager [error enter execs]", state3_enter_exec)
 				{
 				//Unrecoverable error
-				op_sim_end("Unexpected state");
+				op_sim_end("Unexpected state", "", "", "");
 				}
 				FSM_PROFILE_SECTION_OUT (state3_enter_exec)
 
@@ -204,16 +452,13 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				//clear prop update streams
 				
 				disable_beacon();
+				
+				request_storage_dump();
 				}
 				FSM_PROFILE_SECTION_OUT (state4_enter_exec)
 
 			/** state (tx_start) exit executives **/
 			FSM_STATE_EXIT_FORCED (4, "tx_start", "update_manager [tx_start exit execs]")
-				FSM_PROFILE_SECTION_IN ("update_manager [tx_start exit execs]", state4_exit_exec)
-				{
-				request_storage_dump()
-				}
-				FSM_PROFILE_SECTION_OUT (state4_exit_exec)
 
 
 			/** state (tx_start) transition processing **/
@@ -226,10 +471,13 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED (5, "tx_done", state5_enter_exec, "update_manager [tx_done enter execs]")
 				FSM_PROFILE_SECTION_IN ("update_manager [tx_done enter execs]", state5_enter_exec)
 				{
+				//TODO: ensure storage input stream is empty
+				
 				enable_prop_updates();
 				
 				//Allow the node we just received updates from to transmit
 				enable_beacon();
+				
 				send_beacon();
 				}
 				FSM_PROFILE_SECTION_OUT (state5_enter_exec)
@@ -278,6 +526,17 @@ _op_update_manager_terminate (OP_SIM_CONTEXT_ARG_OPT)
 	}
 
 
+/* Undefine shortcuts to state variables to avoid */
+/* syntax error in direct access to fields of */
+/* local variable prs_ptr in _op_update_manager_svar function. */
+#undef storage_id
+#undef is_pkt_interrupt
+#undef pPkt_interrupt
+#undef evh_beacon_tmr
+#undef disth_beacon_timer
+#undef self_id
+#undef source_id
+
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
 
@@ -322,9 +581,52 @@ _op_update_manager_alloc (VosT_Obtype obtype, int init_block)
 void
 _op_update_manager_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	{
+	update_manager_state		*prs_ptr;
 
 	FIN_MT (_op_update_manager_svar (gen_ptr, var_name, var_p_ptr))
 
+	if (var_name == OPC_NIL)
+		{
+		*var_p_ptr = (void *)OPC_NIL;
+		FOUT
+		}
+	prs_ptr = (update_manager_state *)gen_ptr;
+
+	if (strcmp ("storage_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->storage_id);
+		FOUT
+		}
+	if (strcmp ("is_pkt_interrupt" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->is_pkt_interrupt);
+		FOUT
+		}
+	if (strcmp ("pPkt_interrupt" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->pPkt_interrupt);
+		FOUT
+		}
+	if (strcmp ("evh_beacon_tmr" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->evh_beacon_tmr);
+		FOUT
+		}
+	if (strcmp ("disth_beacon_timer" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->disth_beacon_timer);
+		FOUT
+		}
+	if (strcmp ("self_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->self_id);
+		FOUT
+		}
+	if (strcmp ("source_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->source_id);
+		FOUT
+		}
 	*var_p_ptr = (void *)OPC_NIL;
 
 	FOUT

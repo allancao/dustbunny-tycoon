@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char mac_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB91BE1 4BB91BE1 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char mac_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB95750 4BB95750 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -52,8 +52,13 @@ typedef struct
 	{
 	/* Internal state tracking for FSM */
 	FSM_SYS_STATE
+	/* State Variables */
+	int	                    		source_id                                       ;
+	Objid	                  		self_id                                         ;
 	} mac_state;
 
+#define source_id               		op_sv_ptr->source_id
+#define self_id                 		op_sv_ptr->self_id
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -74,9 +79,25 @@ enum { _op_block_origin = __LINE__ + 2};
 
 void rrx_to_output(void)
 {
+	Packet *pPkt;
+	int pktsource_id;
+	char message_str[255];
+	
 	FIN(rrx_to_output());
 	
-	op_pk_send(op_pk_get(op_intrpt_strm()), STRM_OUTPUT);
+	pPkt = op_pk_get(STRM_RRX);
+	op_pk_nfd_get(pPkt, "source_id", &pktsource_id);
+	
+	if(pktsource_id == source_id)
+	{		
+		//sprintf (message_str, "[%d] Destroy Pkt From Self\n", op_id_self()); 
+		//printf (message_str);
+		op_pk_destroy(pPkt);
+	}
+	else
+	{
+		op_pk_send(pPkt, STRM_OUTPUT);
+	}
 	
 	FOUT;
 }
@@ -85,7 +106,7 @@ void input_to_rtx(void)
 {
 	FIN(input_to_rtx());
 	
-	op_pk_send(op_pk_get(op_intrpt_strm()), STRM_RTX);
+	op_pk_send(op_pk_get(STRM_INPUT), STRM_RTX);
 	
 	FOUT;
 }
@@ -167,10 +188,30 @@ mac (OP_SIM_CONTEXT_ARG_OPT)
 
 
 
+			/** state (init) enter executives **/
+			FSM_STATE_ENTER_FORCED_NOLABEL (1, "init", "mac [init enter execs]")
+				FSM_PROFILE_SECTION_IN ("mac [init enter execs]", state1_enter_exec)
+				{
+				self_id = op_id_self();
+				
+				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
+				}
+				FSM_PROFILE_SECTION_OUT (state1_enter_exec)
+
+			/** state (init) exit executives **/
+			FSM_STATE_EXIT_FORCED (1, "init", "mac [init exit execs]")
+
+
+			/** state (init) transition processing **/
+			FSM_TRANSIT_FORCE (0, state0_enter_exec, ;, "default", "", "init", "forward", "tr_3", "mac [init -> forward : default / ]")
+				/*---------------------------------------------------------*/
+
+
+
 			}
 
 
-		FSM_EXIT (0,"mac")
+		FSM_EXIT (1,"mac")
 		}
 	}
 
@@ -201,6 +242,12 @@ _op_mac_terminate (OP_SIM_CONTEXT_ARG_OPT)
 	}
 
 
+/* Undefine shortcuts to state variables to avoid */
+/* syntax error in direct access to fields of */
+/* local variable prs_ptr in _op_mac_svar function. */
+#undef source_id
+#undef self_id
+
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
 
@@ -215,7 +262,7 @@ _op_mac_init (int * init_block_ptr)
 
 	obtype = Vos_Define_Object_Prstate ("proc state vars (mac)",
 		sizeof (mac_state));
-	*init_block_ptr = 0;
+	*init_block_ptr = 2;
 
 	FRET (obtype)
 	}
@@ -234,7 +281,7 @@ _op_mac_alloc (VosT_Obtype obtype, int init_block)
 		{
 		ptr->_op_current_block = init_block;
 #if defined (OPD_ALLOW_ODB)
-		ptr->_op_current_state = "mac [forward enter execs]";
+		ptr->_op_current_state = "mac [init enter execs]";
 #endif
 		}
 	FRET ((VosT_Address)ptr)
@@ -245,9 +292,27 @@ _op_mac_alloc (VosT_Obtype obtype, int init_block)
 void
 _op_mac_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	{
+	mac_state		*prs_ptr;
 
 	FIN_MT (_op_mac_svar (gen_ptr, var_name, var_p_ptr))
 
+	if (var_name == OPC_NIL)
+		{
+		*var_p_ptr = (void *)OPC_NIL;
+		FOUT
+		}
+	prs_ptr = (mac_state *)gen_ptr;
+
+	if (strcmp ("source_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->source_id);
+		FOUT
+		}
+	if (strcmp ("self_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->self_id);
+		FOUT
+		}
 	*var_p_ptr = (void *)OPC_NIL;
 
 	FOUT

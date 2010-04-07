@@ -1,0 +1,104 @@
+%\documentclass[twoside]{enscStyle}
+\documentclass{enscStyle}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+%\usepackage{tikz}
+\usepackage{pgf}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title Page Info
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Project}
+
+\coursecode{483}
+
+\author{
+    Dan Hendry (danh@sfu.ca)\nothtml{, 301133878}\\
+    Veronica ?
+}
+
+\prof{Professor ?}
+
+\date{\today}
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\maketitle
+
+%Needed for twoside option:
+%\thispagestyle{empty}
+
+\cleardoublepage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tables
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
+
+\cleardoublepage
+
+%Dont compile the list of tables and figures to html -> no tables/figures yet
+\nothtml{
+
+\listoftables
+\addcontentsline{toc}{chapter}{\hspace{13pt}List of Tables}
+
+\cleardoublepage
+
+\listoffigures
+\addcontentsline{toc}{chapter}{\hspace{13pt}List of Figures}
+
+\cleardoublepage
+
+}
+
+\pagenumbering{arabic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main Section
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Add chapters as needed
+
+\input{chapters/latexExamples}
+
+\input{chapters/systemDescription}
+
+\input{chapters/nonlinearModel}
+
+\input{chapters/openloopanalysis}
+
+\input{chapters/systemDescription}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% References
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\bibliography{References}
+%\addcontentsline{toc}{chapter}{\hspace{13pt}References}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\nothtml{
+%\begin{appendix}
+%\appendix
+%\renewcommand{\thechapter}{\Alph{chapter}}
+
+%\input{chapters/appendix}
+%\end{appendix}
+%}
+
+\end{document}

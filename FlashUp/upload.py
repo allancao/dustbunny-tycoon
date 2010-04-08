@@ -86,6 +86,10 @@ try:
                 if not newCardSide1.startswith("#"):
                     cards.append((newCardSide1, newCardSide2))
                 
+                    #Invert - add another card with sides reversed
+                    if str(ws.Range("C" + str(i)).Value).strip().lower() == "i":
+                        cards.append((newCardSide2, newCardSide1))
+                
                 i += 1
         finally:
             ws = None
@@ -128,7 +132,8 @@ try:
                     imagesUsed.append(img)
             
             #Text processing
-            cardSide = cardSide.replace("\t", "  ")
+            cardSide = cardSide.replace("\t", "  ") #TODO: regex that shit
+            cardSide = cardSide.replace("\n", "  ")
             cardSide = re.sub(image_extractor_regex, image_replacement_regex, cardSide)
             
             #Write to output

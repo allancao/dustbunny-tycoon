@@ -4,6 +4,7 @@ import os
 import sys
 import ftplib
 import re
+import getpass
 
 print "Starting"
 
@@ -178,7 +179,7 @@ print "Connecting to FTP " + FTP_SERVER
 ftp = None
 try:
 
-    ftp = ftplib.FTP(FTP_SERVER, FTP_USERNAME, raw_input("  Password for %s: " % FTP_USERNAME))
+    ftp = ftplib.FTP(FTP_SERVER, FTP_USERNAME, getpass.getpass("  Password for %s: " % FTP_USERNAME))
     
     result = ftp.cwd(FTP_PUB_HTML)
     assert result.startswith("250"), result

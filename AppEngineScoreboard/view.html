@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <meta http-equiv="refresh" content="2" />
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+  </head>
+  <body>
+    <center>
+    <h1>Cantankerous-Contingency Score Board</h1>
+    <table border="1"> 
+      <col width="160"/>
+      {% for groupPoint in groupPoints %}
+      <col width="60" />
+      {% endfor %}
+      <tr>
+        <td> <b><center>Group: </center></b></td>
+        {% for groupPoint in groupPoints %}
+        <td {% if groupPoint.leader %} BGCOLOR="#99CCFF" {% endif %}> <b><center><a  href="/add{{groupPoint.group}}" >{% if groupPoint.group %} {{ groupPoint.group }} {% else %} ? {% endif %} </a> </center></b></td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <td> <center>Round 1 Score: </center></td>
+        {% for groupPoint in groupPoints %}
+        <td><center>{{ groupPoint.r1pts }}</center></td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <td> <center>Round 2 Score: </center></td>
+        {% for groupPoint in groupPoints %}
+        <td><center>{{ groupPoint.r2pts }}</center></td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <td> <center>Total Score: </center></td>
+        {% for groupPoint in groupPoints %}
+        <td {% if groupPoint.leader %} BGCOLOR="#99CCFF" {% endif %}><b><em><center>{{ groupPoint.totpts }}</center></em></b></td>
+        {% endfor %}
+      </tr>
+    </table>
+    </center>
+  </body>
+</html>

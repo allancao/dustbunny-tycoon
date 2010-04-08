@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+  </head>
+  <body>
+<center>
+    <h1>Group {{ group }} - Current Score {{ currentScore }}</h1>
+    <form action="/add{{ group }}" method="post">
+      <h2>Round 1</h2>
+      <input class="trig" name="amt" type="submit" value="R1: +2"> <span style="width:20%">Subtract</span> 
+      <input class="trig" name="amt" type="submit" value="R1: -1">
+      <input class="trig" name="amt" type="submit" value="R1: -2">
+      <br/> <br/>
+      <h2>Round 2</h2><br/>
+      <input class="trig" name="amt" type="submit" value="R2: +2"> <span style="width:20%">Subtract</span> 
+      <input class="trig" name="amt" type="submit" value="R2: -1">
+      <input class="trig" name="amt" type="submit" value="R2: -2">        
+    </form>
+</center>
+  </body>
+</html>

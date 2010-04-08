@@ -17,8 +17,13 @@ Run, "C:\Windows\Sysnative\SnippingTool.exe"
 KeyWait, LButton, D
 KeyWait, LButton
 
-Sleep, 100
+Sleep, 150
 InputBox, Name, Enter Cliping Name
+if ErrorLevel
+{
+	return
+}
+StringReplace, Name, Name, %A_SPACE%,, All
 
 IfWinExist Snipping Tool
 {

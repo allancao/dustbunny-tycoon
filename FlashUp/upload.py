@@ -52,7 +52,7 @@ for srcFile in currentDirListing:
         if srcFile.lower().endswith(".xlsx"):
             srcXls.append(srcFile)
 #Make sure there are sources
-assert len(srcXls) > 0, "No source CSVs in the current directory"
+assert len(srcXls) > 0, "No source XLSXs in the current directory"
 
 excel = None
 cards = [] #List of tuples
@@ -71,8 +71,16 @@ try:
                 newCardSide2 = ws.Range("B" + str(i)).Value
                 
                 if (newCardSide1 is None and newCardSide2 is None):
-                    print "     Got %s cards from %s" % (i-1, srcXl)
+                    print "     Examined %s rows from %s" % (i-1, srcXl)
                     break
+                
+                try:
+                    newCardSide1 = str(newCardSide1)
+                    newCardSide2 = str(newCardSide2)
+                except UnicodeEncodeError:
+                    print "      Encoding error on row " + str(i)
+                    i += 1
+                    continue
                 
                 if not newCardSide1.startswith("#"):
                     cards.append((newCardSide1, newCardSide2))
@@ -89,6 +97,7 @@ finally:
         excel = None
 
 print "Excel files processed"
+assert len(cards) > 0, "No cards"
 
 ###################################################
 #### Output Processing 

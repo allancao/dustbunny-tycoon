@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB93CFC 4BB93CFC 1 rfsip11 tty2 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0D034 4BC0D034 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -51,12 +51,18 @@ typedef struct
 	int	                    		intrptScheduled                                 ;
 	int	                    		updatesSent                                     ;
 	int	                    		test_isDisabled                                 ;
+	Objid	                  		self_id                                         ;
+	int	                    		maxlistsize                                     ;
+	Stathandle	             		discarded_stathandle                            ;
 	} storage_state;
 
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
 #define intrptScheduled         		op_sv_ptr->intrptScheduled
 #define updatesSent             		op_sv_ptr->updatesSent
 #define test_isDisabled         		op_sv_ptr->test_isDisabled
+#define self_id                 		op_sv_ptr->self_id
+#define maxlistsize             		op_sv_ptr->maxlistsize
+#define discarded_stathandle    		op_sv_ptr->discarded_stathandle
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -82,20 +88,19 @@ void store_update(void)
 	char message_str [255];
 	Objid prop1_id;
 	int key;
-	int newkey;
 	int sourceid;
-	int newsourceid;
 	int key_updnm;
-	int newkey_updnm;
 	int pos_index;
+	int gen_ts;
+	int newkey;
+	int newsourceid;
+	int newkey_updnm;
+	int newgen_ts;
 	int listsize;
-	int srcloc;
-	int i;
-
+	int i, j, k, temp;
+	
 	
 	FIN (store_update ());
-	
-	//TODO: Search the list for old keys
 	
 	//DEBUG
 	if(intrptScheduled == 0)
@@ -107,8 +112,6 @@ void store_update(void)
 	
 	pkt = op_pk_get (op_intrpt_strm ());
 	
-	//op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
-	
 	sprintf (message_str, "[%d] Store Update - List size: %d\n", op_id_self(), op_prg_list_size(pupdate_lst )); 
 	printf (message_str);
 	
@@ -116,42 +119,82 @@ void store_update(void)
 	op_pk_nfd_get(pkt, "key", &newkey);
 	op_pk_nfd_get(pkt, "source_id", &newsourceid);
 	op_pk_nfd_get(pkt, "key_update_number", &newkey_updnm);
+	op_pk_nfd_get(pkt, "generated_timestamp", &newgen_ts);
 	listsize = op_prg_list_size(pupdate_lst);
 	
-	//Search & Compare key_update_number
+	//Following forloop is for 
+	//Search & Compare 'key_update_number'; replace if newer
 	for(i = 0; i < listsize; i++)
 	{
 		lstPkt = (Packet *)op_prg_list_access (pupdate_lst, i);
 		op_pk_nfd_get(lstPkt, "key", &key);
 		op_pk_nfd_get(lstPkt, "source_id", &sourceid);
 		op_pk_nfd_get(lstPkt, "key_update_number", &key_updnm);
+		op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
 		
-		//COMPARE
+		//COMPARE for matching source/key
 		if(newsourceid == sourceid)
 		{
 			if(newkey == key)
 			{
-				if(newkey_updnm > key_updnm)	//key is newer we update
+				if(newkey_updnm > key_updnm)	//if key is newer we update
 				{
 					op_prg_list_remove (pupdate_lst, i);
 					op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 					op_pk_destroy(lstPkt);
 					FOUT;
 				}
-				else //(newkey_updnm <= key_updnm)
+				else
 				{
 					//do nothing
 				}
 			}
 		}
-	} //end forloop
+	} //forloop
+
 	
 	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
-	//op_pk_destroy(pkt);
-	
-	
+
+	//See if we need to get rid of something
+	if(listsize > maxlistsize)
+	{
+		printf("Max list size reached \n");
+		
+		//set first packet for temp
+		lstPkt = (Packet *)op_prg_list_access (pupdate_lst, 0);
+		op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
+		temp = gen_ts;
+		
+		//find oldest timestamp
+		for(j = 0; j < listsize; j++)
+		{
+			lstPkt = (Packet *)op_prg_list_access (pupdate_lst, j);
+			op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
+			
+			if(gen_ts < temp)
+			{
+				temp = gen_ts;	//replace if older
+			}
+		}
+		
+		//delete packet with oldest timestamp, temp, with incoming packet
+		for(k = 0; k < listsize; k++)
+		{
+			lstPkt = (Packet *)op_prg_list_access (pupdate_lst, k);
+			op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
+			
+			if(temp == gen_ts)
+			{
+				//TODO: add statistic
+				op_prg_list_remove (pupdate_lst, k);
+				op_pk_destroy(lstPkt);
+				op_stat_write(discarded_stathandle, 1.0);
+				break;
+			}
+		}
+	} 
+
 	FOUT;
-	
 }
 
 void tx_updates(void)
@@ -241,11 +284,19 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED_NOLABEL (0, "init", "storage [init enter execs]")
 				FSM_PROFILE_SECTION_IN ("storage [init enter execs]", state0_enter_exec)
 				{
+				discarded_stathandle = op_stat_reg ("Discarded Pkts",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				
 				/* allocate an empty list */
 				intrptScheduled = 0;
 				updatesSent = 0;
 				test_isDisabled = 0;
 				pupdate_lst = op_prg_list_create (); 
+				
+				printf("Enter exec debug\n");
+				self_id = op_id_self();
+				op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
+				
+				printf("Enter exec done \n");
 				}
 				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
 
@@ -327,6 +378,9 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef intrptScheduled
 #undef updatesSent
 #undef test_isDisabled
+#undef self_id
+#undef maxlistsize
+#undef discarded_stathandle
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -401,6 +455,21 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	if (strcmp ("test_isDisabled" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->test_isDisabled);
+		FOUT
+		}
+	if (strcmp ("self_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->self_id);
+		FOUT
+		}
+	if (strcmp ("maxlistsize" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->maxlistsize);
+		FOUT
+		}
+	if (strcmp ("discarded_stathandle" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->discarded_stathandle);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

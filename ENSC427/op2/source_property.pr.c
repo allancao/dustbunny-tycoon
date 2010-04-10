@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB8FAD5 4BB8FAD5 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB9401C 4BB9401C 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -210,6 +210,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 					op_pk_nfd_set_int32(pPkt, "source_id", source_id);		
 					op_pk_nfd_set_int32(pPkt, "key", prop_key);	
 					op_pk_nfd_set_int32(pPkt, "key_update_number", prop_key_update_counter);
+					op_pk_nfd_set_int32(pPkt, "generated_timestamp", (int)op_sim_time());
 					
 					op_pk_send(pPkt, 0); //Output stream
 				}

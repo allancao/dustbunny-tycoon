@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0D034 4BC0D034 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0EC06 4BC0EC06 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -18,10 +18,11 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0D034 4BC0D03
 
 
 //Interrupt Codes (random numbers)
-#define IC_DUMP_UPDATES 3
+#define IC_DUMP_UPDATES 		73
+#define IC_DUMP_UPDATES_DONE 	74
 
-//#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_DUMP_UPDATES)
-#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_DUMP_UPDATES)
+#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_DUMP_UPDATES)
+//#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_DUMP_UPDATES)
 #define UPDATE_RECEIVED	(op_intrpt_type() == OPC_INTRPT_STRM)
 
 void store_update(void);
@@ -48,21 +49,25 @@ typedef struct
 	FSM_SYS_STATE
 	/* State Variables */
 	List*	                  		pupdate_lst                                     ;
-	int	                    		intrptScheduled                                 ;
-	int	                    		updatesSent                                     ;
+	int	                    		x_intrptScheduled                               ;
+	int	                    		x_updatesSent                                   ;
 	int	                    		test_isDisabled                                 ;
 	Objid	                  		self_id                                         ;
 	int	                    		maxlistsize                                     ;
 	Stathandle	             		discarded_stathandle                            ;
+	Objid	                  		updatemanager_id                                ;
+	int	                    		source_id                                       ;
 	} storage_state;
 
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
-#define intrptScheduled         		op_sv_ptr->intrptScheduled
-#define updatesSent             		op_sv_ptr->updatesSent
+#define x_intrptScheduled       		op_sv_ptr->x_intrptScheduled
+#define x_updatesSent           		op_sv_ptr->x_updatesSent
 #define test_isDisabled         		op_sv_ptr->test_isDisabled
 #define self_id                 		op_sv_ptr->self_id
 #define maxlistsize             		op_sv_ptr->maxlistsize
 #define discarded_stathandle    		op_sv_ptr->discarded_stathandle
+#define updatemanager_id        		op_sv_ptr->updatemanager_id
+#define source_id               		op_sv_ptr->source_id
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -103,16 +108,16 @@ void store_update(void)
 	FIN (store_update ());
 	
 	//DEBUG
-	if(intrptScheduled == 0)
-	{
-		intrptScheduled = 1;
-		op_intrpt_schedule_self (op_sim_time () + 10, IC_DUMP_UPDATES);
-	}
+	//if(intrptScheduled == 0)
+	//{
+	//	intrptScheduled = 1;
+	//	op_intrpt_schedule_self (op_sim_time () + 10, IC_DUMP_UPDATES);
+	//}
 	
 	
 	pkt = op_pk_get (op_intrpt_strm ());
 	
-	sprintf (message_str, "[%d] Store Update - List size: %d\n", op_id_self(), op_prg_list_size(pupdate_lst )); 
+	sprintf (message_str, "[%d STORE] Store Update - List size: %d\n", source_id, op_prg_list_size(pupdate_lst )); 
 	printf (message_str);
 	
 	//get info
@@ -146,7 +151,8 @@ void store_update(void)
 				}
 				else
 				{
-					//do nothing
+					op_pk_destroy(pkt);
+					FOUT;
 				}
 			}
 		}
@@ -154,12 +160,11 @@ void store_update(void)
 
 	
 	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
+	listsize = op_prg_list_size(pupdate_lst);
 
 	//See if we need to get rid of something
 	if(listsize > maxlistsize)
-	{
-		printf("Max list size reached \n");
-		
+	{	
 		//set first packet for temp
 		lstPkt = (Packet *)op_prg_list_access (pupdate_lst, 0);
 		op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
@@ -189,6 +194,10 @@ void store_update(void)
 				op_prg_list_remove (pupdate_lst, k);
 				op_pk_destroy(lstPkt);
 				op_stat_write(discarded_stathandle, 1.0);
+				
+				sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
+				printf (message_str);
+				
 				break;
 			}
 		}
@@ -207,10 +216,10 @@ void tx_updates(void)
 	
 	FIN (tx_updates ());
 	
-	updatesSent++;			//increment counter
-	intrptScheduled = 0;
+	//updatesSent++;			//increment counter
+	//intrptScheduled = 0;
 
-	sprintf (message_str, "[%d] Sending Packets: size %d\n", op_id_self(), op_prg_list_size(pupdate_lst)); 
+	sprintf (message_str, "[%d STORE] Sending Packets: size %d\n", source_id, op_prg_list_size(pupdate_lst)); 
 	printf (message_str);
 	
 	lstSize = op_prg_list_size (pupdate_lst);
@@ -225,7 +234,9 @@ void tx_updates(void)
 		op_pk_send(pPktCopy, 0);
 	}
 
- 	sprintf (message_str, "[%d] 	Done Sending Packets: size %d\n", op_id_self(), op_prg_list_size(pupdate_lst)); 
+	op_intrpt_schedule_remote(op_sim_time(), IC_DUMP_UPDATES_DONE, updatemanager_id);
+	
+ 	sprintf (message_str, "[%d STORE] 	Done Sending Packets: size %d\n", op_id_self(), op_prg_list_size(pupdate_lst)); 
 	printf (message_str);
 			 
 	FOUT;
@@ -287,16 +298,19 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				discarded_stathandle = op_stat_reg ("Discarded Pkts",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
 				
 				/* allocate an empty list */
-				intrptScheduled = 0;
-				updatesSent = 0;
+				//intrptScheduled = 0;
+				//updatesSent = 0;
 				test_isDisabled = 0;
 				pupdate_lst = op_prg_list_create (); 
 				
-				printf("Enter exec debug\n");
+				//printf("Enter exec debug\n");
 				self_id = op_id_self();
 				op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
+				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
 				
-				printf("Enter exec done \n");
+				updatemanager_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "update_manager");
+				
+				//printf("Enter exec done \n");
 				}
 				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
 
@@ -375,12 +389,14 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 /* syntax error in direct access to fields of */
 /* local variable prs_ptr in _op_storage_svar function. */
 #undef pupdate_lst
-#undef intrptScheduled
-#undef updatesSent
+#undef x_intrptScheduled
+#undef x_updatesSent
 #undef test_isDisabled
 #undef self_id
 #undef maxlistsize
 #undef discarded_stathandle
+#undef updatemanager_id
+#undef source_id
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -442,14 +458,14 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 		*var_p_ptr = (void *) (&prs_ptr->pupdate_lst);
 		FOUT
 		}
-	if (strcmp ("intrptScheduled" , var_name) == 0)
+	if (strcmp ("x_intrptScheduled" , var_name) == 0)
 		{
-		*var_p_ptr = (void *) (&prs_ptr->intrptScheduled);
+		*var_p_ptr = (void *) (&prs_ptr->x_intrptScheduled);
 		FOUT
 		}
-	if (strcmp ("updatesSent" , var_name) == 0)
+	if (strcmp ("x_updatesSent" , var_name) == 0)
 		{
-		*var_p_ptr = (void *) (&prs_ptr->updatesSent);
+		*var_p_ptr = (void *) (&prs_ptr->x_updatesSent);
 		FOUT
 		}
 	if (strcmp ("test_isDisabled" , var_name) == 0)
@@ -470,6 +486,16 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	if (strcmp ("discarded_stathandle" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->discarded_stathandle);
+		FOUT
+		}
+	if (strcmp ("updatemanager_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->updatemanager_id);
+		FOUT
+		}
+	if (strcmp ("source_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->source_id);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB95738 4BB95738 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0EC29 4BC0EC29 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -35,13 +35,16 @@ const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB95738 
 /***********************
  * Interrupt Codes
  ***********************/
-#define IC_REQ_STORE_DUMP		83
-#define IC_STORE_DUMP_DONE		84
+#define IC_REQ_STORE_DUMP			73
+#define IC_STORE_DUMP_DONE			74
 
-#define IC_SEND_BEACON_TIMER	42
+#define IC_PROP_UPDATES_DISABLE		83
+#define IC_PROP_UPDATES_ENABLE		84
 
-#define IC_PK_UPDATEORACK		37
-#define IC_PK_BEACON			38
+#define IC_SEND_BEACON_TIMER		42
+
+#define IC_PK_UPDATEORACK			37
+#define IC_PK_BEACON				38
 
 /***********************
  * Interrupts
@@ -70,6 +73,7 @@ const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB95738 
 void enable_beacon();
 void disable_beacon();
 void send_beacon();
+void send_beacon_timed();
 
 //Property control
 void enable_prop_updates();
@@ -111,6 +115,9 @@ typedef struct
 	OmsT_Dist_Handle	       		disth_beacon_timer                              ;
 	Objid	                  		self_id                                         ;
 	int	                    		source_id                                       ;
+	Objid	                  		prop1_id                                        ;
+	Objid	                  		prop2_id                                        ;
+	Objid	                  		prop3_id                                        ;
 	} update_manager_state;
 
 #define storage_id              		op_sv_ptr->storage_id
@@ -120,6 +127,9 @@ typedef struct
 #define disth_beacon_timer      		op_sv_ptr->disth_beacon_timer
 #define self_id                 		op_sv_ptr->self_id
 #define source_id               		op_sv_ptr->source_id
+#define prop1_id                		op_sv_ptr->prop1_id
+#define prop2_id                		op_sv_ptr->prop2_id
+#define prop3_id                		op_sv_ptr->prop3_id
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -144,7 +154,6 @@ void schedule_beacon()
 	
 	FIN(schedule_beacon());
 	
-
 	next_becon_time = oms_dist_outcome (disth_beacon_timer);
 	if (next_becon_time <0)
 	{
@@ -191,6 +200,8 @@ void send_beacon()
 	pPkt = op_pk_create_fmt("beacon");
 	op_pk_nfd_set_int32(pPkt, "source_id", source_id);
 	
+	//TODO - node type 
+	
 	op_pk_send(pPkt, STRM_OUT_MAC);
 	
 	schedule_beacon();
@@ -203,12 +214,20 @@ void enable_prop_updates()
 {
 	FIN(enable_prop_updates());
 	
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_ENABLE, prop1_id);
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_ENABLE, prop2_id);
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_ENABLE, prop3_id);
+	
 	FOUT;
 }
 	
 void disable_prop_updates()
 {
 	FIN(disable_prop_updates());
+
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop1_id);
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop2_id);
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop3_id);
 	
 	FOUT;
 }
@@ -217,6 +236,8 @@ void disable_prop_updates()
 void request_storage_dump()
 {
 	FIN(request_sotrage_dump());
+	
+	op_intrpt_schedule_remote(op_sim_time(), IC_REQ_STORE_DUMP, storage_id);
 	
 	FOUT;
 }
@@ -232,15 +253,62 @@ void send_to_store()
 	{
 		is_pkt_interrupt = 0;
 		
+		if(pPkt_interrupt == OPC_NIL)
+		{
+			op_sim_end("Nill interrupt pkt", "", "", "");	
+		}
 		
+		pPktToForward = pPkt_interrupt;
+		pPkt_interrupt = OPC_NIL;
 	}
+	else
+	{
+		if(pPkt_interrupt != OPC_NIL)
+		{
+			op_sim_end("Not nill interrupt pkt", "", "", "");	
+		}
+		
+		pPktToForward = op_pk_get(op_intrpt_strm());
+	}
+	
+	op_pk_send(pPktToForward, STRM_OUT_STORE);
 	
 	FOUT;
 }
 	
 void send_to_mac()
 {
+	char message_str[255];
+	Packet *pPktToForward;
+	
 	FIN(send_to_mac());
+
+	if(is_pkt_interrupt)
+	{
+		is_pkt_interrupt = 0;
+		
+		if(pPkt_interrupt == OPC_NIL)
+		{
+			op_sim_end("Nill interrupt pkt", "", "", "");	
+		}
+		
+		pPktToForward = pPkt_interrupt;
+		pPkt_interrupt = OPC_NIL;
+	}
+	else
+	{
+		if(pPkt_interrupt != OPC_NIL)
+		{
+			op_sim_end("Not nill interrupt pkt", "", "", "");	
+		}
+		
+		pPktToForward = op_pk_get(op_intrpt_strm());
+	}
+	
+	sprintf (message_str, "[%d] Send to mac Pkt\n", source_id); 
+	printf (message_str);
+	
+	op_pk_send(pPktToForward, STRM_OUT_MAC);
 	
 	FOUT;
 }
@@ -248,10 +316,38 @@ void send_to_mac()
 void generate_mac_pk_interrupt()
 {
 	char message_str[255];
+	char format_name[255];
+	
 	FIN(generate_mac_pk_interrupt());
 
-	sprintf (message_str, "[%d] Received Mac Pkt\n", op_id_self()); 
+	if(pPkt_interrupt != OPC_NIL)
+	{
+		op_sim_end("Not nill interrupt pkt", "", "", "");	
+	}
+	else if (is_pkt_interrupt)
+	{
+		op_sim_end("Pkt interrupt flag set (bad)", "", "", "");		
+	}
+	else if(op_intrpt_strm() != STRM_IN_MAC)
+	{
+		op_sim_end("generate_mac_pk_interrupt called for non mac stream interrupt", "", "", "");	
+	}
+	
+	pPkt_interrupt = op_pk_get(STRM_IN_MAC);
+	is_pkt_interrupt = 1;
+	
+	sprintf (message_str, "[%d] Received Mac Pkt\n", source_id); 
 	printf (message_str);
+	
+	op_pk_format (pPkt_interrupt, format_name);
+	if (strcmp (format_name, "beacon") == 0)
+	{
+		op_intrpt_schedule_self(op_sim_time(), IC_PK_BEACON);	
+	}
+	else if (strcmp (format_name, "keyupdate") == 0)
+	{
+		op_intrpt_schedule_self(op_sim_time(), IC_PK_UPDATEORACK);	
+	}
 	
 	FOUT;
 }
@@ -317,7 +413,11 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				op_ima_obj_attr_get (self_id, "Beacon Interval", beacon_dist_str);
 				disth_beacon_timer = oms_dist_load_from_string (beacon_dist_str);
 				
+				storage_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "storage");
 				
+				prop1_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop1");
+				prop2_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop2");
+				prop3_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop3");
 				
 				//Property stream priorities
 				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P1, 15);
@@ -447,9 +547,29 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED (4, "tx_start", state4_enter_exec, "update_manager [tx_start enter execs]")
 				FSM_PROFILE_SECTION_IN ("update_manager [tx_start enter execs]", state4_enter_exec)
 				{
+				if(is_pkt_interrupt)
+				{
+					is_pkt_interrupt = 0;
+						
+					if(pPkt_interrupt == OPC_NIL)
+					{
+						op_sim_end("Nill interrupt pkt", "", "", "");	
+					}
+						
+					op_pk_destroy(pPkt_interrupt);
+					pPkt_interrupt = OPC_NIL;
+				}
+				else
+				{
+					if(pPkt_interrupt != OPC_NIL)
+					{
+						op_sim_end("Not nill interrupt pkt", "", "", "");	
+					}
+				}
+				
 				disable_prop_updates();
 				
-				//clear prop update streams
+				//TODO: clear prop update streams (?)
 				
 				disable_beacon();
 				
@@ -471,14 +591,17 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED (5, "tx_done", state5_enter_exec, "update_manager [tx_done enter execs]")
 				FSM_PROFILE_SECTION_IN ("update_manager [tx_done enter execs]", state5_enter_exec)
 				{
-				//TODO: ensure storage input stream is empty
+				if(op_pk_get(STRM_IN_STORE) != OPC_NIL)
+				{
+					op_sim_end("Store stream not empty", "", "", "");
+				}
 				
 				enable_prop_updates();
 				
 				//Allow the node we just received updates from to transmit
 				enable_beacon();
 				
-				send_beacon();
+				//send_beacon();
 				}
 				FSM_PROFILE_SECTION_OUT (state5_enter_exec)
 
@@ -536,6 +659,9 @@ _op_update_manager_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef disth_beacon_timer
 #undef self_id
 #undef source_id
+#undef prop1_id
+#undef prop2_id
+#undef prop3_id
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -625,6 +751,21 @@ _op_update_manager_svar (void * gen_ptr, const char * var_name, void ** var_p_pt
 	if (strcmp ("source_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->source_id);
+		FOUT
+		}
+	if (strcmp ("prop1_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->prop1_id);
+		FOUT
+		}
+	if (strcmp ("prop2_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->prop2_id);
+		FOUT
+		}
+	if (strcmp ("prop3_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->prop3_id);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

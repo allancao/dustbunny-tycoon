@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0EC06 4BC0EC06 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC1ECCC 4BC1ECCC 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -16,6 +16,8 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0EC06 4BC0EC0
 
 /* Header Block */
 
+#define GATEWAY_MODE	(is_gateway)
+#define STORAGE_MODE	(!GATEWAY_MODE)
 
 //Interrupt Codes (random numbers)
 #define IC_DUMP_UPDATES 		73
@@ -25,8 +27,11 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0EC06 4BC0EC0
 //#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_DUMP_UPDATES)
 #define UPDATE_RECEIVED	(op_intrpt_type() == OPC_INTRPT_STRM)
 
+
+
 void store_update(void);
 void tx_updates(void);
+void update_gateway(void);
 
 /* End of Header Block */
 
@@ -57,6 +62,7 @@ typedef struct
 	Stathandle	             		discarded_stathandle                            ;
 	Objid	                  		updatemanager_id                                ;
 	int	                    		source_id                                       ;
+	int	                    		is_gateway                                      ;
 	} storage_state;
 
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
@@ -68,6 +74,7 @@ typedef struct
 #define discarded_stathandle    		op_sv_ptr->discarded_stathandle
 #define updatemanager_id        		op_sv_ptr->updatemanager_id
 #define source_id               		op_sv_ptr->source_id
+#define is_gateway              		op_sv_ptr->is_gateway
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -243,6 +250,15 @@ void tx_updates(void)
 }
 
 
+
+void update_gateway()
+{
+
+	FIN (update_gateway ());
+
+	FOUT;
+}
+
 /* End of Function Block */
 
 /* Undefine optional tracing in FIN/FOUT/FRET */
@@ -308,6 +324,8 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
 				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
 				
+				op_ima_obj_attr_get (self_id, "Is Gateway", &is_gateway);
+				
 				updatemanager_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "update_manager");
 				
 				//printf("Enter exec done \n");
@@ -319,33 +337,70 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 
 
 			/** state (init) transition processing **/
-			FSM_TRANSIT_FORCE (1, state1_enter_exec, ;, "default", "", "init", "idle", "tr_0", "storage [init -> idle : default / ]")
+			FSM_PROFILE_SECTION_IN ("storage [init trans conditions]", state0_trans_conds)
+			FSM_INIT_COND (STORAGE_MODE)
+			FSM_TEST_COND (GATEWAY_MODE)
+			FSM_TEST_LOGIC ("init")
+			FSM_PROFILE_SECTION_OUT (state0_trans_conds)
+
+			FSM_TRANSIT_SWITCH
+				{
+				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, ;, "STORAGE_MODE", "", "init", "storage", "tr_0", "storage [init -> storage : STORAGE_MODE / ]")
+				FSM_CASE_TRANSIT (1, 2, state2_enter_exec, ;, "GATEWAY_MODE", "", "init", "gateway", "tr_3", "storage [init -> gateway : GATEWAY_MODE / ]")
+				}
 				/*---------------------------------------------------------*/
 
 
 
-			/** state (idle) enter executives **/
-			FSM_STATE_ENTER_UNFORCED (1, "idle", state1_enter_exec, "storage [idle enter execs]")
+			/** state (storage) enter executives **/
+			FSM_STATE_ENTER_UNFORCED (1, "storage", state1_enter_exec, "storage [storage enter execs]")
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (3,"storage")
 
 
-			/** state (idle) exit executives **/
-			FSM_STATE_EXIT_UNFORCED (1, "idle", "storage [idle exit execs]")
+			/** state (storage) exit executives **/
+			FSM_STATE_EXIT_UNFORCED (1, "storage", "storage [storage exit execs]")
 
 
-			/** state (idle) transition processing **/
-			FSM_PROFILE_SECTION_IN ("storage [idle trans conditions]", state1_trans_conds)
+			/** state (storage) transition processing **/
+			FSM_PROFILE_SECTION_IN ("storage [storage trans conditions]", state1_trans_conds)
 			FSM_INIT_COND (UPDATE_RECEIVED)
 			FSM_TEST_COND (TX_UPDATES)
-			FSM_TEST_LOGIC ("idle")
+			FSM_TEST_LOGIC ("storage")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
 			FSM_TRANSIT_SWITCH
 				{
-				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, store_update();, "UPDATE_RECEIVED", "store_update()", "idle", "idle", "tr_1", "storage [idle -> idle : UPDATE_RECEIVED / store_update()]")
-				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, tx_updates();, "TX_UPDATES", "tx_updates()", "idle", "idle", "tr_2", "storage [idle -> idle : TX_UPDATES / tx_updates()]")
+				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, store_update();, "UPDATE_RECEIVED", "store_update()", "storage", "storage", "tr_1", "storage [storage -> storage : UPDATE_RECEIVED / store_update()]")
+				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, tx_updates();, "TX_UPDATES", "tx_updates()", "storage", "storage", "tr_2", "storage [storage -> storage : TX_UPDATES / tx_updates()]")
+				}
+				/*---------------------------------------------------------*/
+
+
+
+			/** state (gateway) enter executives **/
+			FSM_STATE_ENTER_UNFORCED (2, "gateway", state2_enter_exec, "storage [gateway enter execs]")
+
+			/** blocking after enter executives of unforced state. **/
+			FSM_EXIT (5,"storage")
+
+
+			/** state (gateway) exit executives **/
+			FSM_STATE_EXIT_UNFORCED (2, "gateway", "storage [gateway exit execs]")
+
+
+			/** state (gateway) transition processing **/
+			FSM_PROFILE_SECTION_IN ("storage [gateway trans conditions]", state2_trans_conds)
+			FSM_INIT_COND (TX_UPDATES)
+			FSM_TEST_COND (UPDATE_RECEIVED)
+			FSM_TEST_LOGIC ("gateway")
+			FSM_PROFILE_SECTION_OUT (state2_trans_conds)
+
+			FSM_TRANSIT_SWITCH
+				{
+				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, ;, "TX_UPDATES", "", "gateway", "gateway", "tr_4", "storage [gateway -> gateway : TX_UPDATES / ]")
+				FSM_CASE_TRANSIT (1, 2, state2_enter_exec, update_gateway();, "UPDATE_RECEIVED", "update_gateway()", "gateway", "gateway", "tr_5", "storage [gateway -> gateway : UPDATE_RECEIVED / update_gateway()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -397,6 +452,7 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef discarded_stathandle
 #undef updatemanager_id
 #undef source_id
+#undef is_gateway
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -496,6 +552,11 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	if (strcmp ("source_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->source_id);
+		FOUT
+		}
+	if (strcmp ("is_gateway" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->is_gateway);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

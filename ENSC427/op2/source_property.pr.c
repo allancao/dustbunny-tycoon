@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB9401C 4BB9401C 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC1E709 4BC1E709 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -22,6 +22,8 @@ const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB9401C
 #define IC_PROP_VAL_CHANGED 		39
 #define IC_UPDATES_DISABLE	 		83
 #define IC_UPDATES_ENABLE			84
+
+#define SOURCE_MODE		(is_source_mode)
 
 //Interrupts 
 #define PROP_VAL_CHANGED	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PROP_VAL_CHANGED)
@@ -59,6 +61,7 @@ typedef struct
 	Evhandle	               		next_update_evh                                 ;
 	OmsT_Dist_Handle	       		update_dist_ptr                                 ;
 	int	                    		source_id                                       ;
+	int	                    		is_source_mode                                  ;
 	} source_property_state;
 
 #define prop_key                		op_sv_ptr->prop_key
@@ -68,6 +71,7 @@ typedef struct
 #define next_update_evh         		op_sv_ptr->next_update_evh
 #define update_dist_ptr         		op_sv_ptr->update_dist_ptr
 #define source_id               		op_sv_ptr->source_id
+#define is_source_mode          		op_sv_ptr->is_source_mode
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -175,11 +179,12 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				op_ima_obj_attr_get (self_id, "Property Key", &prop_key);
 				op_ima_obj_attr_get (self_id, "Property Update Interval", updatedist_str);
 				
+				op_ima_obj_attr_get (self_id, "Enable Properties", &is_source_mode);
+					
 				prop_key_update_counter = 1;
 				prop_last_key_updated = 0; //So it gets updated right away
 				
 				update_dist_ptr = oms_dist_load_from_string (updatedist_str);
-				
 				
 				schedule_update();
 				}
@@ -190,7 +195,17 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 
 
 			/** state (init) transition processing **/
-			FSM_TRANSIT_FORCE (1, state1_enter_exec, ;, "default", "", "init", "active", "tr_0", "source_property [init -> active : default / ]")
+			FSM_PROFILE_SECTION_IN ("source_property [init trans conditions]", state0_trans_conds)
+			FSM_INIT_COND (SOURCE_MODE)
+			FSM_TEST_COND (!SOURCE_MODE)
+			FSM_TEST_LOGIC ("init")
+			FSM_PROFILE_SECTION_OUT (state0_trans_conds)
+
+			FSM_TRANSIT_SWITCH
+				{
+				FSM_CASE_TRANSIT (0, 1, state1_enter_exec, ;, "SOURCE_MODE", "", "init", "active", "tr_0", "source_property [init -> active : SOURCE_MODE / ]")
+				FSM_CASE_TRANSIT (1, 3, state3_enter_exec, ;, "!SOURCE_MODE", "", "init", "do_nothing", "tr_7", "source_property [init -> do_nothing : !SOURCE_MODE / ]")
+				}
 				/*---------------------------------------------------------*/
 
 
@@ -272,6 +287,23 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 
 
 
+			/** state (do_nothing) enter executives **/
+			FSM_STATE_ENTER_UNFORCED (3, "do_nothing", state3_enter_exec, "source_property [do_nothing enter execs]")
+
+			/** blocking after enter executives of unforced state. **/
+			FSM_EXIT (7,"source_property")
+
+
+			/** state (do_nothing) exit executives **/
+			FSM_STATE_EXIT_UNFORCED (3, "do_nothing", "source_property [do_nothing exit execs]")
+
+
+			/** state (do_nothing) transition processing **/
+			FSM_TRANSIT_FORCE (3, state3_enter_exec, ;, "default", "", "do_nothing", "do_nothing", "tr_8", "source_property [do_nothing -> do_nothing : default / ]")
+				/*---------------------------------------------------------*/
+
+
+
 			}
 
 
@@ -316,6 +348,7 @@ _op_source_property_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef next_update_evh
 #undef update_dist_ptr
 #undef source_id
+#undef is_source_mode
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -405,6 +438,11 @@ _op_source_property_svar (void * gen_ptr, const char * var_name, void ** var_p_p
 	if (strcmp ("source_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->source_id);
+		FOUT
+		}
+	if (strcmp ("is_source_mode" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->is_source_mode);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

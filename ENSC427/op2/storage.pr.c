@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC21971 4BC21971 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC23C4D 4BC23C4D 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -15,6 +15,8 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC21971 4BC2197
 
 
 /* Header Block */
+
+#define MAX_SRC_IDS		10
 
 #define GATEWAY_MODE	(is_gateway)
 #define STORAGE_MODE	(!GATEWAY_MODE)
@@ -32,6 +34,8 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC21971 4BC2197
 //#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_DUMP_UPDATES)
 #define UPDATE_RECEIVED	(op_intrpt_type() == OPC_INTRPT_STRM)
 
+
+List *create_stat_lst_loc(const char *);
 
 
 void store_update(void);
@@ -66,8 +70,12 @@ typedef struct
 	Objid	                  		updatemanager_id                                ;
 	int	                    		source_id                                       ;
 	int	                    		is_gateway                                      ;
-	int	                    		discard_stat_lst_size                           ;
-	List*	                  		discard_stat_lst                                ;
+	List*	                  		stat_lst_pdisc_bfull                            ;
+	List*	                  		stat_lst_pdisc_old                              ;
+	List*	                  		stat_lst_pstored_new                            ;
+	List*	                  		stat_lst_pstored_updated                        ;
+	Stathandle	             		stat_preceived                                  ;
+	List*	                  		stat_lst_pdisc_dup                              ;
 	} storage_state;
 
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
@@ -78,8 +86,12 @@ typedef struct
 #define updatemanager_id        		op_sv_ptr->updatemanager_id
 #define source_id               		op_sv_ptr->source_id
 #define is_gateway              		op_sv_ptr->is_gateway
-#define discard_stat_lst_size   		op_sv_ptr->discard_stat_lst_size
-#define discard_stat_lst        		op_sv_ptr->discard_stat_lst
+#define stat_lst_pdisc_bfull    		op_sv_ptr->stat_lst_pdisc_bfull
+#define stat_lst_pdisc_old      		op_sv_ptr->stat_lst_pdisc_old
+#define stat_lst_pstored_new    		op_sv_ptr->stat_lst_pstored_new
+#define stat_lst_pstored_updated		op_sv_ptr->stat_lst_pstored_updated
+#define stat_preceived          		op_sv_ptr->stat_preceived
+#define stat_lst_pdisc_dup      		op_sv_ptr->stat_lst_pdisc_dup
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -119,18 +131,10 @@ void store_update(void)
 	
 	FIN (store_update ());
 	
-	//DEBUG
-	//if(intrptScheduled == 0)
-	//{
-	//	intrptScheduled = 1;
-	//	op_intrpt_schedule_self (op_sim_time () + 10, IC_DUMP_UPDATES);
-	//}
-	
-	
 	pkt = op_pk_get (op_intrpt_strm ());
 	
-	sprintf (message_str, "[%d STORE] Store Update - List size: %d\n", source_id, op_prg_list_size(pupdate_lst )); 
-	printf (message_str);
+	//sprintf (message_str, "[%d STORE] Store Update - List size: %d\n", source_id, op_prg_list_size(pupdate_lst )); 
+	//printf (message_str);
 	
 	//get info
 	op_pk_nfd_get(pkt, "key", &newkey);
@@ -138,6 +142,13 @@ void store_update(void)
 	op_pk_nfd_get(pkt, "key_update_number", &newkey_updnm);
 	op_pk_nfd_get(pkt, "generated_timestamp", &newgen_ts);
 	listsize = op_prg_list_size(pupdate_lst);
+	
+	if(newsourceid < 0 || newsourceid >= MAX_SRC_IDS)
+	{
+		op_sim_end("Bad sourceid", "", "", "");
+	}
+	
+	op_stat_write(stat_preceived, 1.0);
 	
 	//Following forloop is for 
 	//Search & Compare 'key_update_number'; replace if newer
@@ -156,6 +167,8 @@ void store_update(void)
 			{
 				if(newkey_updnm > key_updnm)	//if key is newer we update
 				{
+					op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_updated, sourceid)), 1.0);
+				
 					op_prg_list_remove (pupdate_lst, i);
 					op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 					op_pk_destroy(lstPkt);
@@ -163,6 +176,15 @@ void store_update(void)
 				}
 				else
 				{
+					if(newkey_updnm == key_updnm)
+					{
+						op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pdisc_dup, sourceid)), 1.0);
+					}
+					else
+					{
+						op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pdisc_old, sourceid)), 1.0);
+					}
+				
 					op_pk_destroy(pkt);
 					FOUT;
 				}
@@ -173,6 +195,8 @@ void store_update(void)
 	
 	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 	listsize = op_prg_list_size(pupdate_lst);
+
+	op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_new, newsourceid)), 1.0);
 
 	//See if we need to get rid of something
 	if(listsize > maxlistsize)
@@ -194,52 +218,23 @@ void store_update(void)
 			}
 		}
 		
-		//delete packet with oldest timestamp, temp, with incoming packet
+		//delete packet with oldest timestamp, temp, 
 		for(k = 0; k < listsize; k++)
 		{
 			lstPkt = (Packet *)op_prg_list_access (pupdate_lst, k);
 			op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
+			op_pk_nfd_get(lstPkt, "source_id", &sourceid);
 			
 			if(temp == gen_ts)
 			{
-				//Write a statistic
-				op_pk_nfd_get(lstPkt, "source_id", &sourceid);
-				if(sourceid >= 0 && sourceid < discard_stat_lst_size)
-				{
-					int tmp_lst_size;
-					Stathandle *sth_temp = (Stathandle *)op_prg_list_access (discard_stat_lst, sourceid);
-					
-					if(sth_temp == OPC_NIL)
-					{
-						sth_temp = (Stathandle *) op_prg_mem_alloc (sizeof (Stathandle));
-						*sth_temp = op_stat_reg ("Discarded Pkts", sourceid, OPC_STAT_LOCAL);
-						
-						op_prg_list_remove(discard_stat_lst, sourceid);
-						op_prg_list_insert(discard_stat_lst, sth_temp, sourceid);
-						
-						if(op_prg_list_size(discard_stat_lst) != discard_stat_lst_size)
-						{
-							op_sim_end("List size error", "", "", "");
-						}
-					}
-					
-					//Stathandle *discardHandle = (Stathandle *)op_prg_list_access (discard_stat_lst, sourceid);
-					
-					op_stat_write(*sth_temp, 1.0);
-				}
-				else
-				{
-					op_sim_end("Invalid source id", "", "", "");
-				}
+				op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pdisc_bfull, sourceid)), 1.0);
 				
 				op_prg_list_remove (pupdate_lst, k);
 				op_pk_destroy(lstPkt);
 				
 				
-				//op_stat_write(discarded_stathandle, 1.0);
-				
-				sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
-				printf (message_str);
+				//sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
+				//printf (message_str);
 				
 				break;
 			}
@@ -295,9 +290,41 @@ void gateway_fwrd()
 {
 	FIN (update_gateway ());
 
+	op_stat_write(stat_preceived, 1.0);
 	op_pk_send(op_pk_get(STRM_UM_IN), STRM_GW_OUT);
 	
 	FOUT;
+}
+
+List *create_stat_lst_loc(const char *statName)
+{
+	List *lst;
+	int stat_size_asdf;
+	int i;
+	char msg1[255];
+	char msg2[255];
+	
+	FIN(create_stat_lst_loc());
+	
+	op_stat_dim_size_get(statName, OPC_STAT_LOCAL, &stat_size_asdf);
+	if(stat_size_asdf != MAX_SRC_IDS)
+	{
+		sprintf(msg1, "stat_size_asdf: %d", stat_size_asdf);
+		sprintf(msg2, "MAX_SRC_IDS: %d", MAX_SRC_IDS);
+		op_sim_end("Bad stat dimension", statName, msg1, msg2);
+	}
+	
+	lst = op_prg_list_create();
+	for(i = 0; i < MAX_SRC_IDS; i++)
+	{
+		Stathandle *sth_temp;
+		sth_temp = (Stathandle *) op_prg_mem_alloc (sizeof (Stathandle));
+		*sth_temp = op_stat_reg (statName, i, OPC_STAT_LOCAL);
+		
+		op_prg_list_insert(lst, sth_temp, OPC_LISTPOS_TAIL);
+	}
+	
+	FRET(lst);
 }
 
 /* End of Function Block */
@@ -354,6 +381,20 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				int i;
 				
+				self_id = op_id_self();
+				
+				printf("REGISTERING STATS\n");
+				
+				stat_lst_pstored_new = create_stat_lst_loc("Pkts Stored - New");
+				stat_lst_pstored_updated = create_stat_lst_loc("Pkts Stored - Updated");
+				
+				stat_lst_pdisc_old = create_stat_lst_loc("Pkts Discarded - Old");
+				stat_lst_pdisc_bfull = create_stat_lst_loc("Pkts Discarded - Buffer Full");
+				stat_lst_pdisc_dup = create_stat_lst_loc("Pkts Discarded - Duplicate");
+				
+				
+				stat_preceived = op_stat_reg("Pkts Received",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				/*
 				discard_stat_lst = op_prg_list_create();
 				op_stat_dim_size_get ("Discarded Pkts", OPC_STAT_LOCAL, &discard_stat_lst_size);
 				for(i = 0; i< discard_stat_lst_size; i++)
@@ -364,14 +405,14 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 					//*sth_temp = op_stat_reg ("Discarded Pkts", i, OPC_STAT_LOCAL);
 					//op_prg_list_insert(discard_stat_lst, sth_temp, OPC_LISTPOS_TAIL);
 				}
-				
+				*.
 				//discarded_stathandle = op_stat_reg ("Discarded Pkts",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
 				
 				
 				/* allocate an empty list */
 				pupdate_lst = op_prg_list_create (); 
 				
-				self_id = op_id_self();
+				
 				op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
 				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
 				op_ima_obj_attr_get (self_id, "Is Gateway", &is_gateway);
@@ -508,8 +549,12 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef updatemanager_id
 #undef source_id
 #undef is_gateway
-#undef discard_stat_lst_size
-#undef discard_stat_lst
+#undef stat_lst_pdisc_bfull
+#undef stat_lst_pdisc_old
+#undef stat_lst_pstored_new
+#undef stat_lst_pstored_updated
+#undef stat_preceived
+#undef stat_lst_pdisc_dup
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -606,14 +651,34 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 		*var_p_ptr = (void *) (&prs_ptr->is_gateway);
 		FOUT
 		}
-	if (strcmp ("discard_stat_lst_size" , var_name) == 0)
+	if (strcmp ("stat_lst_pdisc_bfull" , var_name) == 0)
 		{
-		*var_p_ptr = (void *) (&prs_ptr->discard_stat_lst_size);
+		*var_p_ptr = (void *) (&prs_ptr->stat_lst_pdisc_bfull);
 		FOUT
 		}
-	if (strcmp ("discard_stat_lst" , var_name) == 0)
+	if (strcmp ("stat_lst_pdisc_old" , var_name) == 0)
 		{
-		*var_p_ptr = (void *) (&prs_ptr->discard_stat_lst);
+		*var_p_ptr = (void *) (&prs_ptr->stat_lst_pdisc_old);
+		FOUT
+		}
+	if (strcmp ("stat_lst_pstored_new" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_lst_pstored_new);
+		FOUT
+		}
+	if (strcmp ("stat_lst_pstored_updated" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_lst_pstored_updated);
+		FOUT
+		}
+	if (strcmp ("stat_preceived" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_preceived);
+		FOUT
+		}
+	if (strcmp ("stat_lst_pdisc_dup" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_lst_pdisc_dup);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

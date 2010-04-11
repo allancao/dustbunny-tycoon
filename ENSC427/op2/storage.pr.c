@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC1ECCC 4BC1ECCC 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC20594 4BC20594 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -59,10 +59,11 @@ typedef struct
 	int	                    		test_isDisabled                                 ;
 	Objid	                  		self_id                                         ;
 	int	                    		maxlistsize                                     ;
-	Stathandle	             		discarded_stathandle                            ;
 	Objid	                  		updatemanager_id                                ;
 	int	                    		source_id                                       ;
 	int	                    		is_gateway                                      ;
+	int	                    		discard_stat_lst_size                           ;
+	List*	                  		discard_stat_lst                                ;
 	} storage_state;
 
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
@@ -71,10 +72,11 @@ typedef struct
 #define test_isDisabled         		op_sv_ptr->test_isDisabled
 #define self_id                 		op_sv_ptr->self_id
 #define maxlistsize             		op_sv_ptr->maxlistsize
-#define discarded_stathandle    		op_sv_ptr->discarded_stathandle
 #define updatemanager_id        		op_sv_ptr->updatemanager_id
 #define source_id               		op_sv_ptr->source_id
 #define is_gateway              		op_sv_ptr->is_gateway
+#define discard_stat_lst_size   		op_sv_ptr->discard_stat_lst_size
+#define discard_stat_lst        		op_sv_ptr->discard_stat_lst
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -197,10 +199,41 @@ void store_update(void)
 			
 			if(temp == gen_ts)
 			{
-				//TODO: add statistic
+				//Write a statistic
+				op_pk_nfd_get(lstPkt, "source_id", &sourceid);
+				if(sourceid >= 0 && sourceid < discard_stat_lst_size)
+				{
+					int tmp_lst_size;
+					Stathandle *sth_temp = (Stathandle *)op_prg_list_access (discard_stat_lst, sourceid);
+					
+					if(sth_temp == OPC_NIL)
+					{
+						sth_temp = (Stathandle *) op_prg_mem_alloc (sizeof (Stathandle));
+						*sth_temp = op_stat_reg ("Discarded Pkts", sourceid, OPC_STAT_LOCAL);
+						
+						op_prg_list_remove(discard_stat_lst, sourceid);
+						op_prg_list_insert(discard_stat_lst, sth_temp, sourceid);
+						
+						if(op_prg_list_size(discard_stat_lst) != discard_stat_lst_size)
+						{
+							op_sim_end("List size error", "", "", "");
+						}
+					}
+					
+					//Stathandle *discardHandle = (Stathandle *)op_prg_list_access (discard_stat_lst, sourceid);
+					
+					op_stat_write(*sth_temp, 1.0);
+				}
+				else
+				{
+					op_sim_end("Invalid source id", "", "", "");
+				}
+				
 				op_prg_list_remove (pupdate_lst, k);
 				op_pk_destroy(lstPkt);
-				op_stat_write(discarded_stathandle, 1.0);
+				
+				
+				//op_stat_write(discarded_stathandle, 1.0);
 				
 				sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
 				printf (message_str);
@@ -311,24 +344,32 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED_NOLABEL (0, "init", "storage [init enter execs]")
 				FSM_PROFILE_SECTION_IN ("storage [init enter execs]", state0_enter_exec)
 				{
-				discarded_stathandle = op_stat_reg ("Discarded Pkts",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				int i;
+				
+				discard_stat_lst = op_prg_list_create();
+				op_stat_dim_size_get ("Discarded Pkts", OPC_STAT_LOCAL, &discard_stat_lst_size);
+				for(i = 0; i< discard_stat_lst_size; i++)
+				{
+					//Stathandle *sth_temp;
+					op_prg_list_insert(discard_stat_lst, OPC_NIL, OPC_LISTPOS_TAIL);
+					//sth_temp = (Stathandle *) op_prg_mem_alloc (sizeof (Stathandle));
+					//*sth_temp = op_stat_reg ("Discarded Pkts", i, OPC_STAT_LOCAL);
+					//op_prg_list_insert(discard_stat_lst, sth_temp, OPC_LISTPOS_TAIL);
+				}
+				
+				//discarded_stathandle = op_stat_reg ("Discarded Pkts",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
+				
 				
 				/* allocate an empty list */
-				//intrptScheduled = 0;
-				//updatesSent = 0;
 				test_isDisabled = 0;
 				pupdate_lst = op_prg_list_create (); 
 				
-				//printf("Enter exec debug\n");
 				self_id = op_id_self();
 				op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
 				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
-				
 				op_ima_obj_attr_get (self_id, "Is Gateway", &is_gateway);
 				
 				updatemanager_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "update_manager");
-				
-				//printf("Enter exec done \n");
 				}
 				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
 
@@ -449,10 +490,11 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef test_isDisabled
 #undef self_id
 #undef maxlistsize
-#undef discarded_stathandle
 #undef updatemanager_id
 #undef source_id
 #undef is_gateway
+#undef discard_stat_lst_size
+#undef discard_stat_lst
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -539,11 +581,6 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 		*var_p_ptr = (void *) (&prs_ptr->maxlistsize);
 		FOUT
 		}
-	if (strcmp ("discarded_stathandle" , var_name) == 0)
-		{
-		*var_p_ptr = (void *) (&prs_ptr->discarded_stathandle);
-		FOUT
-		}
 	if (strcmp ("updatemanager_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->updatemanager_id);
@@ -557,6 +594,16 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	if (strcmp ("is_gateway" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->is_gateway);
+		FOUT
+		}
+	if (strcmp ("discard_stat_lst_size" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->discard_stat_lst_size);
+		FOUT
+		}
+	if (strcmp ("discard_stat_lst" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->discard_stat_lst);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

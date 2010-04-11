@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC0EC29 4BC0EC29 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC21872 4BC21872 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -87,6 +87,9 @@ void send_to_store();
 void send_to_mac();
 
 void generate_mac_pk_interrupt();
+
+
+void printbad_mac_or_prop_strm(void);
 
 /* End of Header Block */
 
@@ -352,6 +355,19 @@ void generate_mac_pk_interrupt()
 	FOUT;
 }
 
+
+void printbad_mac_or_prop_strm()
+{
+	char message_str[255];
+	
+	FIN(printbad_mac_or_prop_strm());
+
+	sprintf (message_str, "[%d UM DIE] Received mac or prop strm interrupt\n", source_id); 
+	printf (message_str);
+	
+	FOUT;
+}
+
 /* End of Function Block */
 
 /* Undefine optional tracing in FIN/FOUT/FRET */
@@ -513,7 +529,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, send_to_mac();, "I_S_STORE_PKT", "send_to_mac()", "tx", "tx", "tr_6", "update_manager [tx -> tx : I_S_STORE_PKT / send_to_mac()]")
 				FSM_CASE_TRANSIT (1, 5, state5_enter_exec, ;, "I_R_STORE_DUMP_DONE", "", "tx", "tx_done", "tr_17", "update_manager [tx -> tx_done : I_R_STORE_DUMP_DONE / ]")
-				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, ;, "I_S_MAC_PKT || I_S_PROP_PKT", "", "tx", "error", "tr_24", "update_manager [tx -> error : I_S_MAC_PKT || I_S_PROP_PKT / ]")
+				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, printbad_mac_or_prop_strm();, "I_S_MAC_PKT || I_S_PROP_PKT", "printbad_mac_or_prop_strm()", "tx", "error", "tr_24", "update_manager [tx -> error : I_S_MAC_PKT || I_S_PROP_PKT / printbad_mac_or_prop_strm()]")
 				FSM_CASE_TRANSIT (3, 3, state3_enter_exec, ;, "default", "", "tx", "error", "tr_25", "update_manager [tx -> error : default / ]")
 				}
 				/*---------------------------------------------------------*/

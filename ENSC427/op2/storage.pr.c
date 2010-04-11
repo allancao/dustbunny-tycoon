@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC20594 4BC20594 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC21971 4BC21971 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -19,6 +19,11 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC20594 4BC2059
 #define GATEWAY_MODE	(is_gateway)
 #define STORAGE_MODE	(!GATEWAY_MODE)
 
+#define STRM_UM_IN		0
+#define STRM_UM_OUT		0
+
+#define STRM_GW_OUT		1
+
 //Interrupt Codes (random numbers)
 #define IC_DUMP_UPDATES 		73
 #define IC_DUMP_UPDATES_DONE 	74
@@ -31,7 +36,7 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC20594 4BC2059
 
 void store_update(void);
 void tx_updates(void);
-void update_gateway(void);
+void gateway_fwrd(void);
 
 /* End of Header Block */
 
@@ -56,7 +61,6 @@ typedef struct
 	List*	                  		pupdate_lst                                     ;
 	int	                    		x_intrptScheduled                               ;
 	int	                    		x_updatesSent                                   ;
-	int	                    		test_isDisabled                                 ;
 	Objid	                  		self_id                                         ;
 	int	                    		maxlistsize                                     ;
 	Objid	                  		updatemanager_id                                ;
@@ -69,7 +73,6 @@ typedef struct
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
 #define x_intrptScheduled       		op_sv_ptr->x_intrptScheduled
 #define x_updatesSent           		op_sv_ptr->x_updatesSent
-#define test_isDisabled         		op_sv_ptr->test_isDisabled
 #define self_id                 		op_sv_ptr->self_id
 #define maxlistsize             		op_sv_ptr->maxlistsize
 #define updatemanager_id        		op_sv_ptr->updatemanager_id
@@ -265,30 +268,35 @@ void tx_updates(void)
 	lstSize = op_prg_list_size (pupdate_lst);
 	for (i = 0; i < lstSize; i++)
 	{
-		//pkt = (Packet *) op_prg_list_remove (pupdate_lst, OPC_LISTPOS_HEAD);
 		pkt = (Packet *) op_prg_list_access (pupdate_lst, i);
 		
 		pPktCopy = op_pk_copy(pkt);
-		
-		//TODO: Need to duplicate packet - dont remove
-		op_pk_send(pPktCopy, 0);
+		op_pk_send(pPktCopy, STRM_UM_OUT);
 	}
 
 	op_intrpt_schedule_remote(op_sim_time(), IC_DUMP_UPDATES_DONE, updatemanager_id);
 	
- 	sprintf (message_str, "[%d STORE] 	Done Sending Packets: size %d\n", op_id_self(), op_prg_list_size(pupdate_lst)); 
-	printf (message_str);
+ 	//sprintf (message_str, "[%d STORE] 	Done Sending Packets: size %d\n", op_id_self(), op_prg_list_size(pupdate_lst)); 
+	//printf (message_str);
 			 
 	FOUT;
 }
 
-
-
-void update_gateway()
+void tx_updates_done(void)
 {
+	FIN (tx_updates_done ());
+	
+	op_intrpt_schedule_remote(op_sim_time(), IC_DUMP_UPDATES_DONE, updatemanager_id);
+	
+	FOUT;
+}
 
+void gateway_fwrd()
+{
 	FIN (update_gateway ());
 
+	op_pk_send(op_pk_get(STRM_UM_IN), STRM_GW_OUT);
+	
 	FOUT;
 }
 
@@ -361,7 +369,6 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				
 				
 				/* allocate an empty list */
-				test_isDisabled = 0;
 				pupdate_lst = op_prg_list_create (); 
 				
 				self_id = op_id_self();
@@ -395,6 +402,15 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (storage) enter executives **/
 			FSM_STATE_ENTER_UNFORCED (1, "storage", state1_enter_exec, "storage [storage enter execs]")
+				FSM_PROFILE_SECTION_IN ("storage [storage enter execs]", state1_enter_exec)
+				{
+				if(maxlistsize <= 0)
+				{
+					//Typically when this node is a gateway
+					op_sim_end("Invalid max list size", "", "", "");
+				}
+				}
+				FSM_PROFILE_SECTION_OUT (state1_enter_exec)
 
 			/** blocking after enter executives of unforced state. **/
 			FSM_EXIT (3,"storage")
@@ -440,8 +456,8 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 
 			FSM_TRANSIT_SWITCH
 				{
-				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, ;, "TX_UPDATES", "", "gateway", "gateway", "tr_4", "storage [gateway -> gateway : TX_UPDATES / ]")
-				FSM_CASE_TRANSIT (1, 2, state2_enter_exec, update_gateway();, "UPDATE_RECEIVED", "update_gateway()", "gateway", "gateway", "tr_5", "storage [gateway -> gateway : UPDATE_RECEIVED / update_gateway()]")
+				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, tx_updates_done();, "TX_UPDATES", "tx_updates_done()", "gateway", "gateway", "tr_4", "storage [gateway -> gateway : TX_UPDATES / tx_updates_done()]")
+				FSM_CASE_TRANSIT (1, 2, state2_enter_exec, gateway_fwrd();, "UPDATE_RECEIVED", "gateway_fwrd()", "gateway", "gateway", "tr_5", "storage [gateway -> gateway : UPDATE_RECEIVED / gateway_fwrd()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -487,7 +503,6 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef pupdate_lst
 #undef x_intrptScheduled
 #undef x_updatesSent
-#undef test_isDisabled
 #undef self_id
 #undef maxlistsize
 #undef updatemanager_id
@@ -564,11 +579,6 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	if (strcmp ("x_updatesSent" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->x_updatesSent);
-		FOUT
-		}
-	if (strcmp ("test_isDisabled" , var_name) == 0)
-		{
-		*var_p_ptr = (void *) (&prs_ptr->test_isDisabled);
 		FOUT
 		}
 	if (strcmp ("self_id" , var_name) == 0)

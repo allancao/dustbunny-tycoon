@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC21872 4BC21872 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC27FAF 4BC27FAF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -90,6 +90,7 @@ void generate_mac_pk_interrupt();
 
 
 void printbad_mac_or_prop_strm(void);
+void print_default(void);
 
 /* End of Header Block */
 
@@ -158,9 +159,9 @@ void schedule_beacon()
 	FIN(schedule_beacon());
 	
 	next_becon_time = oms_dist_outcome (disth_beacon_timer);
-	if (next_becon_time <0)
+	if (next_becon_time <= 0.1)
 	{
-		next_becon_time = 0;
+		next_becon_time = 0.1;
 	}
 	
 	evh_beacon_tmr = op_intrpt_schedule_self (op_sim_time () + next_becon_time, IC_SEND_BEACON_TIMER);
@@ -368,6 +369,11 @@ void printbad_mac_or_prop_strm()
 	FOUT;
 }
 
+void print_default()
+{
+	printf("DEFAULT\n");
+}
+
 /* End of Function Block */
 
 /* Undefine optional tracing in FIN/FOUT/FRET */
@@ -442,14 +448,14 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				
 				//Lower than property inputs
 				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_STORE, 10);
-				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_MAC, 10);
+				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_MAC, 8);
 				
 				//Absolute highest - controlled by stream interrupts
 				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_PK_BEACON, 20);
 				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_PK_UPDATEORACK, 20);
 				
 				//Lower than STRM_IN_STORE
-				op_intrpt_priority_set (OPC_INTRPT_REMOTE, IC_STORE_DUMP_DONE, 5);
+				op_intrpt_priority_set (OPC_INTRPT_REMOTE, IC_STORE_DUMP_DONE, 9);
 				
 				//Absolute lowest
 				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_SEND_BEACON_TIMER, 0);
@@ -530,7 +536,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, send_to_mac();, "I_S_STORE_PKT", "send_to_mac()", "tx", "tx", "tr_6", "update_manager [tx -> tx : I_S_STORE_PKT / send_to_mac()]")
 				FSM_CASE_TRANSIT (1, 5, state5_enter_exec, ;, "I_R_STORE_DUMP_DONE", "", "tx", "tx_done", "tr_17", "update_manager [tx -> tx_done : I_R_STORE_DUMP_DONE / ]")
 				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, printbad_mac_or_prop_strm();, "I_S_MAC_PKT || I_S_PROP_PKT", "printbad_mac_or_prop_strm()", "tx", "error", "tr_24", "update_manager [tx -> error : I_S_MAC_PKT || I_S_PROP_PKT / printbad_mac_or_prop_strm()]")
-				FSM_CASE_TRANSIT (3, 3, state3_enter_exec, ;, "default", "", "tx", "error", "tr_25", "update_manager [tx -> error : default / ]")
+				FSM_CASE_TRANSIT (3, 3, state3_enter_exec, print_default();, "default", "print_default()", "tx", "error", "tr_25", "update_manager [tx -> error : default / print_default()]")
 				}
 				/*---------------------------------------------------------*/
 

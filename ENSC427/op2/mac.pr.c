@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char mac_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BB95750 4BB95750 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char mac_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC27C00 4BC27C00 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -80,15 +80,15 @@ enum { _op_block_origin = __LINE__ + 2};
 void rrx_to_output(void)
 {
 	Packet *pPkt;
-	int pktsource_id;
+	Objid pktsource;
 	char message_str[255];
 	
 	FIN(rrx_to_output());
 	
 	pPkt = op_pk_get(STRM_RRX);
-	op_pk_nfd_get(pPkt, "source_id", &pktsource_id);
+	op_pk_nfd_get(pPkt, "mac_source", &pktsource);
 	
-	if(pktsource_id == source_id)
+	if(pktsource == self_id)
 	{		
 		//sprintf (message_str, "[%d] Destroy Pkt From Self\n", op_id_self()); 
 		//printf (message_str);
@@ -104,9 +104,15 @@ void rrx_to_output(void)
 
 void input_to_rtx(void)
 {
+	Packet *pPkt;
+
 	FIN(input_to_rtx());
 	
-	op_pk_send(op_pk_get(STRM_INPUT), STRM_RTX);
+	pPkt = op_pk_get(STRM_INPUT);
+	
+	op_pk_nfd_set_objid(pPkt, "mac_source", self_id);
+	
+	op_pk_send(pPkt, STRM_RTX);
 	
 	FOUT;
 }

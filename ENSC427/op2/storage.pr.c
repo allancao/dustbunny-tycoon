@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC23C4D 4BC23C4D 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC261CA 4BC261CA 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
 #include <string.h>
 
 
@@ -196,7 +196,10 @@ void store_update(void)
 	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 	listsize = op_prg_list_size(pupdate_lst);
 
-	op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_new, newsourceid)), 1.0);
+	if(newsourceid != source_id)
+	{
+		op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_new, newsourceid)), 1.0);
+	}
 
 	//See if we need to get rid of something
 	if(listsize > maxlistsize)

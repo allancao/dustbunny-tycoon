@@ -5,10 +5,14 @@ Coordinate_Method: fixed
 Altitude_Method: absolute
 locale: C
 Calendar_Start: unused
-Coordinate_Count: 5
+Coordinate_Count: 9
 # X Position        ,Y Position          ,Altitude            ,Traverse Time       ,Wait Time           ,Pitch               ,Yaw                 ,Roll                
 0.13                ,0.13                ,1                   ,0h0m0.0s            ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
-0.87                ,0.13                ,1                   ,0h0m44.26s          ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
-0.87                ,0.87                ,1                   ,0h0m44.17s          ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
-0.13                ,0.87                ,1                   ,0h0m44.45s          ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
-0.13                ,0.13                ,1                   ,0h0m44.36s          ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.87                ,0.13                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.87                ,0.87                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.13                ,0.87                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.13                ,0.13                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.87                ,0.13                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.87                ,0.87                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.13                ,0.87                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         
+0.13                ,0.13                ,1                   ,0h0m44.0s           ,0h0m0.0s            ,Autocomputed        ,Autocomputed        ,Unspecified         

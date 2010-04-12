@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC261CA 4BC261CA 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC2841B 4BC2841B 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -76,6 +76,7 @@ typedef struct
 	List*	                  		stat_lst_pstored_updated                        ;
 	Stathandle	             		stat_preceived                                  ;
 	List*	                  		stat_lst_pdisc_dup                              ;
+	Stathandle	             		stat_neworupdated                               ;
 	} storage_state;
 
 #define pupdate_lst             		op_sv_ptr->pupdate_lst
@@ -92,6 +93,7 @@ typedef struct
 #define stat_lst_pstored_updated		op_sv_ptr->stat_lst_pstored_updated
 #define stat_preceived          		op_sv_ptr->stat_preceived
 #define stat_lst_pdisc_dup      		op_sv_ptr->stat_lst_pdisc_dup
+#define stat_neworupdated       		op_sv_ptr->stat_neworupdated
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -167,8 +169,12 @@ void store_update(void)
 			{
 				if(newkey_updnm > key_updnm)	//if key is newer we update
 				{
-					op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_updated, sourceid)), 1.0);
-				
+					if(newsourceid != source_id)
+					{
+						op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_updated, sourceid)), 1.0);
+						op_stat_write(stat_neworupdated, 1.0);
+					}
+					
 					op_prg_list_remove (pupdate_lst, i);
 					op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 					op_pk_destroy(lstPkt);
@@ -199,6 +205,7 @@ void store_update(void)
 	if(newsourceid != source_id)
 	{
 		op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pstored_new, newsourceid)), 1.0);
+		op_stat_write(stat_neworupdated, 1.0);
 	}
 
 	//See if we need to get rid of something
@@ -397,20 +404,7 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				
 				
 				stat_preceived = op_stat_reg("Pkts Received",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
-				/*
-				discard_stat_lst = op_prg_list_create();
-				op_stat_dim_size_get ("Discarded Pkts", OPC_STAT_LOCAL, &discard_stat_lst_size);
-				for(i = 0; i< discard_stat_lst_size; i++)
-				{
-					//Stathandle *sth_temp;
-					op_prg_list_insert(discard_stat_lst, OPC_NIL, OPC_LISTPOS_TAIL);
-					//sth_temp = (Stathandle *) op_prg_mem_alloc (sizeof (Stathandle));
-					//*sth_temp = op_stat_reg ("Discarded Pkts", i, OPC_STAT_LOCAL);
-					//op_prg_list_insert(discard_stat_lst, sth_temp, OPC_LISTPOS_TAIL);
-				}
-				*.
-				//discarded_stathandle = op_stat_reg ("Discarded Pkts",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
-				
+				stat_neworupdated = op_stat_reg("Pkts Stored - New or Updated",OPC_STAT_INDEX_NONE, OPC_STAT_LOCAL);
 				
 				/* allocate an empty list */
 				pupdate_lst = op_prg_list_create (); 
@@ -558,6 +552,7 @@ _op_storage_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef stat_lst_pstored_updated
 #undef stat_preceived
 #undef stat_lst_pdisc_dup
+#undef stat_neworupdated
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -682,6 +677,11 @@ _op_storage_svar (void * gen_ptr, const char * var_name, void ** var_p_ptr)
 	if (strcmp ("stat_lst_pdisc_dup" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->stat_lst_pdisc_dup);
+		FOUT
+		}
+	if (strcmp ("stat_neworupdated" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_neworupdated);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

@@ -7,7 +7,11 @@
 %	Vs other configurations
 %	
 
-For this project, the magnetic levitation system is considered as a SISO (single input, single output) system.  As such, only the bottom coil and magnet are considered as shown in the simplified diagram below.
+%TODO: introduction or change
+
+The magnetic levitation system is considered in its SISO (single input, single output) system configuration as it levitates a magnet via repulsion.
+%	Repulsive
+As such, only the bottom coil and magnet are considered as shown in the simplified diagram \ref{fig:projSys}.
 
 %INSERT DIAGRAM
 \begin{figure}[h]
@@ -17,36 +21,53 @@ For this project, the magnetic levitation system is considered as a SISO (single
     \label{fig:projSys}
 \end{figure}
 
-In this model, there are 3 forces acting on the magnet: the force of gravity (mg), the force of friction ($c\dot{z}$) and the force due to the magnetic force form the drive coil ($F_{mag}$).
+In this model, there are 3 forces acting on the magnet: the force of gravity ($mg$), the force of friction ($c\dot{z}$) and the magnetic force form the drive coil ($F_{mag}$).
+
+\section{State Space Model - Inputs, Outputs and State Variables}
 
 For the system modeling done in this report, y denotes the output variable, u denotes the input variable and the vector \textbf{x} denotes the state variables.
+%SISO here 
 
-\section{Inputs, Outputs and State Variables}
+\subsection{Inputs}
+The input to the system is the current in Coil \#1, denoted in diagram \ref{fig:projSys} by $i_{1}$.
+This is given in equation \ref{eq:input}.
 
-\textbf{Input:} The input to the system is the current going into Coil \#1, denoted in the diagram by $i_{1}$.
-In terms of system equations we have:
 \begin{equation}
-u = i_{1}
+	\label{eq:input}
+	\textbf{u} = \left[\begin{array}{c}i_{1}\end{array}\right]
 \end{equation}
 
-\textbf{State variables:} For system model, the state variables are chosen as follows
-\begin{itemize}
-\item x$_1$:  Disk position
-\item x$_2$:  Disk velocity
-\end{itemize}
-In terms of system equations we have:
+\subsection{State Variables}
+\label{sec:statevars}
+
+The state variables for the system are chosen to be the the magnets velocity ($\dot{z}$) and its position ($z$). 
+This is shown in equation \ref{eq:statevars}
+
 \begin{equation}
-x = 
-\left[
-\begin{array}{c}
-z\\
-\dot{x_{1}}\\
-\end{array}
-\right]
+	\label{eq:statevars}
+	{\bf x} = 
+	\left[
+		\begin{array}{c}
+			x_{1} \\
+			x_{2} \\
+		\end{array}
+	\right]
+	=
+	\left[
+		\begin{array}{c}
+			z \\
+			\dot{z} \\
+		\end{array}
+	\right]
 \end{equation}
 
-\textbf{Output:} The output of the system is the position of the disk magnet, denoted in the diagram by z.
-In terms of system equations we have:
+\subsection{Output}
+The output of the system is the position of the disk magnet, denoted in diagram \ref{fig:projSys} by $z$.
+This is shown in equation \ref{eq:output}:
+
 \begin{equation}
-y = x_{1}
+	\label{eq:output}
+	\textbf{y} = 
+	\left[\begin{array}{c}z\end{array}\right] %= 
+	%\left[\begin{array}{c}x_{1}\end{array}\right]
 \end{equation}

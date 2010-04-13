@@ -112,7 +112,7 @@
 \newcounter{figs}
 \newcounter{eqns}
 \newcounter{tabs}
-\setcounter{secnumdepth}{2}
+\setcounter{secnumdepth}{1	}
 
 \renewcommand\bibname{References}
 \bibliographystyle{IEEEtran}

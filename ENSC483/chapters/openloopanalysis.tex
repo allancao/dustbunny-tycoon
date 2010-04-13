@@ -1,2 +1,71 @@
 \chapter{Open Loop Analysis} 
 
+\section{Stability}
+
+System stability depends on the eigenvalues of matrix \textbf{A} from equation \ref{eq:matA}.
+The eigenvalues are shown in equation \ref{eq:evalsAraw}.
+For simplicity, initial position is assumed to be $z_0=1$.
+	%TODO: Does not change
+This yields equation \ref{eq:evalsA}.
+
+
+\begin{align}
+	\label{eq:evalsAraw}
+	\lambda_1 &= {\frac {65.4}{\sqrt {- 109\,{\it z_0}- 675.8}}} & \lambda_2 &= -{\frac {65.4}{\sqrt {- 109\,{\it z_0}- 675.8}}}
+\end{align}
+
+\begin{align}
+	\label{eq:evalsA}
+	\lambda_1 &= 0 + 2.33\,j & \lambda_2 &=  0 - 2.33\,j
+\end{align}
+
+Since the real part of these values is zero, the system is stable in the sense of Laypunov.
+This result is expected as friction was assumed to be zero.
+
+\section{Controllability}
+
+
+The controllability matrix for this system is shown in equation \ref{eq:control}.
+It can easily be seen that the matrix is full rank.
+As such, the system is controllable.
+
+\begin{equation}
+	\label{eq:control}
+	{\bf \Phi_c} =
+	 \left[
+		\begin{array}{ccc}
+			 {\bf B} & | & {\bf AB}\\
+		\end{array}
+	\right]
+	= 
+	\left[
+		\begin{array}{cc}
+			 0 & {\frac {0.138}{m}} \\
+			 {\frac {0.138}{m}} & 0 \\
+		\end{array}
+	\right]
+\end{equation}
+
+\section{Observability}
+
+The observability matrix for this system is shown in equation \ref{eq:observe}.
+It can easily be seen that the matrix is full rank.
+As such, the system is observable.
+
+\begin{equation}
+	\label{eq:observe}
+	{\bf \Phi_o} = 
+	 \left[
+		\begin{array}{c}
+			 {\bf C} \\
+			 {\bf CA} \\
+		\end{array}
+	\right]
+	=
+	\left[
+		\begin{array}{cc}
+			1 & 0 \\
+			0 & 1 \\
+		\end{array}
+	\right]
+\end{equation}

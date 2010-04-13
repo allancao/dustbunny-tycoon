@@ -1,9 +1,150 @@
 \chapter{Linearized Model} 
 
-\section{State Variables}
+%A linear system model is desired of the form presented in equation \ref{eq:linform}.
 
-
+%TODO
 
 %\begin{equation}
-
+%	\label{eq:eqptx}
 %\end{equation}
+
+\section{Equilibrium Point}
+
+The system is linearized about an equilibrium point.
+This point is given by equation\ \ref{eq:eqptx} where $z_0$ represents the initial position of the magnet. %TODO: x only
+%TODO: why
+The input equilibrium may be found using equation \ref{eq:syseq2} as shown in \ref{eq:ustar}.
+
+\begin{equation}
+	\label{eq:eqptx}
+	{\bf x^\star} = 
+	\left[
+		\begin{array}{c}
+			z_{0} \\
+			0 \\
+		\end{array}
+	\right]
+\end{equation}
+
+\vspace{6pt}
+
+\begin{equation}
+	{\frac {u^\star}{0.000105\,\left(z_0 + 6.2 \right) ^{4}}} = 9.81\,m
+\end{equation}
+\begin{equation}
+	\label{eq:ustar}
+	u^\star =  0.00103005\,m \left( z_0 + 6.2 \right) ^{4}
+\end{equation}
+
+\section{Linearizing About the Equilibrium Point}
+
+\subsection{Modal Matrix}
+
+Equations $f_1$ and $f_2$ from \ref{eq:syseq1} and \ref{eq:syseq2} may be used to obtain a linearized modal matrix.
+The modal matrix general form is given in equation \ref{eq:matAraw}.
+Using equations \ref{eq:fderivA}, this gives \ref{eq:matA}.
+
+\begin{equation}
+	\label{eq:matAraw}
+	{\bf A} = 
+	\left[
+		\begin{array}{cc}
+			 {\frac {df_1}{dx_1}} & {\frac {df_1}{dx_2}} \\
+			 {\frac {df_2}{dx_1}} & {\frac {df_2}{dx_2}} \\
+		\end{array}
+	\right]\bigg|_{x^\star, u^\star}
+\end{equation}
+
+\begin{align}
+	\label{eq:fderivA}
+	 {\frac {df_1}{dx_1}} &= 0 &  {\frac {df_1}{dx_2}} &=1 &  {\frac {df_2}{dx_1}} &= - \,{\frac {38095.23810\,u}{m\left( x_1 + 6.2 \right) ^{5}}} &  {\frac {df_2}{dx_2}} &=0
+\end{align}
+
+\begin{equation}
+	\label{eq:matA}
+	{\bf A} = 
+	\left[
+		\begin{array}{cc}
+			 0 & 1 \\
+			 -{\frac {39.24}{z_0 + 6.2}} & 0 \\
+		\end{array}
+	\right]
+\end{equation}
+
+
+\subsection{Input Matrix}
+
+Similarly, $f_1$ and $f_2$ from \ref{eq:syseq1} and \ref{eq:syseq2} may be used to obtain a linearized input matrix.
+The input matrix general form is given in equation \ref{eq:matBraw}.
+Using equations \ref{eq:fderivB}, this gives \ref{eq:matB}.
+
+\begin{equation}
+	\label{eq:matBraw}
+	{\bf B} = 
+	\left[
+		\begin{array}{c}
+			 {\frac {df_1}{du}} \\
+			 {\frac {df_2}{du}} \\
+		\end{array}
+	\right]\bigg|_{x^\star, u^\star}
+\end{equation}
+
+\begin{align}
+	\label{eq:fderivB}
+	 {\frac {df_1}{du}} &= 0 &  {\frac {df_2}{du}} &= {\frac {9523.809524}{m\,\left( x_1 + 6.2 \right) ^{4}}}
+\end{align}
+
+\begin{equation}
+	\label{eq:matB}
+	{\bf B} = 
+	\left[
+		\begin{array}{c}
+			 0 \\
+			{\frac {9523.809524}{m\,\left( z_0 + 6.2 \right) ^{4}}} \\
+		\end{array}
+	\right]
+\end{equation}
+
+\subsection{Output Matrix}
+
+The output matrix is simply given by equation \ref{eq:matC}
+
+\begin{equation}
+	\label{eq:matC}
+	{\bf C} = 
+	\left[
+		\begin{array}{cc}
+			 1 & 0 \\
+		\end{array}
+	\right]
+\end{equation}
+
+\section{Linearized System Model}
+
+The final linearized model of the is given by equations \ref{eq:finalLinearizedx}. %and \ref{eq:finalLinearizedy}.
+
+%TODO: finish
+
+\begin{equation}
+	\label{eq:finalLinearizedx}
+	{\bf \dot{x}} - {\bf \dot{x}^\star} = 
+	\left[
+		\begin{array}{cc}
+			 0 & 1 \\
+			 -{\frac {39.24}{z_0 + 6.2}} & 0 \\
+		\end{array}
+	\right]
+	\left(
+		{\bf x} - {\bf x^\star}
+	\right)
+	+ 
+	\left[
+		\begin{array}{c}
+			 0 \\
+			{\frac {9523.809524}{m\,\left( z_0 + 6.2 \right) ^{4}}} \\
+		\end{array}
+	\right]
+	\left(
+		u - u^\star
+	\right)
+\end{equation}

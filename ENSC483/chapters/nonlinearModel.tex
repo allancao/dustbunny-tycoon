@@ -1,6 +1,8 @@
 \chapter{Nonlinear Model} 
 
-From figure \ref{fig:forces}, summing the forces yields equation \ref{eq:fsum}
+\section{System Dynamic}
+
+From figure \ref{fig:projSys}, summing the forces yields equation \ref{eq:fsum}
 
 \begin{equation}
 	\label{eq:fsum}
@@ -25,7 +27,7 @@ For the purposes of this report their values are assumed based on a similar syst
 	\begin{tabular}{|c|c|}
 		\hline
 		%\vspace{2pt}
-		a & ${\frac {1.05}{10000}}$ \\
+		a & 0.000105 \\
 		\hline
 		%\vspace{2pt}
 		b & 6.2 \\
@@ -35,10 +37,25 @@ For the purposes of this report their values are assumed based on a similar syst
 	\end{tabular}
 \end{table}
 
-It is assumed friction and air resistance are negligible, so $c=0$. 
+It is assumed friction and air resistance are negligible, so $c=0$ in equation \ref{eq:fsum}. 
 As such, equations \ref{eq:fsum} and \ref{eq:mag} give equation \ref{eq:sysdynam}
 
 \begin{equation}
 	\label{eq:sysdynam}
-	m\ddot{z} = {\frac {i}{{\frac {1.05}{10000}} \left(z+6.2 \right) ^{4}}} - 9.81\,m
+	m\ddot{z} = {\frac {i_{1}}{0.000105\,\left(z+6.2 \right) ^{4}}} - 9.81\,m
+\end{equation}
+
+\section{State Space Model}
+
+Using the state variables defined in section \ref{sec:statevars}, two system equations may be written.
+These are presented in equations \ref{eq:syseq1} and \ref{eq:syseq2}.
+
+\begin{equation}
+	\label{eq:syseq1}
+	\dot{x_1} = f_1 = x_2
+\end{equation}
+
+\begin{equation}
+	\label{eq:syseq2}
+	\dot{x_2} = f_2 = {\frac {u}{0.000105\,m\,\left(x_1 + 6.2 \right) ^{4}}} - 9.81
 \end{equation}

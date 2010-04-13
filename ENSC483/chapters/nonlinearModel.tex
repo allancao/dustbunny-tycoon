@@ -1,2 +1,44 @@
 \chapter{Nonlinear Model} 
 
+From figure \ref{fig:forces}, summing the forces yields equation \ref{eq:fsum}
+
+\begin{equation}
+	\label{eq:fsum}
+	m\ddot{z} = F_{mag} - c\dot{z} - mg
+\end{equation}
+
+The force $F_{mag}$ is given by \ref{eq:mag} as presented by the manual~\cite{manual}.
+The constants $a$, $b$, and $N$ are empirically determined properties of the system. 
+For the purposes of this report their values are assumed based on a similar system~\cite{paper} and given in table \ref{tbl:magic}.
+
+\begin{equation}
+	\label{eq:mag}
+	F_{mag} = {\frac {i}{a \left(z+b \right) ^{N}}}
+\end{equation}
+
+\begin{table}[h]
+	\centering
+	\caption{System properties~\cite{paper}}
+	\label{tbl:magic}
+
+	\vspace{6pt}
+	\begin{tabular}{|c|c|}
+		\hline
+		%\vspace{2pt}
+		a & ${\frac {1.05}{10000}}$ \\
+		\hline
+		%\vspace{2pt}
+		b & 6.2 \\
+		\hline
+		N & 4 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+It is assumed friction and air resistance are negligible, so $c=0$. 
+As such, equations \ref{eq:fsum} and \ref{eq:mag} give equation \ref{eq:sysdynam}
+
+\begin{equation}
+	\label{eq:sysdynam}
+	m\ddot{z} = {\frac {i}{{\frac {1.05}{10000}} \left(z+6.2 \right) ^{4}}} - 9.81\,m
+\end{equation}

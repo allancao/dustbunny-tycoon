@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC92954 4BC92954 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA3AFF 4BCA3AFF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
 #include <string.h>
 
 
@@ -22,6 +22,7 @@ const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC92954
 #define IC_PROP_VAL_CHANGED 		39
 #define IC_UPDATES_DISABLE	 		83
 #define IC_UPDATES_ENABLE			84
+#define IC_STOP						21
 
 #define IC_GW_PKT_RX				99
 
@@ -35,6 +36,15 @@ const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC92954
 
 #define I_GW_PKT_RX			(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_GW_PKT_RX)
 #define I_END_SIM			(op_intrpt_type() == OPC_INTRPT_ENDSIM)
+#define I_STOP			(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_STOP)
+
+typedef struct
+{
+	int update_counter_number;
+	int pkts_alive;
+	int has_one_store;
+	int gateway_rx;
+} active_update_tacker;
 
 void new_val(void);
 void schedule_update(void);
@@ -71,6 +81,11 @@ typedef struct
 	int	                    		source_id                                       ;
 	int	                    		is_source_mode                                  ;
 	int	                    		has_one_update                                  ;
+	List *	                 		active_updates_lst                              ;
+	Stathandle	             		stat_update_success                             ;
+	Stathandle	             		stat_update_success_limited_loss                ;
+	int	                    		last_key_update_num_delivered                   ;
+	double	                 		stop_time                                       ;
 	} source_property_state;
 
 #define prop_key                		op_sv_ptr->prop_key
@@ -82,6 +97,11 @@ typedef struct
 #define source_id               		op_sv_ptr->source_id
 #define is_source_mode          		op_sv_ptr->is_source_mode
 #define has_one_update          		op_sv_ptr->has_one_update
+#define active_updates_lst      		op_sv_ptr->active_updates_lst
+#define stat_update_success     		op_sv_ptr->stat_update_success
+#define stat_update_success_limited_loss		op_sv_ptr->stat_update_success_limited_loss
+#define last_key_update_num_delivered		op_sv_ptr->last_key_update_num_delivered
+#define stop_time               		op_sv_ptr->stop_time
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -134,6 +154,10 @@ void gw_pkt_rx()
 	Ici *iciptr;
 	int sourceid;
 	int key_update_number;
+	int action;
+	int discard_reason;
+	int tracker_index;
+	active_update_tacker *pTracker;
 
 	FIN(gw_pkt_rx());
 
@@ -145,14 +169,118 @@ void gw_pkt_rx()
 	
 	op_ici_attr_get (iciptr, "source_id", &sourceid);
 	op_ici_attr_get (iciptr, "key_update_number", &key_update_number);
+	op_ici_attr_get (iciptr, "action", &action);
+	op_ici_attr_get (iciptr, "discard_reason", &discard_reason);
 
+	//Basic field checks 
 	if(sourceid != source_id)
 	{
 		op_sim_end("Bad source id for ICI", "", "", "");
 	}
-	else if(key_update_number > prop_key_update_counter)
+	else if(key_update_number > prop_key_update_counter || key_update_number <= 0)
 	{
 		op_sim_end("Bad key_update_number for ICI", "", "", "");
+	}
+	
+	//Find the tracker
+	pTracker = OPC_NIL;
+	for(tracker_index = 0; tracker_index < op_prg_list_size(active_updates_lst); tracker_index++)
+	{
+		active_update_tacker *pTrackerTemp;
+		pTrackerTemp = (active_update_tacker *)op_prg_list_access(active_updates_lst, tracker_index);
+		if(pTrackerTemp->update_counter_number == key_update_number)
+		{
+			pTracker = pTrackerTemp;
+			break;
+		}
+	}
+	if(pTracker == OPC_NIL)
+	{
+		op_sim_end("Could not find tracker", "", "", "");
+	}
+	
+	if(action == 1)
+	{
+		//Gateway received packe
+		if(pTracker->gateway_rx)
+		{
+			op_sim_end("Two gateway rx interrupts", "", "", "");
+		}
+		else if(pTracker->pkts_alive <= 0)
+		{
+			op_sim_end("pkts_alive problem", "", "", "");
+		}
+		pTracker->gateway_rx = 1;
+		
+		op_stat_write(stat_update_success, 1.0);
+		op_stat_write(stat_update_success_limited_loss, 1.0);
+		
+		if(last_key_update_num_delivered >= key_update_number)
+		{
+			op_sim_end("Problem with gateway", "", "", "");
+		}
+		last_key_update_num_delivered = key_update_number;
+	}
+	else if (action == 2)
+	{
+		//Store	
+		if(pTracker->pkts_alive == 0 && pTracker->has_one_store != 0)
+		{
+			op_sim_end("Thats strange...", "", "", "");
+		}
+		
+		pTracker->pkts_alive++;
+		pTracker->has_one_store = 1;
+	}
+	else if (action == 3)
+	{
+		//Discard
+		pTracker->pkts_alive--;
+		
+		if(pTracker->pkts_alive <= 0)
+		{
+			active_update_tacker *pTrackerTemp;
+			
+			if(pTracker->pkts_alive < 0 &&  pTracker->has_one_store)
+			{
+				op_sim_end("Thats strange...", "2", "", "");
+			}
+			
+			if(pTracker->gateway_rx == 0)
+			{
+				//Nothing left - update has been lost
+				op_stat_write(stat_update_success, 0.0);
+				
+				if(discard_reason == 1)
+				{
+					//Update
+				}
+				else if(discard_reason == 2)
+				{
+					//Mem full
+					if(key_update_number > last_key_update_num_delivered)
+					{
+						op_stat_write(stat_update_success_limited_loss, 0.0);
+					}
+				}
+				else
+				{
+					op_sim_end("Bad discard reason", "", "", "");
+				}
+			}
+			
+			pTrackerTemp = (active_update_tacker *)op_prg_list_remove(active_updates_lst, tracker_index);
+			if(pTrackerTemp != pTracker)
+			{
+				op_sim_end("AHA,not another error!", "", "", "");
+			}
+			
+			op_prg_mem_free(pTracker);
+		}
+	}
+	else
+	{
+		op_sim_end("Bad action", "", "", "");
 	}
 	
 	has_one_update = 1;
@@ -164,22 +292,30 @@ void gw_pkt_rx()
 void stat_finalize()
 {
 	Stathandle oneup;
+	int i;
 
 	FIN(stat_finalize());
-
-	if(has_one_update)
-	{
-		printf("Has one update");
-	}
-	else
-	{
-		printf("Does not have one update");
-	}
 	
-	oneup = op_stat_reg("One Update",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
-	
+	oneup = op_stat_reg("One Update",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);	
 	op_stat_write(oneup, has_one_update);
+	
+	for(i = 0; i < op_prg_list_size(active_updates_lst); i++)
+	{
+		active_update_tacker *pTracker;
+		pTracker = (active_update_tacker *)op_prg_list_access(active_updates_lst, i);
 		
+		if(pTracker->gateway_rx == 0)
+		{
+			//Receiving should already have been taken care of
+			op_stat_write(stat_update_success, 0.0);
+			
+			if(pTracker->update_counter_number > last_key_update_num_delivered)
+			{
+				op_stat_write(stat_update_success_limited_loss, 0.0);
+			}
+		}
+	}
+	
 	FOUT;
 }
 
@@ -235,6 +371,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED_NOLABEL (0, "init", "source_property [init enter execs]")
 				FSM_PROFILE_SECTION_IN ("source_property [init enter execs]", state0_enter_exec)
 				{
+				char msg[100];
 				char updatedist_str [128];
 				
 				self_id = op_id_self();
@@ -242,17 +379,30 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
 				op_ima_obj_attr_get (self_id, "Property Key", &prop_key);
 				op_ima_obj_attr_get (self_id, "Property Update Interval", updatedist_str);
+				op_ima_obj_attr_get (self_id, "Stop Time", &stop_time);
 				
 				op_ima_obj_attr_get (self_id, "Enable Properties", &is_source_mode);
 				
+				active_updates_lst = op_prg_list_create();
 				has_one_update = 0;
 				
-				prop_key_update_counter = 1;
+				prop_key_update_counter = 0;
 				prop_last_key_updated = 0; //So it gets updated right away
 				
 				update_dist_ptr = oms_dist_load_from_string (updatedist_str);
 				
-				schedule_update();
+				stat_update_success = op_stat_reg("Update Success",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
+				stat_update_success_limited_loss = op_stat_reg("Update Success - Losses by buffer full",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
+				
+				if(is_source_mode)
+				{
+					schedule_update();
+					
+					if(stop_time > 0)
+					{
+						op_intrpt_schedule_self (op_sim_time() + stop_time, IC_STOP);
+					}
+				}
 				}
 				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
 
@@ -284,15 +434,40 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				
 				if(prop_key_update_counter != prop_last_key_updated)
 				{
+					active_update_tacker *pTracker;
+					int i;
+					
+					//Error check
+					for(i = 0; i < op_prg_list_size(active_updates_lst); i++)
+					{
+						//Might be able to just check the tail instead
+					
+						pTracker = (active_update_tacker *)op_prg_list_access(active_updates_lst, i);
+						if(pTracker->update_counter_number == prop_last_key_updated)
+						{
+							if(pTracker->has_one_store == 0)
+							{
+								op_sim_end("Did not receive store interrupt", "", "", "");
+							}
+						}
+					}
+				
 					prop_last_key_updated = prop_key_update_counter;
 					
 					pPkt = op_pk_create_fmt("keyupdate");
-				
 					op_pk_nfd_set_int32(pPkt, "source_id", source_id);		
 					op_pk_nfd_set_int32(pPkt, "key", prop_key);	
 					op_pk_nfd_set_int32(pPkt, "key_update_number", prop_key_update_counter);
 					op_pk_nfd_set_dbl(pPkt, "generated_timestamp", op_sim_time());
 					op_pk_nfd_set_objid(pPkt, "source_prop_objid", self_id);
+					
+					pTracker = (active_update_tacker *) op_prg_mem_alloc (sizeof (active_update_tacker));
+					pTracker->update_counter_number = prop_key_update_counter;
+					pTracker->pkts_alive = 0;
+					pTracker->has_one_store = 0;
+					pTracker->gateway_rx = 0;
+					
+					op_prg_list_insert(active_updates_lst, pTracker, OPC_LISTPOS_TAIL);
 					
 					op_pk_send(pPkt, 0); //Output stream
 				}
@@ -313,6 +488,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_TEST_COND (PROP_VAL_CHANGED)
 			FSM_TEST_COND (I_GW_PKT_RX)
 			FSM_TEST_COND (I_END_SIM)
+			FSM_TEST_COND (I_STOP)
 			FSM_TEST_LOGIC ("active")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
@@ -322,6 +498,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, new_val();, "PROP_VAL_CHANGED", "new_val()", "active", "active", "tr_2", "source_property [active -> active : PROP_VAL_CHANGED / new_val()]")
 				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, gw_pkt_rx();, "I_GW_PKT_RX", "gw_pkt_rx()", "active", "active", "tr_9", "source_property [active -> active : I_GW_PKT_RX / gw_pkt_rx()]")
 				FSM_CASE_TRANSIT (3, 1, state1_enter_exec, stat_finalize();, "I_END_SIM", "stat_finalize()", "active", "active", "tr_11", "source_property [active -> active : I_END_SIM / stat_finalize()]")
+				FSM_CASE_TRANSIT (4, 4, state4_enter_exec, ;, "I_STOP", "", "active", "stop", "tr_14", "source_property [active -> stop : I_STOP / ]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -344,6 +521,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_TEST_COND (ENABLE_PROP_UPDATES)
 			FSM_TEST_COND (I_GW_PKT_RX)
 			FSM_TEST_COND (I_END_SIM)
+			FSM_TEST_COND (I_STOP)
 			FSM_TEST_LOGIC ("disable")
 			FSM_PROFILE_SECTION_OUT (state2_trans_conds)
 
@@ -353,6 +531,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, ;, "ENABLE_PROP_UPDATES", "", "disable", "active", "tr_4", "source_property [disable -> active : ENABLE_PROP_UPDATES / ]")
 				FSM_CASE_TRANSIT (2, 2, state2_enter_exec, gw_pkt_rx();, "I_GW_PKT_RX", "gw_pkt_rx()", "disable", "disable", "tr_10", "source_property [disable -> disable : I_GW_PKT_RX / gw_pkt_rx()]")
 				FSM_CASE_TRANSIT (3, 2, state2_enter_exec, stat_finalize();, "I_END_SIM", "stat_finalize()", "disable", "disable", "tr_12", "source_property [disable -> disable : I_END_SIM / stat_finalize()]")
+				FSM_CASE_TRANSIT (4, 4, state4_enter_exec, ;, "I_STOP", "", "disable", "stop", "tr_13", "source_property [disable -> stop : I_STOP / ]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -371,6 +550,47 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (do_nothing) transition processing **/
 			FSM_TRANSIT_FORCE (3, state3_enter_exec, ;, "default", "", "do_nothing", "do_nothing", "tr_8", "source_property [do_nothing -> do_nothing : default / ]")
+				/*---------------------------------------------------------*/
+
+
+
+			/** state (stop) enter executives **/
+			FSM_STATE_ENTER_UNFORCED (4, "stop", state4_enter_exec, "source_property [stop enter execs]")
+				FSM_PROFILE_SECTION_IN ("source_property [stop enter execs]", state4_enter_exec)
+				{
+				char msg_str[255];
+				
+				if (op_ev_valid (next_update_evh) == OPC_TRUE)
+				{
+					sprintf(msg_str, "[%d] Stopping property updates @ %d\n", source_id, op_sim_time());
+					printf(msg_str);
+					op_ev_cancel (next_update_evh);
+				}
+				}
+				FSM_PROFILE_SECTION_OUT (state4_enter_exec)
+
+			/** blocking after enter executives of unforced state. **/
+			FSM_EXIT (9,"source_property")
+
+
+			/** state (stop) exit executives **/
+			FSM_STATE_EXIT_UNFORCED (4, "stop", "source_property [stop exit execs]")
+
+
+			/** state (stop) transition processing **/
+			FSM_PROFILE_SECTION_IN ("source_property [stop trans conditions]", state4_trans_conds)
+			FSM_INIT_COND (I_GW_PKT_RX)
+			FSM_TEST_COND (I_END_SIM)
+			FSM_TEST_COND (DISABLE_PROP_UPDATES || ENABLE_PROP_UPDATES)
+			FSM_TEST_LOGIC ("stop")
+			FSM_PROFILE_SECTION_OUT (state4_trans_conds)
+
+			FSM_TRANSIT_SWITCH
+				{
+				FSM_CASE_TRANSIT (0, 4, state4_enter_exec, gw_pkt_rx();, "I_GW_PKT_RX", "gw_pkt_rx()", "stop", "stop", "tr_15", "source_property [stop -> stop : I_GW_PKT_RX / gw_pkt_rx()]")
+				FSM_CASE_TRANSIT (1, 4, state4_enter_exec, stat_finalize();, "I_END_SIM", "stat_finalize()", "stop", "stop", "tr_16", "source_property [stop -> stop : I_END_SIM / stat_finalize()]")
+				FSM_CASE_TRANSIT (2, 4, state4_enter_exec, ;, "DISABLE_PROP_UPDATES || ENABLE_PROP_UPDATES", "", "stop", "stop", "tr_17", "source_property [stop -> stop : DISABLE_PROP_UPDATES || ENABLE_PROP_UPDATES / ]")
+				}
 				/*---------------------------------------------------------*/
 
 
@@ -421,6 +641,11 @@ _op_source_property_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef source_id
 #undef is_source_mode
 #undef has_one_update
+#undef active_updates_lst
+#undef stat_update_success
+#undef stat_update_success_limited_loss
+#undef last_key_update_num_delivered
+#undef stop_time
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -520,6 +745,31 @@ _op_source_property_svar (void * gen_ptr, const char * var_name, void ** var_p_p
 	if (strcmp ("has_one_update" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->has_one_update);
+		FOUT
+		}
+	if (strcmp ("active_updates_lst" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->active_updates_lst);
+		FOUT
+		}
+	if (strcmp ("stat_update_success" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_update_success);
+		FOUT
+		}
+	if (strcmp ("stat_update_success_limited_loss" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_update_success_limited_loss);
+		FOUT
+		}
+	if (strcmp ("last_key_update_num_delivered" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->last_key_update_num_delivered);
+		FOUT
+		}
+	if (strcmp ("stop_time" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stop_time);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

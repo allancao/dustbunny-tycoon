@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC9152B 4BC9152B 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA3476 4BCA3476 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
 #include <string.h>
 
 
@@ -241,13 +241,13 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					op_sim_end("Nil stream pkt", "", "", "");
 				}
 				
-				printf("Start getting fields\n");
+				//printf("Start getting fields\n");
 				op_pk_nfd_get(pPkt, "source_id", &sourceid);
 				op_pk_nfd_get(pPkt, "key", &key);
 				op_pk_nfd_get(pPkt, "key_update_number", &key_updnm);
 				op_pk_nfd_get(pPkt, "source_prop_objid", &source_prop_id);
 				op_pk_nfd_get(pPkt, "generated_timestamp", &generated_timestamp);
-				printf("\tEnd getting fields\n");
+				//printf("\tEnd getting fields\n");
 				
 				//Check the fields
 				if(sourceid < 0 || sourceid >= MAX_SRC_IDS)
@@ -306,9 +306,10 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					if(oldkey_updnm < key_updnm)
 					{
 						//Trigger stat interrupt on source
-						Ici *iciptr = op_ici_create ("gw_rx");
+						Ici *iciptr = op_ici_create ("prop_action");
 						op_ici_attr_set (iciptr, "source_id", sourceid);
 						op_ici_attr_set (iciptr, "key_update_number", key_updnm);
+						op_ici_attr_set (iciptr, "action", 1); //Gateway rx code
 						op_ici_install(iciptr);
 						op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_RX, source_prop_id);
 				
@@ -346,9 +347,10 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					pkt_received[array_index] = 1;
 					
 					//Trigger stat interrupt on source
-					iciptr= op_ici_create ("gw_rx");
+					iciptr= op_ici_create ("prop_action");
 					op_ici_attr_set (iciptr, "source_id", sourceid);
 					op_ici_attr_set (iciptr, "key_update_number", key_updnm);
+					op_ici_attr_set (iciptr, "action", 1); //Gateway rx code
 					op_ici_install(iciptr);
 					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_RX, source_prop_id);
 				

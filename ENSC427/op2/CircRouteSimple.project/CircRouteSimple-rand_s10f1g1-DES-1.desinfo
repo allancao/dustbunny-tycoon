@@ -1,5 +1,4 @@
-rand_s10f1g1	1	1
-Capacity:	1
+rand_s10f1g1	1	0
 ----------------- Static Environment Attribute Confirmations -----------------
 
 --------------------Name-------------------- --Source--- ------Value------
@@ -13,8 +12,8 @@ mem_opt.pool_small_blocks                    default     TRUE
 mem_opt.grow_pool_planks                     default     TRUE
 mem_optimize                                 default     TRUE
 mem_shred                                    default     FALSE
-mod_dirs                                     env. file   /ensc/guest1/danh/op2/,
-                                                         /ensc/guest1/danh/427Assignments/,
+mod_dirs                                     env. file   /ensc/guest1/danh/427Assignments/,
+                                                         /ensc/guest1/danh/op2/,
                                                          /ensc/local2/opnet/14.0.A/sys/lib,
                                                          /ensc/local2/opnet/14.0.A/sys/icons,
                                                          /ensc/local2/opnet/14.0.A/sys/images,
@@ -270,7 +269,7 @@ debug_mk                                     default     FALSE
 default_site_position_cache_time_granularity env. file   0
 diag_enable                                  default     FALSE
 display_timezone_string                      default     FALSE
-duration                                     env. file   3600
+duration                                     env. file   5400
 edit_lock_mode                               default     FALSE
 endsim_memstats                              default     FALSE
 etrace_diff                                  default     <null>
@@ -319,7 +318,7 @@ memtag_all                                   default     FALSE
 mtn_warn_int                                 default     3
 named_locks                                  default     FALSE
 net_name                                     cmd line    CircRouteSimple-rand_s10f1g1
-num_collect_values                           env. file   100
+num_collect_values                           env. file   500
 num_err                                      default     10
 ot_file                                      env. file   CircRouteSimple-rand_s10f1g1-DES-1
 ot_file.default_format                       default     write_many
@@ -392,7 +391,7 @@ tmm_simulate                                 env. file   FALSE
 tmm_terrain_cache_size                       default     10
 tmm_use_cache                                default     TRUE
 tmm_verbose                                  default     FALSE
-update_interval                              env. file   500000
+update_interval                              env. file   50000
 user_lock_devname                            default     <null>
 verbose_cell_size_report                     env. file   FALSE
 verbose_event_report                         env. file   FALSE

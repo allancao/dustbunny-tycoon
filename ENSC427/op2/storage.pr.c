@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC920A0 4BC920A0 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                            ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA2D27 4BCA2D27 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -30,13 +30,16 @@ const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC920A0 4BC
 #define IC_DUMP_UPDATES 		73
 #define IC_DUMP_UPDATES_DONE 	74
 
+#define IC_SOURCPROP_ACTION 99
+
 #define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_DUMP_UPDATES)
 //#define TX_UPDATES 		(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_DUMP_UPDATES)
 #define UPDATE_RECEIVED	(op_intrpt_type() == OPC_INTRPT_STRM)
 
 
-List *create_stat_lst_loc(const char *);
+int written_global_storage_stat = 0;
 
+List *create_stat_lst_loc(const char *);
 
 void store_update(void);
 void tx_updates(void);
@@ -130,7 +133,8 @@ void store_update(void)
 	int listsize;
 	int i, j, k;
 	double temp;
-	
+	Ici *iciptr;
+	Objid source_prop_id;	
 	
 	FIN (store_update ());
 	
@@ -176,6 +180,23 @@ void store_update(void)
 						op_stat_write(stat_neworupdated, 1.0);
 					}
 					
+					op_pk_nfd_get(lstPkt, "source_prop_objid", &source_prop_id);
+					
+					iciptr = op_ici_create ("prop_action");
+					op_ici_attr_set (iciptr, "source_id", sourceid);
+					op_ici_attr_set (iciptr, "key_update_number", key_updnm);
+					op_ici_attr_set (iciptr, "action", 3); //3 = discard
+					op_ici_attr_set (iciptr, "discard_reason", 1); //1 = update
+					op_ici_install(iciptr);
+					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
+					
+					iciptr = op_ici_create ("prop_action");
+					op_ici_attr_set (iciptr, "source_id", sourceid);
+					op_ici_attr_set (iciptr, "key_update_number", newkey_updnm); //DIFFERENT THAN ABOVE
+					op_ici_attr_set (iciptr, "action", 2); //2 = store - DIFFERENT THAN ABOVE
+					op_ici_install(iciptr);
+					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
+					
 					op_prg_list_remove (pupdate_lst, i);
 					op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 					op_pk_destroy(lstPkt);
@@ -191,7 +212,8 @@ void store_update(void)
 					{
 						op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pdisc_old, sourceid)), 1.0);
 					}
-				
+					
+					//Dont need to trigger the source prop intrupt because this pkt was never stored
 					op_pk_destroy(pkt);
 					FOUT;
 				}
@@ -199,6 +221,14 @@ void store_update(void)
 		}
 	} //forloop
 
+	
+	op_pk_nfd_get(pkt, "source_prop_objid", &source_prop_id);				
+	iciptr = op_ici_create ("prop_action");
+	op_ici_attr_set (iciptr, "source_id", newsourceid);
+	op_ici_attr_set (iciptr, "key_update_number", newkey_updnm);
+	op_ici_attr_set (iciptr, "action", 2); //2 = store
+	op_ici_install(iciptr);
+	op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
 	
 	op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);
 	listsize = op_prg_list_size(pupdate_lst);
@@ -235,16 +265,26 @@ void store_update(void)
 			lstPkt = (Packet *)op_prg_list_access (pupdate_lst, k);
 			op_pk_nfd_get(lstPkt, "generated_timestamp", &gen_ts);
 			op_pk_nfd_get(lstPkt, "source_id", &sourceid);
+			op_pk_nfd_get(lstPkt, "key_update_number", &key_updnm);
 			
 			if(temp == gen_ts)
 			{
 				op_stat_write(*((Stathandle *)op_prg_list_access (stat_lst_pdisc_bfull, sourceid)), 1.0);
 				
+				op_pk_nfd_get(lstPkt, "source_prop_objid", &source_prop_id);				
+				iciptr = op_ici_create ("prop_action");
+				op_ici_attr_set (iciptr, "source_id", sourceid);
+				op_ici_attr_set (iciptr, "key_update_number", key_updnm);
+				op_ici_attr_set (iciptr, "action", 3); //3 = discard
+				op_ici_attr_set (iciptr, "discard_reason", 2); //2 = Memory Full
+				op_ici_install(iciptr);
+				op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
+				
 				op_prg_list_remove (pupdate_lst, k);
 				op_pk_destroy(lstPkt);
 				
 				
-				sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
+				//sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
 				//printf (message_str);
 				
 				break;
@@ -411,6 +451,12 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				pupdate_lst = op_prg_list_create (); 
 				
 				op_ima_sim_attr_get (OPC_IMA_INTEGER, "Capacity", &maxlistsize);
+				if(written_global_storage_stat == 0)
+				{
+					written_global_storage_stat = 1;
+					op_stat_write_scalar("Storage Capacity", maxlistsize);
+				}
+				
 				//op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
 				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
 				op_ima_obj_attr_get (self_id, "Is Gateway", &is_gateway);

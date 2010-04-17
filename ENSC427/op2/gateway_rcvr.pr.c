@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC2A72F 4BC2A72F 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
+const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC8F07A 4BC8F07A 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -17,6 +17,7 @@ const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC2A72
 /* Header Block */
 
 #define MAX_SRC_IDS		10
+#define IC_SOURCPROP_RX 99
 
 int has_inited = 0;
 
@@ -27,14 +28,15 @@ List *p2_last_pkts;
 List *p3_last_pkts;
 
 Stathandle stat_neworreplace;
+Stathandle stat_delay;
 
 //Statistic lists
 List *p1_updates_stat_lst;
 List *p2_updates_stat_lst;
 List *p3_updates_stat_lst;
 
-List *update_counter_change_stat_lst;
-List *delay_stat_lst;
+//List *update_counter_change_stat_lst;
+//List *delay_stat_lst;
 
 List *create_stat_lst(char *);
 
@@ -185,6 +187,7 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					}
 					
 					stat_neworreplace = op_stat_reg("Update Pkt - New or Replace" ,OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
+					stat_delay = op_stat_reg("Delay" ,OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 				}
 				}
 				FSM_PROFILE_SECTION_OUT (state0_enter_exec)
@@ -216,6 +219,9 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				int key;
 				int sourceid;
 				int key_updnm;
+				double generated_timestamp;
+				
+				Objid source_prop_id;
 				
 				char message_str [255];
 				
@@ -227,6 +233,8 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				op_pk_nfd_get(pPkt, "source_id", &sourceid);
 				op_pk_nfd_get(pPkt, "key", &key);
 				op_pk_nfd_get(pPkt, "key_update_number", &key_updnm);
+				op_pk_nfd_get(pPkt, "source_prop_objid", &source_prop_id);
+				op_pk_nfd_get(pPkt, "generated_timestamp", &generated_timestamp);
 				
 				//Check the fields
 				if(sourceid < 0 || sourceid >= MAX_SRC_IDS)
@@ -237,7 +245,6 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				{
 					op_sim_end("Bad key_updnm", "", "", "");
 				}
-				
 				
 				//Basic record
 				if(key == 1)
@@ -265,14 +272,22 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				{
 					int oldkey_updnm;
 					
-					printf("[GATEWAY] Update");
+					//printf("[GATEWAY] Update");
 					op_pk_nfd_get(pPktOld, "key_update_number", &oldkey_updnm);
 					
 					if(oldkey_updnm < key_updnm)
 					{
-						printf("[GATEWAY]	 stat_neworreplace\n");
+						//Trigger stat interrupt on source
+						Ici *iciptr = op_ici_create ("gw_rx");
+						op_ici_attr_set (iciptr, "source_id", sourceid);
+						op_ici_attr_set (iciptr, "key_update_number", key_updnm);
+						op_ici_install(iciptr);
+						op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_RX, source_prop_id);
+				
+						//printf("[GATEWAY]	 stat_neworreplace\n");
 						op_stat_write(stat_neworreplace, 1.0);
-						printf("[GATEWAY]	 	stat_neworreplace done\n");
+						op_stat_write(stat_delay, (op_sim_time () - generated_timestamp));
+						//printf("[GATEWAY]	 	stat_neworreplace done\n");
 						
 						op_prg_list_remove(lastPktLst, sourceid);
 						op_prg_list_insert(lastPktLst, pPkt, sourceid); 
@@ -287,9 +302,17 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				}
 				else
 				{
-					printf("[GATEWAY] New");
+					//Trigger stat interrupt on source
+					Ici *iciptr = op_ici_create ("gw_rx");
+					op_ici_attr_set (iciptr, "source_id", sourceid);
+					op_ici_attr_set (iciptr, "key_update_number", key_updnm);
+					op_ici_install(iciptr);
+					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_RX, source_prop_id);
+				
+					//printf("[GATEWAY] New");
 					pkt_received[sourceid*3 + (key-1)] = 1;
 					op_stat_write(stat_neworreplace, 1.0);
+					op_stat_write(stat_delay, (op_sim_time () - generated_timestamp));
 				
 					op_prg_list_remove(lastPktLst, sourceid);
 					op_prg_list_insert(lastPktLst, pPkt, sourceid); 

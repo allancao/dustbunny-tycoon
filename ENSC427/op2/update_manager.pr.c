@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC27FAF 4BC27FAF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC8FFDB 4BC8FFDB 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -46,6 +46,10 @@ const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC27FAF 
 #define IC_PK_UPDATEORACK			37
 #define IC_PK_BEACON				38
 
+#define IC_Q_DISABLE				54
+#define IC_Q_ENABLE					55
+
+
 /***********************
  * Interrupts
  ***********************/
@@ -74,10 +78,14 @@ void enable_beacon();
 void disable_beacon();
 void send_beacon();
 void send_beacon_timed();
+void reset_beacon_timer();
 
 //Property control
 void enable_prop_updates();
 void disable_prop_updates();
+
+void disable_q();
+void enable_q();
 
 //Storage control
 void request_storage_dump();
@@ -122,6 +130,7 @@ typedef struct
 	Objid	                  		prop1_id                                        ;
 	Objid	                  		prop2_id                                        ;
 	Objid	                  		prop3_id                                        ;
+	Objid	                  		queue_id                                        ;
 	} update_manager_state;
 
 #define storage_id              		op_sv_ptr->storage_id
@@ -134,6 +143,7 @@ typedef struct
 #define prop1_id                		op_sv_ptr->prop1_id
 #define prop2_id                		op_sv_ptr->prop2_id
 #define prop3_id                		op_sv_ptr->prop3_id
+#define queue_id                		op_sv_ptr->queue_id
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -154,14 +164,13 @@ enum { _op_block_origin = __LINE__ + 2};
 
 void schedule_beacon()
 {
-	double next_becon_time;
+	double next_becon_time = 0;
 	
 	FIN(schedule_beacon());
 	
-	next_becon_time = oms_dist_outcome (disth_beacon_timer);
-	if (next_becon_time <= 0.1)
+	while(next_becon_time <= 0.1)
 	{
-		next_becon_time = 0.1;
+		next_becon_time = oms_dist_outcome (disth_beacon_timer);
 	}
 	
 	evh_beacon_tmr = op_intrpt_schedule_self (op_sim_time () + next_becon_time, IC_SEND_BEACON_TIMER);
@@ -187,6 +196,14 @@ void disable_beacon()
 		op_ev_cancel (evh_beacon_tmr);
 	}
 
+	FOUT;
+}
+
+void reset_beacon_timer()
+{
+	FIN(reset_beacon_timer());
+	disable_beacon();
+	enable_beacon();
 	FOUT;
 }
 
@@ -309,8 +326,8 @@ void send_to_mac()
 		pPktToForward = op_pk_get(op_intrpt_strm());
 	}
 	
-	sprintf (message_str, "[%d] Send to mac Pkt\n", source_id); 
-	printf (message_str);
+	//sprintf (message_str, "[%d] Send to mac Pkt\n", source_id); 
+	//printf (message_str);
 	
 	op_pk_send(pPktToForward, STRM_OUT_MAC);
 	
@@ -323,6 +340,8 @@ void generate_mac_pk_interrupt()
 	char format_name[255];
 	
 	FIN(generate_mac_pk_interrupt());
+	
+	reset_beacon_timer(); //To prevent a bad state
 
 	if(pPkt_interrupt != OPC_NIL)
 	{
@@ -340,8 +359,8 @@ void generate_mac_pk_interrupt()
 	pPkt_interrupt = op_pk_get(STRM_IN_MAC);
 	is_pkt_interrupt = 1;
 	
-	sprintf (message_str, "[%d] Received Mac Pkt\n", source_id); 
-	printf (message_str);
+	//sprintf (message_str, "[%d] Received Mac Pkt\n", source_id); 
+	//printf (message_str);
 	
 	op_pk_format (pPkt_interrupt, format_name);
 	if (strcmp (format_name, "beacon") == 0)
@@ -356,6 +375,19 @@ void generate_mac_pk_interrupt()
 	FOUT;
 }
 
+void disable_q()
+{
+	FIN(disable_q());
+	op_intrpt_schedule_remote(op_sim_time(), IC_Q_DISABLE, queue_id);	
+	FOUT;
+}
+
+void enable_q()
+{
+	FIN(enable_q());
+	op_intrpt_schedule_remote(op_sim_time(), IC_Q_ENABLE, queue_id);	
+	FOUT;
+}
 
 void printbad_mac_or_prop_strm()
 {
@@ -440,6 +472,8 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				prop1_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop1");
 				prop2_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop2");
 				prop3_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop3");
+				
+				queue_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "hold_queue");
 				
 				//Property stream priorities
 				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P1, 15);
@@ -526,7 +560,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_PROFILE_SECTION_IN ("update_manager [tx trans conditions]", state2_trans_conds)
 			FSM_INIT_COND (I_S_STORE_PKT)
 			FSM_TEST_COND (I_R_STORE_DUMP_DONE)
-			FSM_TEST_COND (I_S_MAC_PKT || I_S_PROP_PKT)
+			FSM_TEST_COND (I_S_MAC_PKT)
 			FSM_DFLT_COND
 			FSM_TEST_LOGIC ("tx")
 			FSM_PROFILE_SECTION_OUT (state2_trans_conds)
@@ -535,7 +569,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, send_to_mac();, "I_S_STORE_PKT", "send_to_mac()", "tx", "tx", "tr_6", "update_manager [tx -> tx : I_S_STORE_PKT / send_to_mac()]")
 				FSM_CASE_TRANSIT (1, 5, state5_enter_exec, ;, "I_R_STORE_DUMP_DONE", "", "tx", "tx_done", "tr_17", "update_manager [tx -> tx_done : I_R_STORE_DUMP_DONE / ]")
-				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, printbad_mac_or_prop_strm();, "I_S_MAC_PKT || I_S_PROP_PKT", "printbad_mac_or_prop_strm()", "tx", "error", "tr_24", "update_manager [tx -> error : I_S_MAC_PKT || I_S_PROP_PKT / printbad_mac_or_prop_strm()]")
+				FSM_CASE_TRANSIT (2, 3, state3_enter_exec, printbad_mac_or_prop_strm();, "I_S_MAC_PKT", "printbad_mac_or_prop_strm()", "tx", "error", "tr_24", "update_manager [tx -> error : I_S_MAC_PKT / printbad_mac_or_prop_strm()]")
 				FSM_CASE_TRANSIT (3, 3, state3_enter_exec, print_default();, "default", "print_default()", "tx", "error", "tr_25", "update_manager [tx -> error : default / print_default()]")
 				}
 				/*---------------------------------------------------------*/
@@ -589,6 +623,12 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 					}
 				}
 				
+				if(op_pk_get(STRM_IN_MAC) != OPC_NIL)
+				{
+					op_sim_end("STRM_IN_MAC - Packet waiting", "", "", "");	
+				}
+				
+				disable_q();
 				disable_prop_updates();
 				
 				//TODO: clear prop update streams (?)
@@ -618,6 +658,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 					op_sim_end("Store stream not empty", "", "", "");
 				}
 				
+				enable_q();
 				enable_prop_updates();
 				
 				//Allow the node we just received updates from to transmit
@@ -684,6 +725,7 @@ _op_update_manager_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef prop1_id
 #undef prop2_id
 #undef prop3_id
+#undef queue_id
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -788,6 +830,11 @@ _op_update_manager_svar (void * gen_ptr, const char * var_name, void ** var_p_pt
 	if (strcmp ("prop3_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->prop3_id);
+		FOUT
+		}
+	if (strcmp ("queue_id" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->queue_id);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

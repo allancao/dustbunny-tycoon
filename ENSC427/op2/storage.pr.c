@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC29BBF 4BC29BBF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC8F2EC 4BC8F2EC 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                            ";
 #include <string.h>
 
 
@@ -122,13 +122,14 @@ void store_update(void)
 	int sourceid;
 	int key_updnm;
 	int pos_index;
-	int gen_ts;
+	double gen_ts;
 	int newkey;
 	int newsourceid;
 	int newkey_updnm;
-	int newgen_ts;
+	double newgen_ts;
 	int listsize;
-	int i, j, k, temp;
+	int i, j, k;
+	double temp;
 	
 	
 	FIN (store_update ());
@@ -267,8 +268,8 @@ void tx_updates(void)
 	//updatesSent++;			//increment counter
 	//intrptScheduled = 0;
 
-	sprintf (message_str, "[%d STORE] Sending Packets: size %d\n", source_id, op_prg_list_size(pupdate_lst)); 
-	printf (message_str);
+	//sprintf (message_str, "[%d STORE] Sending Packets: size %d\n", source_id, op_prg_list_size(pupdate_lst)); 
+	//printf (message_str);
 	
 	lstSize = op_prg_list_size (pupdate_lst);
 	for (i = 0; i < lstSize; i++)

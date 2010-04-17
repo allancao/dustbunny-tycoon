@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC26382 4BC26382 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC90159 4BC90159 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                            ";
 #include <string.h>
 
 
@@ -23,6 +23,8 @@ const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC26382
 #define IC_UPDATES_DISABLE	 		83
 #define IC_UPDATES_ENABLE			84
 
+#define IC_GW_PKT_RX				99
+
 #define SOURCE_MODE		(is_source_mode)
 
 //Interrupts 
@@ -31,8 +33,14 @@ const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC26382
 #define DISABLE_PROP_UPDATES	(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_UPDATES_DISABLE)
 #define ENABLE_PROP_UPDATES		(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_UPDATES_ENABLE)
 
+#define I_GW_PKT_RX			(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_GW_PKT_RX)
+#define I_END_SIM			(op_intrpt_type() == OPC_INTRPT_ENDSIM)
+
 void new_val(void);
 void schedule_update(void);
+
+void gw_pkt_rx(void);
+void stat_finalize(void);
 
 /* End of Header Block */
 
@@ -116,6 +124,47 @@ void schedule_update(void)
 
 	next_update_evh      = op_intrpt_schedule_self (op_sim_time () + next_update_time, IC_PROP_VAL_CHANGED);
 
+	FOUT;
+}
+
+void gw_pkt_rx()
+{
+	Ici *iciptr;
+	int sourceid;
+	int key_update_number;
+
+	FIN(gw_pkt_rx());
+
+	iciptr = op_intrpt_ici ();
+	if(iciptr == OPC_NIL)
+	{
+		op_sim_end("Null ICI", "", "", "");
+	}
+	
+	op_ici_attr_get (iciptr, "source_id", &sourceid);
+	op_ici_attr_get (iciptr, "key_update_number", &key_update_number);
+
+	if(sourceid != source_id)
+	{
+		op_sim_end("Bad source id for ICI", "", "", "");
+	}
+	else if(key_update_number > prop_key_update_counter)
+	{
+		op_sim_end("Bad key_update_number for ICI", "", "", "");
+	}
+	
+	
+	
+	op_ici_destroy(iciptr);
+	FOUT;
+}
+
+void stat_finalize()
+{
+	FIN(stat_finalize());
+	
+	printf("stat_finalize\n");
+	
 	FOUT;
 }
 
@@ -225,7 +274,8 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 					op_pk_nfd_set_int32(pPkt, "source_id", source_id);		
 					op_pk_nfd_set_int32(pPkt, "key", prop_key);	
 					op_pk_nfd_set_int32(pPkt, "key_update_number", prop_key_update_counter);
-					op_pk_nfd_set_int32(pPkt, "generated_timestamp", (int)op_sim_time());
+					op_pk_nfd_set_dbl(pPkt, "generated_timestamp", op_sim_time());
+					op_pk_nfd_set_objid(pPkt, "source_prop_objid", self_id);
 					
 					op_pk_send(pPkt, 0); //Output stream
 				}
@@ -244,7 +294,8 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_PROFILE_SECTION_IN ("source_property [active trans conditions]", state1_trans_conds)
 			FSM_INIT_COND (DISABLE_PROP_UPDATES)
 			FSM_TEST_COND (PROP_VAL_CHANGED)
-			FSM_DFLT_COND
+			FSM_TEST_COND (I_GW_PKT_RX)
+			FSM_TEST_COND (I_END_SIM)
 			FSM_TEST_LOGIC ("active")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
@@ -252,7 +303,8 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, ;, "DISABLE_PROP_UPDATES", "", "active", "disable", "tr_1", "source_property [active -> disable : DISABLE_PROP_UPDATES / ]")
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, new_val();, "PROP_VAL_CHANGED", "new_val()", "active", "active", "tr_2", "source_property [active -> active : PROP_VAL_CHANGED / new_val()]")
-				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, ;, "default", "", "active", "active", "tr_5", "source_property [active -> active : default / ]")
+				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, gw_pkt_rx();, "I_GW_PKT_RX", "gw_pkt_rx()", "active", "active", "tr_9", "source_property [active -> active : I_GW_PKT_RX / gw_pkt_rx()]")
+				FSM_CASE_TRANSIT (3, 1, state1_enter_exec, stat_finalize();, "I_END_SIM", "stat_finalize()", "active", "active", "tr_11", "source_property [active -> active : I_END_SIM / stat_finalize()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -273,7 +325,8 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_PROFILE_SECTION_IN ("source_property [disable trans conditions]", state2_trans_conds)
 			FSM_INIT_COND (PROP_VAL_CHANGED)
 			FSM_TEST_COND (ENABLE_PROP_UPDATES)
-			FSM_DFLT_COND
+			FSM_TEST_COND (I_GW_PKT_RX)
+			FSM_TEST_COND (I_END_SIM)
 			FSM_TEST_LOGIC ("disable")
 			FSM_PROFILE_SECTION_OUT (state2_trans_conds)
 
@@ -281,7 +334,8 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				{
 				FSM_CASE_TRANSIT (0, 2, state2_enter_exec, new_val();, "PROP_VAL_CHANGED", "new_val()", "disable", "disable", "tr_3", "source_property [disable -> disable : PROP_VAL_CHANGED / new_val()]")
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, ;, "ENABLE_PROP_UPDATES", "", "disable", "active", "tr_4", "source_property [disable -> active : ENABLE_PROP_UPDATES / ]")
-				FSM_CASE_TRANSIT (2, 2, state2_enter_exec, ;, "default", "", "disable", "disable", "tr_6", "source_property [disable -> disable : default / ]")
+				FSM_CASE_TRANSIT (2, 2, state2_enter_exec, gw_pkt_rx();, "I_GW_PKT_RX", "gw_pkt_rx()", "disable", "disable", "tr_10", "source_property [disable -> disable : I_GW_PKT_RX / gw_pkt_rx()]")
+				FSM_CASE_TRANSIT (3, 2, state2_enter_exec, stat_finalize();, "I_END_SIM", "stat_finalize()", "disable", "disable", "tr_12", "source_property [disable -> disable : I_END_SIM / stat_finalize()]")
 				}
 				/*---------------------------------------------------------*/
 

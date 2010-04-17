@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC8F07A 4BC8F07A 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC9152B 4BC9152B 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -22,18 +22,20 @@ const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC8F07A 4B
 int has_inited = 0;
 
 int pkt_received[MAX_SRC_IDS*3];
+//int hack_pkt_srcid[MAX_SRC_IDS*3];
+int hack_pkt_keyupnum[MAX_SRC_IDS*3];
 
-List *p1_last_pkts;
-List *p2_last_pkts;
-List *p3_last_pkts;
+//Packet *p1_last_pkts[MAX_SRC_IDS];
+//Packet *p2_last_pkts[MAX_SRC_IDS];
+//Packet *p3_last_pkts[MAX_SRC_IDS];
 
 Stathandle stat_neworreplace;
 Stathandle stat_delay;
 
 //Statistic lists
-List *p1_updates_stat_lst;
-List *p2_updates_stat_lst;
-List *p3_updates_stat_lst;
+//List *p1_updates_stat_lst;
+//List *p2_updates_stat_lst;
+//List *p3_updates_stat_lst;
 
 //List *update_counter_change_stat_lst;
 //List *delay_stat_lst;
@@ -166,19 +168,22 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					printf("INITIALIZING gateway statistics\n");
 					has_inited = 1;
 					
-					p1_updates_stat_lst = create_stat_lst("P1 Updates Received");
-					p2_updates_stat_lst = create_stat_lst("P2 Updates Received");
-					p3_updates_stat_lst = create_stat_lst("P3 Updates Received");
+					//p1_updates_stat_lst = create_stat_lst("P1 Updates Received");
+					//p2_updates_stat_lst = create_stat_lst("P2 Updates Received");
+					//p3_updates_stat_lst = create_stat_lst("P3 Updates Received");
 					
-					p1_last_pkts = op_prg_list_create();
-					p2_last_pkts = op_prg_list_create();
-					p3_last_pkts = op_prg_list_create();
+					//p1_last_pkts = op_prg_list_create();
+					//p2_last_pkts = op_prg_list_create();
+					//p3_last_pkts = op_prg_list_create();
 					
 					for(i = 0; i < MAX_SRC_IDS; i++)
 					{
-						op_prg_list_insert(p1_last_pkts, OPC_NIL, OPC_LISTPOS_TAIL);
-						op_prg_list_insert(p2_last_pkts, OPC_NIL, OPC_LISTPOS_TAIL);
-						op_prg_list_insert(p3_last_pkts, OPC_NIL, OPC_LISTPOS_TAIL);
+						//p1_last_pkts[i] = OPC_NIL;
+						//p2_last_pkts[i] = OPC_NIL;
+						//p3_last_pkts[i] = OPC_NIL;
+						//op_prg_list_insert(p1_last_pkts, OPC_NIL, OPC_LISTPOS_TAIL);
+						//op_prg_list_insert(p2_last_pkts, OPC_NIL, OPC_LISTPOS_TAIL);
+						//op_prg_list_insert(p3_last_pkts, OPC_NIL, OPC_LISTPOS_TAIL);
 					}
 					
 					for(i = 0; i < MAX_SRC_IDS*3; i++)
@@ -214,27 +219,35 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				FSM_PROFILE_SECTION_IN ("gateway_rcvr [record exit execs]", state1_exit_exec)
 				{
 				Packet *pPkt;
-				Packet *pPktOld;
+				//Packet *pPktOld;
 				
 				int key;
 				int sourceid;
 				int key_updnm;
 				double generated_timestamp;
 				
+				int array_index;
+				
 				Objid source_prop_id;
 				
 				char message_str [255];
 				
-				List *lastPktLst;
-				Stathandle *received_stat;
+				//Packet **lastPktLst;
+				//Stathandle *received_stat;
 				
 				pPkt = op_pk_get(op_intrpt_strm());
+				if(pPkt == OPC_NIL)
+				{
+					op_sim_end("Nil stream pkt", "", "", "");
+				}
 				
+				printf("Start getting fields\n");
 				op_pk_nfd_get(pPkt, "source_id", &sourceid);
 				op_pk_nfd_get(pPkt, "key", &key);
 				op_pk_nfd_get(pPkt, "key_update_number", &key_updnm);
 				op_pk_nfd_get(pPkt, "source_prop_objid", &source_prop_id);
 				op_pk_nfd_get(pPkt, "generated_timestamp", &generated_timestamp);
+				printf("\tEnd getting fields\n");
 				
 				//Check the fields
 				if(sourceid < 0 || sourceid >= MAX_SRC_IDS)
@@ -249,31 +262,46 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 				//Basic record
 				if(key == 1)
 				{
-					received_stat = (Stathandle *)op_prg_list_access (p1_updates_stat_lst, sourceid);
-					lastPktLst = p1_updates_stat_lst;
+					//received_stat = (Stathandle *)op_prg_list_access (p1_updates_stat_lst, sourceid);
+					//lastPktLst = p1_last_pkts;
 				}
 				else if (key == 2)
 				{
-					received_stat = (Stathandle *)op_prg_list_access (p2_updates_stat_lst, sourceid);
-					lastPktLst = p2_updates_stat_lst;
+					//received_stat = (Stathandle *)op_prg_list_access (p2_updates_stat_lst, sourceid);
+					//lastPktLst = p2_last_pkts;
 				}
 				else if (key == 3)
 				{
-					received_stat = (Stathandle *)op_prg_list_access (p3_updates_stat_lst, sourceid);
-					lastPktLst = p3_updates_stat_lst;
+					//received_stat = (Stathandle *)op_prg_list_access (p3_updates_stat_lst, sourceid);
+					//lastPktLst = p3_last_pkts;
 				}
 				else
 				{
 					op_sim_end("Bad key", "", "", "");
 				}
 				
-				pPktOld = (Packet *)op_prg_list_access(lastPktLst, sourceid);
-				if(pkt_received[sourceid*3 + (key-1)])
+				array_index = sourceid*3 + (key-1);
+				
+				//pPktOld = (Packet *)op_prg_list_access(lastPktLst, sourceid);
+				//pPktOld = (Packet *)lastPktLst[sourceid];
+				if(pkt_received[array_index])
 				{
 					int oldkey_updnm;
 					
+					//sprintf (message_str, "[GATEWAY] %d : %d\n", sourceid, key); 
+					//printf (message_str);
+					
+					//if(pPktOld == OPC_NIL)
+					//{
+					//	op_sim_end("WTF!!", "", "", "");
+					//}
+					
+					oldkey_updnm = hack_pkt_keyupnum[array_index];
+					
 					//printf("[GATEWAY] Update");
-					op_pk_nfd_get(pPktOld, "key_update_number", &oldkey_updnm);
+					//printf("Old Start getting fields\n");
+					//op_pk_nfd_get(pPktOld, "key_update_number", &oldkey_updnm);
+					//printf("\tOld End getting fields\n");
 					
 					if(oldkey_updnm < key_updnm)
 					{
@@ -289,34 +317,60 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 						op_stat_write(stat_delay, (op_sim_time () - generated_timestamp));
 						//printf("[GATEWAY]	 	stat_neworreplace done\n");
 						
-						op_prg_list_remove(lastPktLst, sourceid);
-						op_prg_list_insert(lastPktLst, pPkt, sourceid); 
+						//if(pPkt == pPktOld)
+						//{
+						//	op_sim_end("Pkts the same", "", "", "");
+						//}
+						
+						hack_pkt_keyupnum[array_index] = key_updnm;
+						//lastPktLst[sourceid] = pPkt;
+				//		op_prg_list_remove(lastPktLst, sourceid);
+				//		op_prg_list_insert(lastPktLst, pPkt, sourceid); 
 					
-						op_pk_destroy(pPktOld);
+						//op_pk_destroy(pPktOld);
 					
 					}
 					else
 					{
-						op_pk_destroy(pPkt);
+						//if(pPkt == pPktOld)
+						//{
+						//	op_sim_end("Pkts the same", "", "", "");
+						//}
+						//op_pk_destroy(pPkt);
 					}
 				}
 				else
 				{
+					
+					Ici *iciptr;
+					pkt_received[array_index] = 1;
+					
 					//Trigger stat interrupt on source
-					Ici *iciptr = op_ici_create ("gw_rx");
+					iciptr= op_ici_create ("gw_rx");
 					op_ici_attr_set (iciptr, "source_id", sourceid);
 					op_ici_attr_set (iciptr, "key_update_number", key_updnm);
 					op_ici_install(iciptr);
 					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_RX, source_prop_id);
 				
 					//printf("[GATEWAY] New");
-					pkt_received[sourceid*3 + (key-1)] = 1;
+					
 					op_stat_write(stat_neworreplace, 1.0);
 					op_stat_write(stat_delay, (op_sim_time () - generated_timestamp));
 				
-					op_prg_list_remove(lastPktLst, sourceid);
-					op_prg_list_insert(lastPktLst, pPkt, sourceid); 
+					//if(lastPktLst[sourceid] != OPC_NIL)
+					//{
+					//	op_sim_end("AHAHAHA", "", "", "");
+					//}
+					
+					hack_pkt_keyupnum[array_index] = key_updnm;
+					
+					//lastPktLst[sourceid] = pPkt;
+					
+				//	op_prg_list_remove(lastPktLst, sourceid);
+				//	op_prg_list_insert(lastPktLst, pPkt, sourceid); 
 				}
+				
+				op_pk_destroy(pPkt);
 				
 				/*
 				sprintf (message_str, "[GATEWAY] %d : %d\n", sourceid, key); 

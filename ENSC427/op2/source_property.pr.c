@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC90159 4BC90159 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                            ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC92954 4BC92954 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
 #include <string.h>
 
 
@@ -70,6 +70,7 @@ typedef struct
 	OmsT_Dist_Handle	       		update_dist_ptr                                 ;
 	int	                    		source_id                                       ;
 	int	                    		is_source_mode                                  ;
+	int	                    		has_one_update                                  ;
 	} source_property_state;
 
 #define prop_key                		op_sv_ptr->prop_key
@@ -80,6 +81,7 @@ typedef struct
 #define update_dist_ptr         		op_sv_ptr->update_dist_ptr
 #define source_id               		op_sv_ptr->source_id
 #define is_source_mode          		op_sv_ptr->is_source_mode
+#define has_one_update          		op_sv_ptr->has_one_update
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -153,7 +155,7 @@ void gw_pkt_rx()
 		op_sim_end("Bad key_update_number for ICI", "", "", "");
 	}
 	
-	
+	has_one_update = 1;
 	
 	op_ici_destroy(iciptr);
 	FOUT;
@@ -161,10 +163,23 @@ void gw_pkt_rx()
 
 void stat_finalize()
 {
+	Stathandle oneup;
+
 	FIN(stat_finalize());
+
+	if(has_one_update)
+	{
+		printf("Has one update");
+	}
+	else
+	{
+		printf("Does not have one update");
+	}
 	
-	printf("stat_finalize\n");
+	oneup = op_stat_reg("One Update",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 	
+	op_stat_write(oneup, has_one_update);
+		
 	FOUT;
 }
 
@@ -229,7 +244,9 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				op_ima_obj_attr_get (self_id, "Property Update Interval", updatedist_str);
 				
 				op_ima_obj_attr_get (self_id, "Enable Properties", &is_source_mode);
-					
+				
+				has_one_update = 0;
+				
 				prop_key_update_counter = 1;
 				prop_last_key_updated = 0; //So it gets updated right away
 				
@@ -403,6 +420,7 @@ _op_source_property_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef update_dist_ptr
 #undef source_id
 #undef is_source_mode
+#undef has_one_update
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -497,6 +515,11 @@ _op_source_property_svar (void * gen_ptr, const char * var_name, void ** var_p_p
 	if (strcmp ("is_source_mode" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->is_source_mode);
+		FOUT
+		}
+	if (strcmp ("has_one_update" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->has_one_update);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

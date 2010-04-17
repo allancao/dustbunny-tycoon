@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC8F2EC 4BC8F2EC 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                            ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BC920A0 4BC920A0 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                            ";
 #include <string.h>
 
 
@@ -244,7 +244,7 @@ void store_update(void)
 				op_pk_destroy(lstPkt);
 				
 				
-				//sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
+				sprintf (message_str, "[%d STORE] \tMax list size reached, discarding packet aged: %d\n", source_id, gen_ts); 
 				//printf (message_str);
 				
 				break;
@@ -410,8 +410,8 @@ storage (OP_SIM_CONTEXT_ARG_OPT)
 				/* allocate an empty list */
 				pupdate_lst = op_prg_list_create (); 
 				
-				
-				op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
+				op_ima_sim_attr_get (OPC_IMA_INTEGER, "Capacity", &maxlistsize);
+				//op_ima_obj_attr_get (self_id, "Max Packets", &maxlistsize);
 				op_ima_obj_attr_get (self_id, "Source ID", &source_id);
 				op_ima_obj_attr_get (self_id, "Is Gateway", &is_gateway);
 				

@@ -27,6 +27,28 @@ A temperature sensor for example, might support a 'temperature' property, the va
 Properties do not have to contain a single value and each may be as large as the payload limit of network packets. %Somewhat of a vague statement
 
 %TODO: What is the ferry
+%
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/source}
+    \caption{Source Node}
+    \label{fig:source}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/ferry}
+    \caption{Ferry Node}
+    \label{fig:Ferry}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/gateway}
+    \caption{Gateway Node}
+    \label{fig:Gateway}
+\end{figure}
 
 The network and message ferrying algorithm is designed to synchronize a central repository with the current state of every source node.
 Only the most recent state (or most recent value) for each property is important, not the history of how that property has changed.

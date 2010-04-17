@@ -29,12 +29,16 @@ Properties do not have to contain a single value and each may be as large as the
 %TODO: What is the ferry
 %
 
+Sources have properties (prop1, prop2, etc) which generate messages that are carried to the Gateway by the message ferry.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=.5\textwidth]{images/source}
     \caption{Source Node}
     \label{fig:source}
 \end{figure}
+
+Source node shown above is static nodes in the network which have a set of properties (key/value pairs) 	
 
 \begin{figure}[h]
     \centering
@@ -43,12 +47,20 @@ Properties do not have to contain a single value and each may be as large as the
     \label{fig:Ferry}
 \end{figure}
 
+Ferry Node above is a mobile node which collects updates from source nodes when they are in range.
+
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=.5\textwidth]{images/gateway}
     \caption{Gateway Node}
     \label{fig:Gateway}
 \end{figure}
+
+Gateway Node is a download update packets form message ferries and forward them to the central repository over the Internet.
+
+
+
 
 The network and message ferrying algorithm is designed to synchronize a central repository with the current state of every source node.
 Only the most recent state (or most recent value) for each property is important, not the history of how that property has changed.

@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA5CC1 4BCA5CC1 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA6900 4BCA6900 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -501,7 +501,7 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				disth_beacon_timer = oms_dist_load_from_string (beacon_dist_str);
 				
 				op_ima_obj_attr_get (self_id, "Is Source", &is_source);
-				op_ima_sim_attr_get (self_id, "Enable Source Storage", &enable_source_storage);
+				op_ima_sim_attr_get (OPC_IMA_INTEGER, "Enable Source Storage", &enable_source_storage);
 				
 				storage_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "storage");
 				

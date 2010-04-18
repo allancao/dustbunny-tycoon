@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA5113 4BCA5113 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char gateway_rcvr_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA6A00 4BCA6A00 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -30,6 +30,7 @@ int hack_pkt_keyupnum[MAX_SRC_IDS*3];
 //Packet *p3_last_pkts[MAX_SRC_IDS];
 
 Stathandle stat_neworreplace;
+Stathandle stat_counterchange;
 //Stathandle stat_delay;
 
 //Statistic lists
@@ -175,6 +176,7 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					}
 					
 					stat_neworreplace = op_stat_reg("Update Pkt - New or Replace" ,OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
+					stat_counterchange = op_stat_reg("Update Counter Change" ,OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 					//stat_delay = op_stat_reg("Delay" ,OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 				}
 				}
@@ -252,6 +254,7 @@ gateway_rcvr (OP_SIM_CONTEXT_ARG_OPT)
 					if(oldkey_updnm < key_updnm)
 					{
 						is_update = 1;
+						op_stat_write(stat_counterchange, key_updnm - oldkey_updnm);
 						hack_pkt_keyupnum[array_index] = key_updnm;
 					}
 				}

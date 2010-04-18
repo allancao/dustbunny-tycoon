@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA2D27 4BCA2D27 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA6A40 4BCA6A40 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
 #include <string.h>
 
 

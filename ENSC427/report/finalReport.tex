@@ -40,13 +40,15 @@
 
 \cleardoublepage
 
-\setcounter{page}{1} % the table of contents will be shown as page iii
+%\setcounter{page}{1} % the table of contents will be shown as page iii
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Abstract
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{abstract}
 \input{chapters/abstract}
+\end{abstract}
 
 \cleardoublepage
 
@@ -87,7 +89,9 @@
 
 \input{chapters/projectPremise}
 
-\input{chapters/simulation}
+\input{chapters/validation}
+
+\input{chapters/mainSimulation}
 
 \input{chapters/conclusion}
 
@@ -104,10 +108,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \nothtml{
-\appendix
+\begin{appendix}
+%\appendix
 %\renewcommand{\thechapter}{\Alph{chapter}}
 
 \input{chapters/appendix}
+\end{appendix}
 }
 
 \ifHtml

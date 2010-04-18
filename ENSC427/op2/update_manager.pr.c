@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC90CCE 4BC90CCE 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA5CC1 4BCA5CC1 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -69,6 +69,9 @@ const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC90CCE 
 //Local (self)
 #define I_L_SEND_BEACON_TIMER (op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_SEND_BEACON_TIMER)
 
+
+#define STORE_UPDATES			(!is_source || enable_source_storage)
+
 /***********************
  * Prototypes
  ***********************/
@@ -96,6 +99,7 @@ void send_to_mac();
 
 void generate_mac_pk_interrupt();
 
+void clear_pk_interrupt(void);
 
 void printbad_mac_or_prop_strm(void);
 void print_default(void);
@@ -131,6 +135,8 @@ typedef struct
 	Objid	                  		prop2_id                                        ;
 	Objid	                  		prop3_id                                        ;
 	Objid	                  		queue_id                                        ;
+	int	                    		is_source                                       ;
+	int	                    		enable_source_storage                           ;
 	} update_manager_state;
 
 #define storage_id              		op_sv_ptr->storage_id
@@ -144,6 +150,8 @@ typedef struct
 #define prop2_id                		op_sv_ptr->prop2_id
 #define prop3_id                		op_sv_ptr->prop3_id
 #define queue_id                		op_sv_ptr->queue_id
+#define is_source               		op_sv_ptr->is_source
+#define enable_source_storage   		op_sv_ptr->enable_source_storage
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -334,6 +342,31 @@ void send_to_mac()
 	FOUT;
 }
 
+void clear_pk_interrupt()
+{
+
+	FIN(clear_pk_interrupt());
+	
+	if(is_pkt_interrupt)
+	{
+		is_pkt_interrupt = 0;
+		
+		if(pPkt_interrupt == OPC_NIL)
+		{
+			op_sim_end("Nill interrupt pkt", "", "", "");	
+		}
+		
+		op_pk_destroy(pPkt_interrupt);
+		pPkt_interrupt = OPC_NIL;
+	}
+	else
+	{
+		op_sim_end("clear_pk_interrupt called wrong", "", "", "");	
+	}
+	
+	FOUT;
+}
+
 void generate_mac_pk_interrupt()
 {
 	char message_str[255];
@@ -467,6 +500,9 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				op_ima_obj_attr_get (self_id, "Beacon Interval", beacon_dist_str);
 				disth_beacon_timer = oms_dist_load_from_string (beacon_dist_str);
 				
+				op_ima_obj_attr_get (self_id, "Is Source", &is_source);
+				op_ima_sim_attr_get (self_id, "Enable Source Storage", &enable_source_storage);
+				
 				storage_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "storage");
 				
 				prop1_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop1");
@@ -526,9 +562,10 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_INIT_COND (I_PK_BEACON)
 			FSM_TEST_COND (I_S_PROP_PKT)
 			FSM_TEST_COND (I_S_MAC_PKT)
-			FSM_TEST_COND (I_PK_UPDATEORACK)
+			FSM_TEST_COND (I_PK_UPDATEORACK && STORE_UPDATES)
 			FSM_TEST_COND ((I_S_STORE_PKT || I_R_STORE_DUMP_DONE))
 			FSM_TEST_COND (I_L_SEND_BEACON_TIMER)
+			FSM_TEST_COND (I_PK_UPDATEORACK && !STORE_UPDATES)
 			FSM_TEST_LOGIC ("idle")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
@@ -537,9 +574,10 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				FSM_CASE_TRANSIT (0, 4, state4_enter_exec, ;, "I_PK_BEACON", "", "idle", "tx_start", "tr_14", "update_manager [idle -> tx_start : I_PK_BEACON / ]")
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, send_to_store();, "I_S_PROP_PKT", "send_to_store()", "idle", "idle", "tr_19", "update_manager [idle -> idle : I_S_PROP_PKT / send_to_store()]")
 				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, generate_mac_pk_interrupt();, "I_S_MAC_PKT", "generate_mac_pk_interrupt()", "idle", "idle", "tr_20", "update_manager [idle -> idle : I_S_MAC_PKT / generate_mac_pk_interrupt()]")
-				FSM_CASE_TRANSIT (3, 1, state1_enter_exec, send_to_store();, "I_PK_UPDATEORACK", "send_to_store()", "idle", "idle", "tr_21", "update_manager [idle -> idle : I_PK_UPDATEORACK / send_to_store()]")
+				FSM_CASE_TRANSIT (3, 1, state1_enter_exec, send_to_store();, "I_PK_UPDATEORACK && STORE_UPDATES", "send_to_store()", "idle", "idle", "tr_21", "update_manager [idle -> idle : I_PK_UPDATEORACK && STORE_UPDATES / send_to_store()]")
 				FSM_CASE_TRANSIT (4, 3, state3_enter_exec, ;, "(I_S_STORE_PKT || I_R_STORE_DUMP_DONE)", "", "idle", "error", "tr_22", "update_manager [idle -> error : (I_S_STORE_PKT || I_R_STORE_DUMP_DONE) / ]")
 				FSM_CASE_TRANSIT (5, 1, state1_enter_exec, send_beacon();, "I_L_SEND_BEACON_TIMER", "send_beacon()", "idle", "idle", "tr_23", "update_manager [idle -> idle : I_L_SEND_BEACON_TIMER / send_beacon()]")
+				FSM_CASE_TRANSIT (6, 1, state1_enter_exec, clear_pk_interrupt();, "I_PK_UPDATEORACK && !STORE_UPDATES", "clear_pk_interrupt()", "idle", "idle", "tr_27", "update_manager [idle -> idle : I_PK_UPDATEORACK && !STORE_UPDATES / clear_pk_interrupt()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -726,6 +764,8 @@ _op_update_manager_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef prop2_id
 #undef prop3_id
 #undef queue_id
+#undef is_source
+#undef enable_source_storage
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -835,6 +875,16 @@ _op_update_manager_svar (void * gen_ptr, const char * var_name, void ** var_p_pt
 	if (strcmp ("queue_id" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->queue_id);
+		FOUT
+		}
+	if (strcmp ("is_source" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->is_source);
+		FOUT
+		}
+	if (strcmp ("enable_source_storage" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->enable_source_storage);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

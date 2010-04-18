@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA3AFF 4BCA3AFF 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA5D8D 4BCA5D8D 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
 #include <string.h>
 
 
@@ -44,6 +44,7 @@ typedef struct
 	int pkts_alive;
 	int has_one_store;
 	int gateway_rx;
+	double generated_timestamp;
 } active_update_tacker;
 
 void new_val(void);
@@ -86,6 +87,7 @@ typedef struct
 	Stathandle	             		stat_update_success_limited_loss                ;
 	int	                    		last_key_update_num_delivered                   ;
 	double	                 		stop_time                                       ;
+	Stathandle	             		stat_delay                                      ;
 	} source_property_state;
 
 #define prop_key                		op_sv_ptr->prop_key
@@ -102,6 +104,7 @@ typedef struct
 #define stat_update_success_limited_loss		op_sv_ptr->stat_update_success_limited_loss
 #define last_key_update_num_delivered		op_sv_ptr->last_key_update_num_delivered
 #define stop_time               		op_sv_ptr->stop_time
+#define stat_delay              		op_sv_ptr->stat_delay
 
 /* These macro definitions will define a local variable called	*/
 /* "op_sv_ptr" in each function containing a FIN statement.	*/
@@ -157,6 +160,7 @@ void gw_pkt_rx()
 	int action;
 	int discard_reason;
 	int tracker_index;
+	double generated_timestamp;
 	active_update_tacker *pTracker;
 
 	FIN(gw_pkt_rx());
@@ -171,6 +175,7 @@ void gw_pkt_rx()
 	op_ici_attr_get (iciptr, "key_update_number", &key_update_number);
 	op_ici_attr_get (iciptr, "action", &action);
 	op_ici_attr_get (iciptr, "discard_reason", &discard_reason);
+	op_ici_attr_get (iciptr, "generated_timestamp", &generated_timestamp);
 
 	//Basic field checks 
 	if(sourceid != source_id)
@@ -212,6 +217,7 @@ void gw_pkt_rx()
 		}
 		pTracker->gateway_rx = 1;
 		
+		op_stat_write(stat_delay, op_sim_time() - generated_timestamp);
 		op_stat_write(stat_update_success, 1.0);
 		op_stat_write(stat_update_success_limited_loss, 1.0);
 		
@@ -314,6 +320,14 @@ void stat_finalize()
 				op_stat_write(stat_update_success_limited_loss, 0.0);
 			}
 		}
+		
+		if(pTracker->update_counter_number == prop_last_key_updated)
+		{
+			if(pTracker->gateway_rx == 0)
+			{
+				op_stat_write(stat_delay, op_sim_time() - pTracker->generated_timestamp);
+			}
+		}
 	}
 	
 	FOUT;
@@ -391,6 +405,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 				
 				update_dist_ptr = oms_dist_load_from_string (updatedist_str);
 				
+				stat_delay = op_stat_reg("Delay",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 				stat_update_success = op_stat_reg("Update Success",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 				stat_update_success_limited_loss = op_stat_reg("Update Success - Losses by buffer full",OPC_STAT_INDEX_NONE, OPC_STAT_GLOBAL);
 				
@@ -466,6 +481,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 					pTracker->pkts_alive = 0;
 					pTracker->has_one_store = 0;
 					pTracker->gateway_rx = 0;
+					pTracker->generated_timestamp = op_sim_time();
 					
 					op_prg_list_insert(active_updates_lst, pTracker, OPC_LISTPOS_TAIL);
 					
@@ -646,6 +662,7 @@ _op_source_property_terminate (OP_SIM_CONTEXT_ARG_OPT)
 #undef stat_update_success_limited_loss
 #undef last_key_update_num_delivered
 #undef stop_time
+#undef stat_delay
 
 #undef FIN_PREAMBLE_DEC
 #undef FIN_PREAMBLE_CODE
@@ -770,6 +787,11 @@ _op_source_property_svar (void * gen_ptr, const char * var_name, void ** var_p_p
 	if (strcmp ("stop_time" , var_name) == 0)
 		{
 		*var_p_ptr = (void *) (&prs_ptr->stop_time);
+		FOUT
+		}
+	if (strcmp ("stat_delay" , var_name) == 0)
+		{
+		*var_p_ptr = (void *) (&prs_ptr->stat_delay);
 		FOUT
 		}
 	*var_p_ptr = (void *)OPC_NIL;

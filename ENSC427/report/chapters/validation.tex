@@ -3,7 +3,7 @@
 %
 %I am adding another section which talks about the 'main' simulation
 
-\chapter{Validation} %TODO: no longer a chapter
+\section{Validation} %TODO: no longer a chapter
 
 In this section, there will be two subsections.  One will discuss the simulation to validate our design and implementation.  
 % TODO: reword - two stages in the simulation process -> not two sections in the report
@@ -24,7 +24,7 @@ We define our packet loss as the number of packets dropped due to the fact that 
 
 %_________________________________________________________________
 %________________________SCENARIO 1_______________________________
-\section{Scenario 1: Validation}
+\subsection{Scenario 1: Validation}
 \label{sec:scenario1}
 
 In this scenario, we are trying to test our design implementation, we need to address what to look for.  
@@ -32,7 +32,7 @@ In this scenario, we are trying to test our design implementation, we need to ad
 % Not what to look for -> validate that the node models work 
 We need to validate that the updates from source nodes are delivered successfully when in range and to see if the packets are handled properly as designed.  
 
-\subsection{Topology}
+\subsubsection{Topology}
 
 The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
 % No: constant speed of 60 kph
@@ -52,7 +52,7 @@ The paths of the ferry movement is outlined in white color.
 
 The simulation run time is 6 minutes.  
 
-\subsection{Simulation 1 Results}
+\subsubsection{Simulation 1 Results}
 %The results you show here are for a different simulation
 
 After setting up OPNET to capture the desired statistics, we simulate our design and see if it is successful in delivering packets from the source nodes to the gateway node.
@@ -85,7 +85,7 @@ Since there are seven source nodes, this accounts for the 20 packets received by
 
 %_________________________________________________________________
 %________________________SCENARIO 2_______________________________
-\section{Scenario 2 : Performance Evaluations}
+\subsection{Scenario 2 : Performance Evaluations}
 \label{sec:scenario2}
 
 %Basic introduction - a realistic situation
@@ -99,7 +99,7 @@ Because of the nature of our algorithm, there may be dropped packets when the up
 This loss measures the case where the buffer is full, and the oldest packets are dropped to accommodate for adding the new packet.  
 The other is to find the delay, which is measured by the time to update the central repository.
 
-\subsection{Scenario Considerations}
+\subsubsection{Scenario Considerations}
 
 The following factors have been considered when designing scenarios:
 \begin{itemize}
@@ -110,7 +110,7 @@ The following factors have been considered when designing scenarios:
 %\item Distances and distributions of ferries and gateways
 \end{itemize}
 
-\subsection{Scenario 2: Topology}
+\subsubsection{Scenario 2: Topology}
 
 In Figure \ref{fig:scenario2}, our scenario for the packet The size of this topology is 1km x 1km.  
 That is the distance between source node 0 and 4 is 1km, while the distance between source node 6 and 2 is also 1km.  
@@ -125,7 +125,7 @@ The speed of the ferries is random and the direction is random, where the speed 
 \end{figure}
 
 
-\section{Results}
+\subsection{Results - Not here}
 
 In the following graph, we can see that the buffer size used is proportional to the rate of successful packets delivered to ferries.
 

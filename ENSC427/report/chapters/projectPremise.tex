@@ -42,35 +42,7 @@ Properties do not have to contain a single value and each may be as large as the
 %
 %This needs to be broken into an new section or placed in a subsection
 
-Sources have properties (prop1, prop2, etc) which generate messages. These messages get carried to any gateway node by message ferries.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=.5\textwidth]{images/source}
-    \caption{Source Node Model}
-    \label{fig:source}
-\end{figure}
-
-Source node shown above is a static node in the network which have a set of properties that generate update messages. 	
-%TODO: Dont use "shown above" - use \ref{} for the figure number
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=.5\textwidth]{images/ferry}
-    \caption{Ferry Node}
-    \label{fig:Ferry}
-\end{figure}
-
-Ferry Node above is a mobile node which collects updates from source nodes when they are in range. These updates are then stored in memory.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=.5\textwidth]{images/gateway}
-    \caption{Gateway Node}
-    \label{fig:Gateway}
-\end{figure}
-
-Gateway Node above receives the update messages from ferries and forwards them to their final destination via the Internet. 
 
 %TODO: new section
 
@@ -96,9 +68,51 @@ These gateway nodes are then responsible for using a reliable delivery mechanism
 
 \subsubsection{Nodes}
 
-The network is comprised of four types of nodes.
+The network is comprised of three types of nodes:
+\begin{itemize}
+\item Ferry Nodes
+\item Source Nodes
+\item Gateway Nodes
+\end{itemize}
 
+
+
+Sources have properties (prop1, prop2, etc) which generate messages. These messages get carried to any gateway node by message ferries.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/source}
+    \caption{Source Node Model}
+    \label{fig:source}
+\end{figure}
+
+Source node shown in figure \ref{fig:source} is a static node in the network which have a set of properties that generate update messages. 	
+%TODO: Dont use "shown above" - use \ref{} for the figure number
+%\item[Central Repository: ] 
+%The central repository is a server and the final destination for updates sent from source nodes.
+%It maintains a list of the current state of all source nodes.
+%There is only one central repository node.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/ferry}
+    \caption{Ferry Node}
+    \label{fig:Ferry}
+\end{figure}
+
+Ferry Node shown in figure \ref{fig:Ferry} is a mobile node which collects updates from source nodes when they are in range. These updates are then stored in memory.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/gateway}
+    \caption{Gateway Node}
+    \label{fig:Gateway}
+\end{figure}
+
+Gateway Node shown in figure \ref{fig:Gateway} receives the update messages from ferries and forwards them to their final destination via the Internet. 
 \begin{description}
+
 \item[Source Node: ] 
 Static nodes in the network which have a set of properties (key/value pairs).
 After a property of a source changes, known as a state change, it attempt to notify the central repository by transferring update packets to message ferries.
@@ -111,10 +125,7 @@ A source node could be, for example, a specially equipt cell phone or a small co
 \item[Gateway: ]
 Gateway nodes download update packets form message ferries and forward them to the central repository over the Internet.
 Transfer of updates between the gateway and central repository is assumed to be reliable. 
-\item[Central Repository: ] 
-The central repository is a server and the final destination for updates sent from source nodes.
-It maintains a list of the current state of all source nodes.
-There is only one central repository node.
+
 \end{description}
 
 

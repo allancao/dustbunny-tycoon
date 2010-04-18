@@ -7,8 +7,7 @@
 
 Message ferrying, also known as store-carry-forward, is the approach of physically carrying data from nodes that are out of range and deliver them to their destination. 
 Some of the advantages of message ferries are that they virtually do not require physical infrastructure and that they also have a low cost. 
-They're constructed in self configured mesh network of mobile devices that have wireless links and move freely in any direction independently. 
-%	This last sentence is wrong - thats a MANET
+
 	
 \subsection{Application Characteristics and Requirements}
 
@@ -155,12 +154,12 @@ When there are source nodes in range, they give their updates to the ferries. Si
 Ferry nodes do the steps shown below in order:
 
 \begin{enumerate}
-\item Move around sending beacons to let other nodes know that there is a ferry in range.
+\item Move around sending beacons to notify other nodes that there is a ferry in range.
 \item When a source node is in range, the ferry node receives the updates from it.
 \item Ferry nodes only keep the most recent update according to the key update number and age.
 	\begin{enumerate}
-	\item sub item
-	\item sub item
+	\item It compares the updates and keeps the most recent according to the key update.
+	\item If a ferry gets full, it considers the age and gets rid of the oldest update
 	\end{enumerate}
 \item It then moves till a gateway beacon is received.
 \item Ferry node then sends the updates to the gateway.
@@ -170,24 +169,23 @@ Ferry nodes do the steps shown below in order:
 
 Source nodes do the steps shown below in order:
 
-\begin{itemize}
+\begin{enumerate}
 \item They wait till a beacon is receive from the ferry node.
-\item Based on the current state, key update,  they send three updates to the ferry node.
+\item Based on the current state, key update,  they send three properties to the ferry node.
 
-
-\end{itemize}
+\end{enumerate}
 
 
 \subsubsection{Gateway Algorithm}
 
 Gateway nodes do the steps shown below in order:
 
-\begin{itemize}
-\item Gateway nodes send beacons to find ferries that are in range.
+\begin{enumerate}
+\item Gateway nodes notify ferries that there's a beacon in range.
 \item Ferries then send their most recent update to the gateway nodes.
 \item Gateway nodes receives these updates.
-\item Records that an update ha been received.
-\end{itemize}
+\item Records that an update has been received.
+\end{enumerate}
 
 
 

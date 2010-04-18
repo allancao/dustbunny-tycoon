@@ -84,11 +84,15 @@ These gateway nodes are then responsible for using a reliable delivery mechanism
 
 \emph{Insert image showing this process.}
 
+%--------------------------------------------------------------------------------------------------------
+% 		Elements
+%--------------------------------------------------------------------------------------------------------
 \section{Network Elements}
 
-This section describes the elements present in the network.
 
-\subsection{Physical Network Entities}
+%This section describes the elements present in the network.
+
+\subsection{Nodes}
 
 The network is comprised of four types of nodes.
 
@@ -112,7 +116,15 @@ There is only one central repository node.
 \end{description}
 
 
-\subsection{Inter-Node Communication}
+\subsection{Properties}
+%On source node
+%
+%Three main pieces of data
+%	- Source id
+%	- Key
+%	- Key update number
+
+\subsection{Packets}
 
 At the network layer, two types of packets are used as follows:
 
@@ -125,6 +137,22 @@ Packets sent from the central repository to source nodes acknowledging that the 
 %TODO:  NO - beacons are used to discover when nodes are in range
 \end{description}
 
+%--------------------------------------------------------------------------------------------------------
+% 		Algorithm
+%--------------------------------------------------------------------------------------------------------
+\section{Algorithm and Behavior - Simplified}
+
+\subsection{Ferry Algorithm}
+% 1 sends beacons - let other nodes know there is a ferry
+% 2 When updates are received - stores them
+% 	- Discard old pkts based on key update number
+% 	- Discard old pkts based on age - in the presence of limited memory
+% 3 When a gateway beacon is received - send updates
+
+
+%--------------------------------------------------------------------------------------------------------
+% 		Other stuff to include
+%--------------------------------------------------------------------------------------------------------
 
 %TODO: Talk about layer 1 and 2 assumptions we are making
 %	- No unintentional loss (ie from rf interference)

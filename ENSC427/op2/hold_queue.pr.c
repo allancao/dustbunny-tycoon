@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char hold_queue_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BC8FF16 4BC8FF16 1 rfsip5 danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                                ";
+const char hold_queue_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA7A00 4BCA7A00 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -138,7 +138,9 @@ hold_queue (OP_SIM_CONTEXT_ARG_OPT)
 				len = op_prg_list_size(lst_pkts);
 				while(len > 0)
 				{
+					printf("[HOLD] - Sending buffered pkt\n");
 					op_pk_send(op_prg_list_remove (lst_pkts, OPC_LISTPOS_HEAD), 0);
+					printf("\t[HOLD] - Done sending buffered pkt\n");
 					len = op_prg_list_size(lst_pkts);	
 				}
 				

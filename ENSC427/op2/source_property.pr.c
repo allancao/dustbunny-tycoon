@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA670E 4BCA670E 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
+const char source_property_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA9486 4BCA9486 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -45,6 +45,8 @@ typedef struct
 	int has_one_store;
 	int gateway_rx;
 	double generated_timestamp;
+	int mark_for_delete;
+	int discard_reason;
 } active_update_tacker;
 
 void new_val(void);
@@ -162,6 +164,8 @@ void gw_pkt_rx()
 	int tracker_index;
 	double generated_timestamp;
 	active_update_tacker *pTracker;
+	char msg[255];
+	int i;
 
 	FIN(gw_pkt_rx());
 
@@ -177,6 +181,13 @@ void gw_pkt_rx()
 	op_ici_attr_get (iciptr, "discard_reason", &discard_reason);
 	op_ici_attr_get (iciptr, "generated_timestamp", &generated_timestamp);
 
+	//DEBUG
+	if(source_id == 9 && prop_key == 2)
+	{
+		sprintf(msg, "[DBG] key_update_number=%d, action=%d\n", key_update_number, action);
+		printf(msg);
+	}
+	
 	//Basic field checks 
 	if(sourceid != source_id)
 	{
@@ -201,7 +212,26 @@ void gw_pkt_rx()
 	}
 	if(pTracker == OPC_NIL)
 	{
-		op_sim_end("Could not find tracker", "", "", "");
+		int i;
+		char msg1[255];
+		char msg2[255];
+		char msg3[255];
+		
+		printf("Current list state\n");
+		for(i = 0; i < op_prg_list_size(active_updates_lst); i++)
+		{
+			active_update_tacker *pTrackerTemp;
+			pTrackerTemp = (active_update_tacker *)op_prg_list_access(active_updates_lst, i);
+			
+			sprintf(msg1, "update_counter_number=%d\n", pTrackerTemp->update_counter_number);
+			printf(msg1);
+		}
+		
+		sprintf(msg1, "Tracker index=%d, List size=%d", tracker_index, op_prg_list_size(active_updates_lst));
+		sprintf(msg2, "key_update_number=%d, prop_key_update_counter=%d", key_update_number, prop_key_update_counter);
+		sprintf(msg3, "Action=%d", action);
+		
+		op_sim_end("Could not find tracker", msg1, msg2, msg3);
 	}
 	
 	if(action == 1)
@@ -230,7 +260,8 @@ void gw_pkt_rx()
 	else if (action == 2)
 	{
 		//Store	
-		if(pTracker->pkts_alive == 0 && pTracker->has_one_store != 0)
+		//if(pTracker->pkts_alive == 0 && pTracker->has_one_store != 0)
+		if(pTracker->pkts_alive < 0)
 		{
 			op_sim_end("Thats strange...", "", "", "");
 		}
@@ -242,8 +273,16 @@ void gw_pkt_rx()
 	{
 		//Discard
 		pTracker->pkts_alive--;
-		
+		pTracker->discard_reason = discard_reason;
+		/*
 		if(pTracker->pkts_alive <= 0)
+		{
+			pTracker->mark_for_delete--;
+		}
+		
+
+		//if(pTracker->pkts_alive <= 0)
+		if(pTracker->mark_for_delete <= 0)
 		{
 			active_update_tacker *pTrackerTemp;
 			
@@ -283,6 +322,8 @@ void gw_pkt_rx()
 			
 			op_prg_mem_free(pTracker);
 		}
+		
+		*/
 	}
 	else
 	{
@@ -290,6 +331,59 @@ void gw_pkt_rx()
 	}
 	
 	has_one_update = 1;
+	
+	for(i = 0; i < op_prg_list_size(active_updates_lst); i++)
+	{
+		pTracker = (active_update_tacker *)op_prg_list_access(active_updates_lst, i);
+	
+		if(pTracker->pkts_alive <= 0)
+		{
+			pTracker->mark_for_delete--;
+		}
+		
+
+		//if(pTracker->pkts_alive <= 0)
+		if(pTracker->mark_for_delete <= 0)
+		{
+			active_update_tacker *pTrackerTemp;
+			
+			if(pTracker->pkts_alive < 0 &&  pTracker->has_one_store)
+			{
+				op_sim_end("Thats strange...", "2", "", "");
+			}
+			
+			if(pTracker->gateway_rx == 0)
+			{
+				//Nothing left - update has been lost
+				op_stat_write(stat_update_success, 0.0);
+				
+				if(pTracker->discard_reason == 1)
+				{
+					//Update
+				}
+				else if(pTracker->discard_reason == 2)
+				{
+					//Mem full
+					if(pTracker->update_counter_number > last_key_update_num_delivered)
+					{
+						op_stat_write(stat_update_success_limited_loss, 0.0);
+					}
+				}
+				else
+				{
+					op_sim_end("Bad discard reason", "", "", "");
+				}
+			}
+			
+			pTrackerTemp = (active_update_tacker *)op_prg_list_remove(active_updates_lst, i);
+			if(pTrackerTemp != pTracker)
+			{
+				op_sim_end("AHA,not another error!", "", "", "");
+			}
+			
+			op_prg_mem_free(pTracker);
+		}
+	}
 	
 	op_ici_destroy(iciptr);
 	FOUT;
@@ -482,6 +576,7 @@ source_property (OP_SIM_CONTEXT_ARG_OPT)
 					pTracker->has_one_store = 0;
 					pTracker->gateway_rx = 0;
 					pTracker->generated_timestamp = op_sim_time();
+					pTracker->mark_for_delete = 3;
 					
 					op_prg_list_insert(active_updates_lst, pTracker, OPC_LISTPOS_TAIL);
 					

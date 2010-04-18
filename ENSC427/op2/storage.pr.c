@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A op_runsim 7 4BCA6A40 4BCA6A40 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                           ";
+const char storage_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA8AA8 4BCA8AA8 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -184,18 +184,20 @@ void store_update(void)
 					
 					iciptr = op_ici_create ("prop_action");
 					op_ici_attr_set (iciptr, "source_id", sourceid);
+					op_ici_attr_set (iciptr, "key_update_number", newkey_updnm);
+					op_ici_attr_set (iciptr, "action", 2);
+					op_ici_install(iciptr);
+					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
+					
+					iciptr = op_ici_create ("prop_action");
+					op_ici_attr_set (iciptr, "source_id", sourceid);
 					op_ici_attr_set (iciptr, "key_update_number", key_updnm);
 					op_ici_attr_set (iciptr, "action", 3); //3 = discard
 					op_ici_attr_set (iciptr, "discard_reason", 1); //1 = update
 					op_ici_install(iciptr);
 					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
 					
-					iciptr = op_ici_create ("prop_action");
-					op_ici_attr_set (iciptr, "source_id", sourceid);
-					op_ici_attr_set (iciptr, "key_update_number", newkey_updnm); //DIFFERENT THAN ABOVE
-					op_ici_attr_set (iciptr, "action", 2); //2 = store - DIFFERENT THAN ABOVE
-					op_ici_install(iciptr);
-					op_intrpt_schedule_remote (op_sim_time (), IC_SOURCPROP_ACTION, source_prop_id);
+					
 					
 					op_prg_list_remove (pupdate_lst, i);
 					op_prg_list_insert(pupdate_lst, pkt, OPC_LISTPOS_TAIL);

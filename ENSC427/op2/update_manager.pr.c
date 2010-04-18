@@ -4,7 +4,7 @@
 
 
 /* This variable carries the header into the object file */
-const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA6900 4BCA6900 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
+const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA9879 4BCA9879 1 payette danh 0 0 none none 0 0 none 0 0 0 0 0 0 0 0 18a9 3                                                                                                                                                                                                                                                                                                                                                                                                               ";
 #include <string.h>
 
 
@@ -49,6 +49,7 @@ const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA6900 
 #define IC_Q_DISABLE				54
 #define IC_Q_ENABLE					55
 
+#define IC_TX_ACQUIRED				67
 
 /***********************
  * Interrupts
@@ -63,14 +64,21 @@ const char update_manager_pr_c [] = "MIL_3_Tfile_Hdr_ 140A 30A opnet 7 4BCA6900 
 #define I_PK_UPDATEORACK	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_UPDATEORACK)
 #define I_PK_BEACON			(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_BEACON)
 
+#define I_TX_ACQUIRED		((op_intrpt_type() == OPC_INTRPT_SELF || op_intrpt_type() == OPC_INTRPT_REMOTE) && op_intrpt_code() == IC_TX_ACQUIRED)
+
 //Remote
 #define I_R_STORE_DUMP_DONE	(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_STORE_DUMP_DONE)
 
 //Local (self)
 #define I_L_SEND_BEACON_TIMER (op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_SEND_BEACON_TIMER)
 
+/***********************
+ * Other crap
+ ***********************/
 
 #define STORE_UPDATES			(!is_source || enable_source_storage)
+
+List *tx_rights_lst = OPC_NIL;
 
 /***********************
  * Prototypes
@@ -103,6 +111,8 @@ void clear_pk_interrupt(void);
 
 void printbad_mac_or_prop_strm(void);
 void print_default(void);
+
+void acquire_tx_rights(void);
 
 /* End of Header Block */
 
@@ -334,7 +344,7 @@ void send_to_mac()
 		pPktToForward = op_pk_get(op_intrpt_strm());
 	}
 	
-	//sprintf (message_str, "[%d] Send to mac Pkt\n", source_id); 
+	//sprintf (message_str, "[%d] Send to mac Pkt - %d\n", source_id, (int)op_sim_time()); 
 	//printf (message_str);
 	
 	op_pk_send(pPktToForward, STRM_OUT_MAC);
@@ -392,7 +402,7 @@ void generate_mac_pk_interrupt()
 	pPkt_interrupt = op_pk_get(STRM_IN_MAC);
 	is_pkt_interrupt = 1;
 	
-	//sprintf (message_str, "[%d] Received Mac Pkt\n", source_id); 
+	//sprintf (message_str, "[%d] Received Mac Pkt - %d\n", source_id, (int)op_sim_time()); 
 	//printf (message_str);
 	
 	op_pk_format (pPkt_interrupt, format_name);
@@ -428,15 +438,65 @@ void printbad_mac_or_prop_strm()
 	
 	FIN(printbad_mac_or_prop_strm());
 
-	sprintf (message_str, "[%d UM DIE] Received mac or prop strm interrupt\n", source_id); 
-	printf (message_str);
+	//sprintf (message_str, "[%d UM DIE] Received mac or prop strm interrupt\n", source_id); 
+	//printf (message_str);
 	
 	FOUT;
 }
 
 void print_default()
 {
+	FIN(print_default());
 	printf("DEFAULT\n");
+	FOUT;
+}
+
+void acquire_tx_rights()
+{
+	int i;
+	FIN(acquire_tx_rights());
+	
+	if(is_pkt_interrupt)
+	{
+		is_pkt_interrupt = 0;
+		
+		if(pPkt_interrupt == OPC_NIL)
+		{
+			op_sim_end("Nill interrupt pkt", "", "", "");	
+		}
+		
+		op_pk_destroy(pPkt_interrupt);
+		pPkt_interrupt = OPC_NIL;
+	}
+	else
+	{
+		if(pPkt_interrupt != OPC_NIL)
+		{
+			op_sim_end("Not nill interrupt pkt", "", "", "");	
+		}
+	}
+	
+	for(i = 0; i < op_prg_list_size(tx_rights_lst); i++)
+	{
+		if(op_prg_list_access(tx_rights_lst, i) == &self_id)
+		{
+			if(i = 0)
+			{
+				op_sim_end("NOOOOO.......", "", "", "");	
+			}
+			
+			FOUT;
+		}
+	}
+	
+	op_prg_list_insert(tx_rights_lst, &self_id, OPC_LISTPOS_TAIL);
+	if(op_prg_list_size(tx_rights_lst) == 1)
+	{
+		op_intrpt_schedule_self(op_sim_time(), IC_TX_ACQUIRED);
+	}
+	
+	FOUT;
+
 }
 
 /* End of Function Block */
@@ -511,6 +571,12 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				
 				queue_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "hold_queue");
 				
+				if(tx_rights_lst == OPC_NIL)
+				{
+					printf("Creating TX rights list\n");
+					tx_rights_lst = op_prg_list_create();
+				}
+				
 				//Property stream priorities
 				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P1, 15);
 				op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P2, 15);
@@ -523,6 +589,8 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				//Absolute highest - controlled by stream interrupts
 				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_PK_BEACON, 20);
 				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_PK_UPDATEORACK, 20);
+				
+				op_intrpt_priority_set (OPC_INTRPT_SELF, IC_TX_ACQUIRED, 20);
 				
 				//Lower than STRM_IN_STORE
 				op_intrpt_priority_set (OPC_INTRPT_REMOTE, IC_STORE_DUMP_DONE, 9);
@@ -559,25 +627,27 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 
 			/** state (idle) transition processing **/
 			FSM_PROFILE_SECTION_IN ("update_manager [idle trans conditions]", state1_trans_conds)
-			FSM_INIT_COND (I_PK_BEACON)
+			FSM_INIT_COND (I_TX_ACQUIRED)
 			FSM_TEST_COND (I_S_PROP_PKT)
 			FSM_TEST_COND (I_S_MAC_PKT)
 			FSM_TEST_COND (I_PK_UPDATEORACK && STORE_UPDATES)
 			FSM_TEST_COND ((I_S_STORE_PKT || I_R_STORE_DUMP_DONE))
 			FSM_TEST_COND (I_L_SEND_BEACON_TIMER)
 			FSM_TEST_COND (I_PK_UPDATEORACK && !STORE_UPDATES)
+			FSM_TEST_COND (I_PK_BEACON)
 			FSM_TEST_LOGIC ("idle")
 			FSM_PROFILE_SECTION_OUT (state1_trans_conds)
 
 			FSM_TRANSIT_SWITCH
 				{
-				FSM_CASE_TRANSIT (0, 4, state4_enter_exec, ;, "I_PK_BEACON", "", "idle", "tx_start", "tr_14", "update_manager [idle -> tx_start : I_PK_BEACON / ]")
+				FSM_CASE_TRANSIT (0, 4, state4_enter_exec, ;, "I_TX_ACQUIRED", "", "idle", "tx_start", "tr_14", "update_manager [idle -> tx_start : I_TX_ACQUIRED / ]")
 				FSM_CASE_TRANSIT (1, 1, state1_enter_exec, send_to_store();, "I_S_PROP_PKT", "send_to_store()", "idle", "idle", "tr_19", "update_manager [idle -> idle : I_S_PROP_PKT / send_to_store()]")
 				FSM_CASE_TRANSIT (2, 1, state1_enter_exec, generate_mac_pk_interrupt();, "I_S_MAC_PKT", "generate_mac_pk_interrupt()", "idle", "idle", "tr_20", "update_manager [idle -> idle : I_S_MAC_PKT / generate_mac_pk_interrupt()]")
 				FSM_CASE_TRANSIT (3, 1, state1_enter_exec, send_to_store();, "I_PK_UPDATEORACK && STORE_UPDATES", "send_to_store()", "idle", "idle", "tr_21", "update_manager [idle -> idle : I_PK_UPDATEORACK && STORE_UPDATES / send_to_store()]")
 				FSM_CASE_TRANSIT (4, 3, state3_enter_exec, ;, "(I_S_STORE_PKT || I_R_STORE_DUMP_DONE)", "", "idle", "error", "tr_22", "update_manager [idle -> error : (I_S_STORE_PKT || I_R_STORE_DUMP_DONE) / ]")
 				FSM_CASE_TRANSIT (5, 1, state1_enter_exec, send_beacon();, "I_L_SEND_BEACON_TIMER", "send_beacon()", "idle", "idle", "tr_23", "update_manager [idle -> idle : I_L_SEND_BEACON_TIMER / send_beacon()]")
 				FSM_CASE_TRANSIT (6, 1, state1_enter_exec, clear_pk_interrupt();, "I_PK_UPDATEORACK && !STORE_UPDATES", "clear_pk_interrupt()", "idle", "idle", "tr_27", "update_manager [idle -> idle : I_PK_UPDATEORACK && !STORE_UPDATES / clear_pk_interrupt()]")
+				FSM_CASE_TRANSIT (7, 1, state1_enter_exec, acquire_tx_rights();, "I_PK_BEACON", "acquire_tx_rights()", "idle", "idle", "tr_28", "update_manager [idle -> idle : I_PK_BEACON / acquire_tx_rights()]")
 				}
 				/*---------------------------------------------------------*/
 
@@ -641,6 +711,11 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 			FSM_STATE_ENTER_FORCED (4, "tx_start", state4_enter_exec, "update_manager [tx_start enter execs]")
 				FSM_PROFILE_SECTION_IN ("update_manager [tx_start enter execs]", state4_enter_exec)
 				{
+				if(op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD) != &self_id)
+				{
+					op_sim_end("Dont have TX rights", "", "", "");	
+				}
+				
 				if(is_pkt_interrupt)
 				{
 					is_pkt_interrupt = 0;
@@ -703,6 +778,21 @@ update_manager (OP_SIM_CONTEXT_ARG_OPT)
 				enable_beacon();
 				
 				//send_beacon();
+				
+				if(op_prg_list_remove(tx_rights_lst, OPC_LISTPOS_HEAD) != &self_id)
+				{
+					op_sim_end("Dont have TX rights", "Leave", "", "");	
+				}
+				
+				if(op_prg_list_size(tx_rights_lst)>0)
+				{
+					if(op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD) == &self_id)
+					{
+						op_sim_end("Stupid OPNET", "This is actually your fault", "", "");	
+					}
+					
+					op_intrpt_schedule_remote(op_sim_time(), IC_TX_ACQUIRED, *((int *)op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD)));
+				}
 				}
 				FSM_PROFILE_SECTION_OUT (state5_enter_exec)
 

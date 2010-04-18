@@ -5,13 +5,10 @@
 
 \section{Validation} %TODO: no longer a chapter
 
-In this section, there will be two subsections.  One will discuss the simulation to validate our design and implementation.  
-% TODO: reword - two stages in the simulation process -> not two sections in the report
-The other will be used to test the performance using parametric studies.  
-More detail will be explained in the following subsequent section \ref{sec:scenario1} and \ref{sec:scenario2}.
-
-Some pa
-We define our packet loss as the number of packets dropped due to the fact that the buffer size limit has been reached.
+%small intro
+In this section, we will discuss the simulation to validate our design and implementation. 
+A scenario is created to validate that the updates from source nodes are delivered successfully when in range and to see if the update packets are handled properly by the ferry node as designed.   
+Further detail will be explained in the following subsequent section \ref{sec:scenario1}.
 
 
 %When simulating each scenario, the following metrics will be measured:
@@ -24,36 +21,29 @@ We define our packet loss as the number of packets dropped due to the fact that 
 
 %_________________________________________________________________
 %________________________SCENARIO 1_______________________________
-\subsection{Scenario 1: Validation}
+\subsection{Scenario Topology  and Details}
 \label{sec:scenario1}
 
-In this scenario, we are trying to test our design implementation, we need to address what to look for.  
-% Dont use 'we', dont refer to section -> stage
-% Not what to look for -> validate that the node models work 
-We need to validate that the updates from source nodes are delivered successfully when in range and to see if the packets are handled properly as designed.  
 
-\subsubsection{Topology}
+In Figure \ref{fig:scenario1}, it shows the topology to test if the gateway receives the update packets sent by the source nodes and if the ferry is picking up these update packets from source nodes when it moves past them.
+There is one gateway node, one ferry node, and seven source nodes. 
+The size of this topology is 0.75km x 0.75km with source nodes placed evenly apart by 0.375km.  
+The speed of the ferry is a constant 60kph, as it moves clockwise along the rectangular path that is highlighted in white.
 
-The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
-% No: constant speed of 60 kph
-
-In Figure \ref{fig:scenario1}we test to see if the gateway receives the update packets sent by the source nodes.  
-There are two gateway nodes, two ferry nodes, and seven source nodes.  
-The directions of each ferry are indicated by red arrows.
-The paths of the ferry movement is outlined in white color.
 
 %picture of the rectangular path
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.7\textwidth]{images/scenario1-top2}
-    \caption{Scenario1 Topology2}
+    \includegraphics[width=.7\textwidth]{images/scenario1-top1r}
+    \caption{Validation Scenario Topology}
     \label{fig:scenario1}
 \end{figure}
 
 The simulation run time is 6 minutes.  
 
-\subsubsection{Simulation 1 Results}
-%The results you show here are for a different simulation
+\subsection{Validation Simulation Results}
+\label{sec:results-validate}
+
 
 After setting up OPNET to capture the desired statistics, we simulate our design and see if it is successful in delivering packets from the source nodes to the gateway node.
 
@@ -88,16 +78,20 @@ Since there are seven source nodes, this accounts for the 20 packets received by
 \subsection{Scenario 2 : Performance Evaluations}
 \label{sec:scenario2}
 
+%basic introduction
+This will be used to test the performance of message ferrying algorithm using parametric studies.  
 %Basic introduction - a realistic situation
-%	- random ferry movements
 
-In this section, we examine the performance evaluations of message ferrying design to focus two parameters.  
-One of them is to determine a so-called packet loss where we measure the memory utilization versus the packet dropping threshold within ferries.
-% Not utilization - we are imposing a limit
-Because of the nature of our algorithm, there may be dropped packets when the update number is older.
-% Dont use 'our'
-This loss measures the case where the buffer is full, and the oldest packets are dropped to accommodate for adding the new packet.  
+The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
+
+In this section, we examine the performance evaluations of message ferrying design to focus on two parameters.  
+One of the parameters is to determine a so-called packet loss where we measure the buffer size limit versus the packet dropping threshold within ferries.
+Because of the nature of the algorithm, there may be dropped packets when the update number is older.
+This packet loss is defined as where it measures the number of packets dropped when the buffer is full, and the oldest packets are dropped to accommodate for adding the new packet.  
+We define our packet loss as the number of packets dropped due to the fact that the buffer size limit has been reached.
+In this scenario, to test our design implementation, a simple scenario is created to validate that the node models are working as designed.  
 The other is to find the delay, which is measured by the time to update the central repository.
+
 
 \subsubsection{Scenario Considerations}
 

@@ -1,5 +1,7 @@
 \chapter{Project Premise and Model Design} 
 
+\section{Premise}
+
 %TODO: need to discuss ferry characteristics - task oriented
 
 
@@ -8,7 +10,7 @@ Some of the advantages of message ferries are that they virtually do not require
 They're constructed in self configured mesh network of mobile devices that have wireless links and move freely in any direction independently. 
 %	This last sentence is wrong - thats a MANET
 	
-
+\subsection{Application Characteristics and Requirements}
 
 Any application running over a message ferrying network must have the following characteristics:
 
@@ -28,7 +30,7 @@ Applications should limit the size of messages such that the can be transmitted 
 Given these criteria, a message ferrying network is unsuitable for many typical networking applications including web browsing, real-time voice or text communication and file transfer.
 As such, a very specialized 'state monitoring' network designed for non-critical monitoring of remote sensors is considered.
 
-\section{State Monitoring Network}
+\subsection{State Monitoring Network}
 
 The general premise for this project consists of a network containing numerous, uniquely identifiable source nodes. 
 Each source node has a limited number of properties, in the form of key/value pairs, specifying a property name (the key) and its current value.
@@ -85,14 +87,15 @@ These gateway nodes are then responsible for using a reliable delivery mechanism
 \emph{Insert image showing this process.}
 
 %--------------------------------------------------------------------------------------------------------
-% 		Elements
+% 		Design
 %--------------------------------------------------------------------------------------------------------
-\section{Network Elements}
+\section{Modal Design}
+\subsection{Network Elements}
 
 
 %This section describes the elements present in the network.
 
-\subsection{Nodes}
+\subsubsection{Nodes}
 
 The network is comprised of four types of nodes.
 
@@ -116,7 +119,7 @@ There is only one central repository node.
 \end{description}
 
 
-\subsection{Properties}
+\subsubsection{Properties}
 
 Source node has three main pieces of data:
 \begin{itemize}
@@ -128,7 +131,7 @@ Source node has three main pieces of data:
 Note that the key update number is extremely important because it lets the ferry know of the most recent update.
 
 
-\subsection{Packets}
+\subsubsection{Packets}
 
 At the network layer, two types of packets are used as follows:
 
@@ -145,21 +148,25 @@ When there are source nodes in range, they give their updates to the ferries. Si
 %--------------------------------------------------------------------------------------------------------
 % 		Algorithm
 %--------------------------------------------------------------------------------------------------------
-\section{Algorithm and Behavior - Simplified}
+\subsection{Algorithm and Behavior - Simplified}
 
-\subsection{Ferry Algorithm}
+\subsubsection{Ferry Algorithm}
 
 Ferry nodes do the steps shown below in order:
 
-\begin{itemize}
+\begin{enumerate}
 \item Move around sending beacons to let other nodes know that there is a ferry in range.
 \item When a source node is in range, the ferry node receives the updates from it.
 \item Ferry nodes only keep the most recent update according to the key update number and age.
+	\begin{enumerate}
+	\item sub item
+	\item sub item
+	\end{enumerate}
 \item It then moves till a gateway beacon is received.
 \item Ferry node then sends the updates to the gateway.
-\end{itemize}
+\end{enumerate}
 
-\subsection{Source Algorithm}
+\subsubsection{Source Algorithm}
 
 Source nodes do the steps shown below in order:
 
@@ -171,7 +178,7 @@ Source nodes do the steps shown below in order:
 \end{itemize}
 
 
-\subsection{Gateway Algorithm}
+\subsubsection{Gateway Algorithm}
 
 Gateway nodes do the steps shown below in order:
 

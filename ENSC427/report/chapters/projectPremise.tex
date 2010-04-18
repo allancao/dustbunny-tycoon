@@ -69,12 +69,23 @@ These gateway nodes are then responsible for using a reliable delivery mechanism
 \subsubsection{Nodes}
 
 The network is comprised of three types of nodes:
-\begin{itemize}
-\item Ferry Nodes
-\item Source Nodes
-\item Gateway Nodes
-\end{itemize}
 
+\begin{description}
+
+\item[Source Node: ] 
+Static nodes in the network which have a set of properties (key/value pairs).
+After a property of a source changes, known as a state change, it attempt to notify the central repository by transferring update packets to message ferries.
+A source node could be, for example, a remote temperature sensor.
+\item[Message Ferry: ] 
+A mobile node which collects updates from source nodes when they are in range.
+Message ferries store update packets from source nodes within a buffer. 
+When in range, these update packets are forwarded to gateway nodes.
+A source node could be, for example, a specially equipt cell phone or a small computer attached to a vehicle. 
+\item[Gateway: ]
+Gateway nodes download update packets form message ferries and forward them to the central repository over the Internet.
+Transfer of updates between the gateway and central repository is assumed to be reliable. 
+
+\end{description}
 
 
 Sources have properties (prop1, prop2, etc) which generate messages. These messages get carried to any gateway node by message ferries.
@@ -111,22 +122,7 @@ Ferry Node shown in figure \ref{fig:Ferry} is a mobile node which collects updat
 \end{figure}
 
 Gateway Node shown in figure \ref{fig:Gateway} receives the update messages from ferries and forwards them to their final destination via the Internet. 
-\begin{description}
 
-\item[Source Node: ] 
-Static nodes in the network which have a set of properties (key/value pairs).
-After a property of a source changes, known as a state change, it attempt to notify the central repository by transferring update packets to message ferries.
-A source node could be, for example, a remote temperature sensor.
-\item[Message Ferry: ] 
-A mobile node which collects updates from source nodes when they are in range.
-Message ferries store update packets from source nodes within a buffer. 
-When in range, these update packets are forwarded to gateway nodes.
-A source node could be, for example, a specially equipt cell phone or a small computer attached to a vehicle. 
-\item[Gateway: ]
-Gateway nodes download update packets form message ferries and forward them to the central repository over the Internet.
-Transfer of updates between the gateway and central repository is assumed to be reliable. 
-
-\end{description}
 
 
 \subsubsection{Properties}

@@ -1,14 +1,15 @@
 \chapter{Project Premise and OPNET Model Design} 
 
-This chapter presents the premise and details of a specific network design used to analyze message ferrying in section \ref{sec:premise}.
+This chapter presents the premise and details of a specialized network design used to analyze message ferrying in section \ref{sec:premise}.
 A general overview of the OPNET model which was created is then presented in section \ref{sec:model_design}.
-Please refer to appendix \ref{appendix:code} for specific details.
+Please refer to the appendix for specific details.
 Finally, the results of an initial simulation used to validate the node models is presented in \ref{sec:validation}.
 
 \section{Premise}
 \label{sec:premise}
 
-%TODO: Intro
+This section outlines the requirements for any application which uses message ferrying.
+Details of a specialized \lq{}state monitoring\rq{} network are then discussed.
 
 \subsection{Application Characteristics and Requirements}
 \label{sec:premise_appchar}
@@ -23,9 +24,7 @@ Given that ferries have limited memory, loss of data must be expected.
 \item[Small and Independent Messages: ]
 Following from the limited memory capacity of ferries and the high probability of data loss, a reliable method for segmentation and reassembly of messages should not be expected. 
 Applications should limit the size of messages such that the can be transmitted in their entirety using one protocol data unit.
-%Use PDU instead of packet?
-%
-(See section \ref{sec:fountain_codes} for future work)
+
 \end{description}
 
 Given these criteria, a message ferrying network is unsuitable for many typical networking applications including web browsing, real-time voice or text communication and file transfer.

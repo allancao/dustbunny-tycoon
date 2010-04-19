@@ -30,20 +30,19 @@ There are four main categories for future work and improvements to the OPNET mod
 Many aspects of the ferrying algorithm implemented in this network are simplistic.
 For example, there is no reverse communication from the gateway to message ferries indicating updates have been delivered and update messages may be discarded.
 The implementation of an update acknowledgment mechanism could significantly improve performance and memory utilization.
-Additionally, a more intelligent algorithm used by ferries to discard packets could also improve network performance.
+Additionally, a more intelligent algorithm used by ferries to discard packets could also improve overall network performance.
 
 \subsection{Model Improvements}
 
-Many assumptions and simplifications were made when considering update and packet transfer between nodes.
-For example, near data transfer was assumed, little to no packet loss, an a defined communication range of 60 meters.
-%Why valid
-Implementing an existing point to point protocol for wireless data transfer, such as WiFi or ZigBee would provide more realistic results.
+Many assumptions and simplifications were made when considering update and data transfer between nodes.
+For example, near instantaneous data transfer, little to no packet loss, and a strict communication range of 60 meters was assumed.
+Incorporating an existing point to point protocol for reliable wireless data transfer, such as WiFi or ZigBee would provide more realistic results.
 
 \subsection{Statistic Improvements}
 
-Due to the unique nature of the network, common ways to measure network statistics are not valid.
-As such, custom code was required to measure all statistics.
-Measurement of only two statistics was implemented, delay and update loss.
+Due to the unique nature of the network, common ways to measure statistics are not valid.
+As such, custom logic was required to produce all statistics.
+Measurement of only two statistics was implemented, delay and update success rate.
 Adding additional statistics, such as number of active packets in the network and arrival order, would provide additional insights into the networks behaviour.
 
 \subsection{Applicability and Network Model}
@@ -51,12 +50,4 @@ Adding additional statistics, such as number of active packets in the network an
 The simulation presented involves roughly even source node placement and random ferry movement.
 It is unlikely that a real %change real
 network would have these characteristics.
-Creating and simulating a real-world application of message ferrying would provide more realistic statistics.
-%Yuck
-
-%\subsection{Fountain Codes}
-%\label{sec:fountain_codes}
-
-%An assumption of the scenario was that application messages can be transmitted in a single network packet.
-%A possible solution overcome this limitation without using an ARQ scheme (poorly suited to a delay tolerant network) is the use of fountain error correcting codes (aka rateless erasure codes). 
-%See \url{http://en.wikipedia.org/wiki/Fountain_codes}.
+Creating and simulating a real-world network model would provide more realistic results.

@@ -24,7 +24,6 @@ Given that ferries have limited memory, loss of data must be expected.
 \item[Small and Independent Messages: ]
 Following from the limited memory capacity of ferries and the high probability of data loss, a reliable method for segmentation and reassembly of messages should not be expected. 
 Applications should limit the size of messages such that the can be transmitted in their entirety using one protocol data unit.
-
 \end{description}
 
 Given these criteria, a message ferrying network is unsuitable for many typical networking applications including web browsing, real-time voice or text communication and file transfer.
@@ -59,7 +58,7 @@ Once messages have been delivered to gateway nodes, they are assumed to have bee
 Due to the lack of support in OPNET for message ferrying, all node and process models were creates specifically for this project. 
 An overview of the basic network elements, including node and packets types, is presented in \ref{sec:net_element}.
 A description of the networking algorithm is then presented in section \ref{sec:algorithm}.
-Please refer to appendix \ref{appendix:code} for specific implementation details.
+Please refer to the appendix for specific implementation details.
 
 \subsection{Network Elements}
 \label{sec:net_element}
@@ -74,19 +73,20 @@ The network is comprised of three types of network nodes:
 
 \item[Source Node: ] 
 Static (non-mobile) nodes in the network which have a set of properties (key/value pairs).
-After a property of a source node changes, known as a state change, it attempt to notify the central repository by transferring update packets to any message ferries which are in range.
+After a property of a source node changes, known as a state change, it attempt to notify the central repository via gateway nodes by transferring update packets to any message ferries which are in range.
+It is important to note that source updates may be delivered to any gateway.
 A source node could be, for example, a remote temperature sensor.
 \item[Message Ferry: ] 
-A mobile nodes which collects updates from source nodes when they are in range.
-Message ferries store update packets from source nodes within a buffer. 
+Mobile nodes which collects updates from source nodes when they are in range.
+Message ferries store updates from source nodes within a buffer. 
 When in range, these update packets are forwarded to gateway nodes.
 A source node could be, for example, a specially equipt cell phone or a small computer attached to a vehicle. 
 \item[Gateway: ]
 Gateway nodes download update packets from message ferries and mark them as received.
 \end{description}
 
-Source nodes have properties (prop1, prop2, etc) which update messages. 
-These messages get carried to any gateway node by message ferries. 
+Source nodes have properties (prop1, prop2, etc) which generate update messages. 
+These messages get carried to \emph{any} gateway node by message ferries. 
 The OPNET node model for a source node node may be seen in \ref{fig:source}
 
 \begin{figure}[h]

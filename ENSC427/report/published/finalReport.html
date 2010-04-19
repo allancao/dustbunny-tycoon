@@ -1,0 +1,1215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
+  "http://www.w3.org/TR/html4/loose.dtd">  
+<html > 
+<head><title>Message Ferrying: Implementation and Simulation in OPNET</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<!-- html --> 
+<meta name="src" content="finalReport.tex"> 
+<meta name="date" content="2010-04-19 11:07:00"> 
+<link rel="stylesheet" type="text/css" href="finalReport.css"> 
+</head><body 
+>
+   <div class="maketitle">
+
+
+<h2 class="titleHead">Message Ferrying: Implementation and
+Simulation in OPNET</h2>
+<span 
+class="cmr-12x-x-120">ENSC 427</span>
+   <br/> <br/>
+<div class="author" > Group 9<br />
+Dan Hendry (danh@sfu.ca)<br />
+Yazan Shehadeh (ysa5@sfu.ca)<br />
+Timbo Yuen (tty2@sfu.ca)<br />
+</div>
+   <br/>
+Simon Fraser University<br />
+School of Engineering Science
+
+   <br/>
+<div class="date" >April 19, 2010</div><br />
+Course Instructor: Professor Ljiljana Trajkovic
+
+   <hr/> </div>
+
+<!--l. 43--><p class="indent" >
+
+   <div 
+class="abstract" 
+>
+<!--l. 51--><p class="indent" >
+
+<div class="center" 
+>
+<!--l. 51--><p class="noindent" >
+<!--l. 51--><p class="noindent" ><span 
+class="cmbx-12">Abstract</span></div>
+<!--l. 1--><p class="noindent" >Machine to machine communication has long been considered a feature of the next
+technological age. For many applications, networking options available today are
+either too expensive or cumbersome to justify the information they are able to
+provide (such as dedicated wired Ethernet or cellular data modems), or do not
+provide uniform connectivity (such as WiFi). An alternate solution is to use ad-hoc
+mesh networking. Such networks however, require every node to be connect to
+another and fail when the network is sparse or becomes partitioned. Message
+ferrying is a technique which uses physical mobile devices, known as message
+ferries, as data transport mechanisms between disconnected network nodes or
+partitioned subnetworks. This report describes a message ferrying algorithm and
+simulation model for task oriented ferries created in OPNET which is applicable
+to a specialized remote sensor network in which a central repository maintains
+current sensor state. Update success rate and delay results are presented for two
+simulations.
+
+   </div>
+
+<!--l. 64--><p class="indent" >   <hr/>
+
+   <h2 class="likechapterHead"><a 
+ id="x1-1000"></a>Contents</h2> <div class="tableofcontents">
+   <span class="chapterToc" > <a 
+href="#Q1-1-2">&#x00A0;   Contents</a></span>
+<br />   <span class="chapterToc" >1 <a 
+href="#x1-20001" id="QQ2-1-3">Introduction</a></span>
+<br />   &#x00A0;<span class="sectionToc" >1.1 <a 
+href="#x1-30001.1" id="QQ2-1-4">Background</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >1.1.1 <a 
+href="#x1-40001.1.1" id="QQ2-1-5">Ad Hoc Network Types</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >1.1.2 <a 
+href="#x1-80001.1.2" id="QQ2-1-9">Message Ferrying &amp; Store-Carry-Forward Routing</a></span>
+<br />   &#x00A0;<span class="sectionToc" >1.2 <a 
+href="#x1-90001.2" id="QQ2-1-10">Motivations and Potential Applications</a></span>
+<br />   &#x00A0;<span class="sectionToc" >1.3 <a 
+href="#x1-100001.3" id="QQ2-1-11">Project Goals</a></span>
+<br />   <span class="chapterToc" >2 <a 
+href="#x1-110002" id="QQ2-1-12">Project Premise and OPNET Model Design</a></span>
+<br />   &#x00A0;<span class="sectionToc" >2.1 <a 
+href="#x1-120002.1" id="QQ2-1-13">Premise</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.1.1 <a 
+href="#x1-130002.1.1" id="QQ2-1-14">Application Characteristics and Requirements</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.1.2 <a 
+href="#x1-140002.1.2" id="QQ2-1-15">State Monitoring Network</a></span>
+<br />   &#x00A0;<span class="sectionToc" >2.2 <a 
+href="#x1-150002.2" id="QQ2-1-16">OPNET Model Design</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.2.1 <a 
+href="#x1-160002.2.1" id="QQ2-1-17">Network Elements</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.2.2 <a 
+href="#x1-200002.2.2" id="QQ2-1-24">Algorithm and Behaviour</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.2.3 <a 
+href="#x1-240002.2.3" id="QQ2-1-28">Assumptions</a></span>
+<br />   &#x00A0;<span class="sectionToc" >2.3 <a 
+href="#x1-250002.3" id="QQ2-1-29">Validation</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.3.1 <a 
+href="#x1-260002.3.1" id="QQ2-1-30">Scenario Topology and Details</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >2.3.2 <a 
+href="#x1-270002.3.2" id="QQ2-1-32">Validation Simulation Results</a></span>
+<br />   <span class="chapterToc" >3 <a 
+href="#x1-280003" id="QQ2-1-35">Simulation</a></span>
+<br />   &#x00A0;<span class="sectionToc" >3.1 <a 
+href="#x1-290003.1" id="QQ2-1-36">Network Model</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.1.1 <a 
+href="#x1-300003.1.1" id="QQ2-1-37">Scenario 1</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.1.2 <a 
+href="#x1-310003.1.2" id="QQ2-1-39">Scenario 2</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.1.3 <a 
+href="#x1-320003.1.3" id="QQ2-1-41">Common Settings</a></span>
+<br />   &#x00A0;<span class="sectionToc" >3.2 <a 
+href="#x1-330003.2" id="QQ2-1-42">Metrics and Results of Interest </a></span>
+
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.2.1 <a 
+href="#x1-340003.2.1" id="QQ2-1-43">Update Success Rate</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.2.2 <a 
+href="#x1-350003.2.2" id="QQ2-1-44">Delay</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >3.2.3 <a 
+href="#x1-360003.2.3" id="QQ2-1-45">Simulation Parameters Varied</a></span>
+<br />   <span class="chapterToc" >4 <a 
+href="#x1-400004" id="QQ2-1-49">Results</a></span>
+<br />   &#x00A0;<span class="sectionToc" >4.1 <a 
+href="#x1-410004.1" id="QQ2-1-50">Success Rate</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.1.1 <a 
+href="#x1-420004.1.1" id="QQ2-1-51">Simulation 1</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.1.2 <a 
+href="#x1-430004.1.2" id="QQ2-1-53">Simulation 2</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.1.3 <a 
+href="#x1-440004.1.3" id="QQ2-1-55">Comparison of Success Rate</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.1.4 <a 
+href="#x1-450004.1.4" id="QQ2-1-57">Effect of Source Node Storage</a></span>
+<br />   &#x00A0;<span class="sectionToc" >4.2 <a 
+href="#x1-460004.2" id="QQ2-1-59">Delay</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.2.1 <a 
+href="#x1-470004.2.1" id="QQ2-1-60">Simulation 1</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.2.2 <a 
+href="#x1-480004.2.2" id="QQ2-1-63">Simulation 2</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >4.2.3 <a 
+href="#x1-490004.2.3" id="QQ2-1-66">Comparison of Simulation</a></span>
+<br />   <span class="chapterToc" >5 <a 
+href="#x1-500005" id="QQ2-1-69">Conclusion</a></span>
+<br />   &#x00A0;<span class="sectionToc" >5.1 <a 
+href="#x1-510005.1" id="QQ2-1-70">Results</a></span>
+<br />   &#x00A0;<span class="sectionToc" >5.2 <a 
+href="#x1-520005.2" id="QQ2-1-71">Future Work</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >5.2.1 <a 
+href="#x1-530005.2.1" id="QQ2-1-72">Algorithm Improvements</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >5.2.2 <a 
+href="#x1-540005.2.2" id="QQ2-1-73">Model Improvements</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >5.2.3 <a 
+href="#x1-550005.2.3" id="QQ2-1-74">Statistic Improvements</a></span>
+<br />   &#x00A0;&#x00A0;<span class="subsectionToc" >5.2.4 <a 
+href="#x1-560005.2.4" id="QQ2-1-75">Applicability and Network Model</a></span>
+<br />   <span class="chapterToc" > <a 
+href="#Q1-1-77">&#x00A0;   References</a></span>
+   </div><a 
+ id="Q1-1-2"></a>
+
+<!--l. 67--><p class="indent" >
+
+<!--l. 15--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;1</span><br /><a 
+ id="x1-20001"></a>Introduction</h2>
+   <h3 class="sectionHead"><span class="titlemark">1.1   </span> <a 
+ id="x1-30001.1"></a>Background</h3>
+<!--l. 18--><p class="noindent" >Message ferrying is a networking approach where data is physically carried between
+network nodes which cannot communicate directly. It is sometimes called
+&#8221;store-carry-forward&#8221; routing&#x00A0;<span class="cite">[<a 
+href="#XRouting">1</a>]</span>. Message ferries can be of two types; message
+oriented ferries and task oriented ferries&#x00A0;<span class="cite">[<a 
+href="#Xhybrid">2</a>]</span>. Message oriented ferries are ferries
+dedicated to the task of transporting data, known in this context as messages,
+and their position is controlled by a ferrying algorithm. Task oriented ferries
+transport data but do so while performing another task. Their movement is not
+controlled by the ferrying algorithm. Much past research has focused on message
+oriented ferries within partitioned, wireless ad-hoc networks&#x00A0;<span class="cite">[<a 
+href="#XRouting">1</a>]</span>&#x00A0;<span class="cite">[<a 
+href="#Xadhocmsgferry">3</a>]</span> . Very little
+research has been found on the topic of task oriented ferries, the focus of this
+project. Related networking concepts are presented in section <a 
+href="#x1-40001.1.1">1.1.1<!--tex4ht:ref: sec:net_types --></a>. Potential
+examples of applications suitable for message ferrying are presented in section
+<a 
+href="#x1-90001.2">1.2<!--tex4ht:ref: sec:motivations --></a>.
+<!--l. 31--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">1.1.1   </span> <a 
+ id="x1-40001.1.1"></a>Ad Hoc Network Types</h4>
+<!--l. 34--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-50001.1.1"></a>Mobile Ad Hoc Networks</h5>
+<!--l. 35--><p class="noindent" >A mobile ad hoc network (MANET), is a self-configuring mesh network of mobile
+devices connected by wireless links&#x00A0;<span class="cite">[<a 
+href="#Xbook1">4</a>]</span>. These mobile devices are free to move
+independently in any direction and act as a router, where it must forward traffic
+unrelated to its own. Much past research on message ferrying has focused on
+MANETs.
+
+<!--l. 39--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-60001.1.1"></a>Partitioned Networks</h5>
+<!--l. 41--><p class="noindent" >Partitioned networks are networks with no single hop or multiple hop route between
+some or even all node pairs.&#x00A0;<span class="cite">[<a 
+href="#Xhybrid">2</a>]</span> In a partitioned network, nodes may remain fully
+disconnected or they may <span 
+class="cmti-12">cluster</span>, forming subnetworks in which all nodes are
+connected. All current used routing algorithms used in MANETs fail in the presence of
+partitioning&#x00A0;<span class="cite">[<a 
+href="#XRouting">1</a>]</span>. This project assumes disconnected nodes, but does not assume nodes
+cluster.
+<!--l. 48--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-70001.1.1"></a>Delay Tolerant Networks</h5>
+<!--l. 51--><p class="noindent" >A delay tolerant network is one in which routing strategies and applications must tolerate
+significant delays delivering packets. This delay may range from a few minutes up to
+hours or even days&#x00A0;<span class="cite">[<a 
+href="#XRouting">1</a>]</span>. The network presented in this report is inherently delay
+tolerant.
+<!--l. 56--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">1.1.2   </span> <a 
+ id="x1-80001.1.2"></a>Message Ferrying &amp; Store-Carry-Forward Routing</h4>
+<!--l. 58--><p class="noindent" >Message ferrying is a technique where mobile nodes in a MANET buffer data and
+physically carry it between nodes which are unable to communicate directly&#x00A0;<span class="cite">[<a 
+href="#Xadhocmsgferry">3</a>]</span>.
+Store-carry-forward routing is a strategy which makes use of, typically, known or assigned
+trajectories of these mobile nodes, known as message ferries&#x00A0;<span class="cite">[<a 
+href="#XRouting">1</a>]</span>. Some messages are
+dropped if no route to the destination can be found&#x00A0;<span class="cite">[<a 
+href="#Ximplement">5</a>]</span>.
+<!--l. 62--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">1.2   </span> <a 
+ id="x1-90001.2"></a>Motivations and Potential Applications</h3>
+<!--l. 65--><p class="noindent" >With the significant number of mobile devices in use today, such as smartphones, laptops,
+
+tablets, netbooks, and more, there are many devices which could be potentially used as
+message ferries&#x00A0;<span class="cite">[<a 
+href="#Xwearable">6</a>]</span>. This project proposes one way to make use of the technology we
+transport with us on a daily basis. A message ferrying network could transport small
+amounts of data over large distances essentially for free. Beyond the use of message ferrying
+in remote sensor networks, discussed throughout this report, other applications of this
+technique might include tracking road traffic conditions, in-house utility management,
+automation for home devices, industrial monitoring, robot to robot communication and
+more&#x00A0;<span class="cite">[<a 
+href="#Xbook1">4</a>]</span>.
+<!--l. 73--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">1.3   </span> <a 
+ id="x1-100001.3"></a>Project Goals</h3>
+<!--l. 75--><p class="noindent" >Message ferrying has typically been examined within the context of improving throughput,
+reducing delay and increasing reliability within an ad hoc network&#x00A0;<span class="cite">[<a 
+href="#Xefficientrouting">7</a>]</span>. Due to the
+complexity of incorporating message ferrying into existing ad hoc and MANET routing
+algorithms, this project will focus on a network in which data is transported strictly using
+ferries. No clustering of network nodes and routing within subnetworks will be considered
+(as discussed in section <a 
+href="#x1-60001.1.1">1.1.1<!--tex4ht:ref: sec:clustering --></a>). Surprisingly, very little research has been found for a
+network with these characteristics. The goals of this project may be listed as
+follows.
+      <ul class="itemize1">
+      <li class="itemize">Design and implement a message ferrying algorithm.
+      </li>
+      <li class="itemize">Simulate this algorithm in a highly partitioned network without node clustering
+      or subnetworks.
+      </li>
+      <li class="itemize">Evaluate the network using delay and message loss metrics.
+
+      </li>
+      <li class="itemize">Examine the impact of node density, ferry count, and memory limits.</li></ul>
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;2</span><br /><a 
+ id="x1-110002"></a>Project Premise and OPNET Model Design</h2>
+<!--l. 3--><p class="noindent" >This chapter presents the premise and details of a specialized network design used to
+analyze message ferrying in section <a 
+href="#x1-120002.1">2.1<!--tex4ht:ref: sec:premise --></a>. A general overview of the OPNET model which
+was created is then presented in section <a 
+href="#x1-150002.2">2.2<!--tex4ht:ref: sec:model_design --></a>. Please refer to the appendix for specific details.
+Finally, the results of an initial simulation used to validate the node models is presented in
+<a 
+href="#x1-250002.3">2.3<!--tex4ht:ref: sec:validation --></a>.
+   <h3 class="sectionHead"><span class="titlemark">2.1   </span> <a 
+ id="x1-120002.1"></a>Premise</h3>
+<!--l. 11--><p class="noindent" >This section outlines the requirements for any application which uses message ferrying.
+Details of a specialized &#8216;state monitoring&#8217; network are then discussed.
+<!--l. 14--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.1.1   </span> <a 
+ id="x1-130002.1.1"></a>Application Characteristics and Requirements</h4>
+<!--l. 17--><p class="noindent" >Any application making use of message ferrying must have the following characteristics:
+      <dl class="description"><dt class="description">
+<span 
+class="cmbx-12">Delay Tolerance:</span>  </dt><dd 
+class="description">Since data is transported by a physical device, significant delays
+      of minutes to hours must be expected.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Loss Tolerance:</span>  </dt><dd 
+class="description">Given  that  ferries  have  limited  memory,  loss  of  data  must  be
+      expected.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Small and Independent Messages:</span>  </dt><dd 
+class="description">Following from the limited memory capacity
+      of  ferries  and  the  high  probability  of  data  loss,  a  reliable  method  for
+      segmentation and reassembly of messages should not be expected. Applications
+      should limit the size of messages such that the can be transmitted in their
+      entirety using one protocol data unit.</dd></dl>
+
+<!--l. 29--><p class="indent" >   Given these criteria, a message ferrying network is unsuitable for many typical
+networking applications including web browsing, real-time voice or text communication and
+file transfer. As such, a very specialized &#8217;state monitoring&#8217; network designed for non-critical
+monitoring of remote sensors is considered.
+<!--l. 32--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.1.2   </span> <a 
+ id="x1-140002.1.2"></a>State Monitoring Network</h4>
+<!--l. 34--><p class="noindent" >The general premise for this project consists of a network containing numerous, uniquely
+identifiable source nodes. Each source node has a limited number of properties, in the form
+of key/value pairs, specifying a property name (the key) and its current value. Properties
+may change overtime and each change defines a new state for the source node. A
+temperature sensor for example, might support a &#8217;temperature&#8217; property, the value of
+which is the current temperature updated every hour. Properties do not have to
+contain a single value and each may be as large as the payload limit of network
+packets.
+<!--l. 41--><p class="indent" >   The network and message ferrying algorithm is designed to synchronize a central
+repository with the current state of every source node. Only the most recent state (or most
+recent value) for each property is important, not the history of how that property
+has changed. This limits the number of packets which can exist in the network
+as only the most recent update must be reported. The message ferries collect
+data from source nodes when they are in range and transport it to the central
+repository. The central repository is assumed to be a server connected to the
+Internet. Ferries pass updates they have collected from source nodes to special
+gateway nodes. These gateway nodes are then responsible for using a reliable
+delivery mechanism over a standard IP network to update the central repository.
+This last stage is not considered for the implementation presented here. Once
+messages have been delivered to gateway nodes, they are assumed to have been
+delivered.
+
+<!--l. 55--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">2.2   </span> <a 
+ id="x1-150002.2"></a>OPNET Model Design</h3>
+<!--l. 58--><p class="noindent" >Due to the lack of support in OPNET for message ferrying, all node and process models
+were creates specifically for this project. An overview of the basic network elements,
+including node and packets types, is presented in <a 
+href="#x1-160002.2.1">2.2.1<!--tex4ht:ref: sec:net_element --></a>. A description of the networking
+algorithm is then presented in section <a 
+href="#x1-200002.2.2">2.2.2<!--tex4ht:ref: sec:algorithm --></a>. Please refer to the appendix for specific
+implementation details.
+<!--l. 63--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.2.1   </span> <a 
+ id="x1-160002.2.1"></a>Network Elements</h4>
+<!--l. 68--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-170002.2.1"></a>Network Nodes</h5>
+<!--l. 70--><p class="noindent" >The network is comprised of three types of network nodes:
+      <dl class="description"><dt class="description">
+<span 
+class="cmbx-12">Source Node:</span>  </dt><dd 
+class="description">Static  (non-mobile)  nodes  in  the  network  which  have  a  set  of
+      properties (key/value pairs). After a property of a source node changes, known
+      as a state change, it attempt to notify the central repository via gateway nodes
+      by transferring update packets to any message ferries which are in range. It
+      is important to note that source updates may be delivered to any gateway. A
+      source node could be, for example, a remote temperature sensor.
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Message Ferry:</span>  </dt><dd 
+class="description">Mobile nodes which collects updates from source nodes when they
+      are in range. Message ferries store updates from source nodes within a buffer.
+      When in range, these update packets are forwarded to gateway nodes. A source
+      node could be, for example, a specially equipt cell phone or a small computer
+      attached to a vehicle.
+
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Gateway:</span>  </dt><dd 
+class="description">Gateway nodes download update packets from message ferries and mark
+      them as received.</dd></dl>
+<!--l. 88--><p class="indent" >   Source nodes have properties (prop1, prop2, etc) which generate update messages.
+These messages get carried to <span 
+class="cmti-12">any </span>gateway node by message ferries. The OPNET node
+model for a source node node may be seen in <a 
+href="#x1-170011">2.1<!--tex4ht:ref: fig:source --></a>
+<!--l. 92--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-170011"></a>
+
+<!--l. 94--><p class="noindent" ><img 
+src="images/source.jpg" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;2.1: </span><span  
+class="content">Source Node Model</span></div><!--tex4ht:label?: x1-170011 -->
+
+<!--l. 97--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 99--><p class="indent" >   The OPNET node model for a message ferry is shown in figure <a 
+href="#x1-170022">2.2<!--tex4ht:ref: fig:Ferry --></a>. The ferry is a
+mobile node which collects updates from source nodes when they are in range.
+These updates are then stored in memory (the storage process in figure <a 
+href="#x1-170022">2.2<!--tex4ht:ref: fig:Ferry --></a>).
+The storage process compares the updates, uniquely identified by source ID and
+property key, and keeps the most recent according to the key update number (see
+below).
+<!--l. 104--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-170022"></a>
+
+<!--l. 106--><p class="noindent" ><img 
+src="images/ferry.jpg" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;2.2: </span><span  
+class="content">Ferry Node Model</span></div><!--tex4ht:label?: x1-170022 -->
+
+<!--l. 109--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 111--><p class="indent" >   The OPNET model for a gateway node is shown in figure <a 
+href="#x1-170033">2.3<!--tex4ht:ref: fig:Gateway --></a>. The gateway
+process model seen in the figure is responsible for tracking what updates have been
+received. It makes use of global variables so updates may be received by any
+gateway.
+<!--l. 115--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-170033"></a>
+
+<!--l. 117--><p class="noindent" ><img 
+src="images/gateway.jpg" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;2.3: </span><span  
+class="content">Gateway Node Model</span></div><!--tex4ht:label?: x1-170033 -->
+
+<!--l. 120--><p class="indent" >   </div><hr class="endfigure">
+   <h5 class="subsubsectionHead"><a 
+ id="x1-180002.2.1"></a>Properties and Property Process</h5>
+<!--l. 124--><p class="noindent" >Each source node supports three properties as can be seen in figure <a 
+href="#x1-170011">2.1<!--tex4ht:ref: fig:source --></a>. Furthermore, each
+property has three main pieces of data as described below. Updates generated by the
+property contain these three pieces of information. For the purposes of this project, the
+value of the property is inconsequential and not considered.
+      <dl class="description"><dt class="description">
+<span 
+class="cmbx-12">Source ID:</span>  </dt><dd 
+class="description">A unique identifier of the source node a property is associated with
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Key:</span>  </dt><dd 
+class="description">Or property key is a unique for each property within a source node
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Key Update Number:</span>  </dt><dd 
+class="description">A counter which is incremented each time the property
+      value changes. Only the most recent value of a property, as defined by its key
+      update number, is of importance.</dd></dl>
+<!--l. 136--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-190002.2.1"></a>Packets</h5>
+<!--l. 138--><p class="noindent" >Two types of packets are used within the OPNET model.
+      <dl class="description"><dt class="description">
+<span 
+class="cmbx-12">Update Packet:</span>  </dt><dd 
+class="description">Update packets are generated by the property processes of source
+      nodes when their value changes. They are transmitted to message ferries which
+      in turn transport them to the gateway.
+
+      </dd><dt class="description">
+<span 
+class="cmbx-12">Beacon Packet:</span>  </dt><dd 
+class="description">Beacon packets are used to detect when nodes are in range and
+      are able to communicate. Beacon packets are generated periodically be ferry and
+      gateway nodes and trigger transmission of stored update messages by receiving
+      nodes.</dd></dl>
+<!--l. 152--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.2.2   </span> <a 
+ id="x1-200002.2.2"></a>Algorithm and Behaviour</h4>
+<!--l. 155--><p class="noindent" >A brief overview of the algorithm implemented in each node is presented in this section.
+Pseudo code is presented here; refer to the appendix for the actual implementation.
+<!--l. 158--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-210002.2.2"></a>Ferry Node Algorithm</h5>
+<!--l. 160--><p class="noindent" >Ferry nodes behave in the following way. Note that ferry nodes are mobile.
+<!--l. 162--><p class="indent" >
+      <ol  class="enumerate1" >
+      <li 
+  class="enumerate" id="x1-21002x1">Periodically send beacons to notify other nodes that there is a ferry in range.
+      These beacons trigger source nodes and other ferries to transmit stored updates.
+      </li>
+      <li 
+  class="enumerate" id="x1-21004x2">When updates are received, store them. Updates are discard based on the following
+      conditions.
+           <ol  class="enumerate2" >
+           <li 
+  class="enumerate" id="x1-21006x1">If two updates (one received and one in memory) with the same source id
+           and key are detected, discard the updated with the smallest key update
+           number.
+
+           </li>
+           <li 
+  class="enumerate" id="x1-21008x2">If the memory limit has been reached, discard the oldest update (regardless
+           of source id and key).</li></ol>
+      </li>
+      <li 
+  class="enumerate" id="x1-21010x3">When a beacon is received, transmit all updates in memory.
+      </li>
+      <li 
+  class="enumerate" id="x1-21012x4">Repeat</li></ol>
+<!--l. 175--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-220002.2.2"></a>Source Node Algorithm</h5>
+<!--l. 177--><p class="noindent" >Source nodes behave in the following way
+<!--l. 179--><p class="indent" >
+      <ol  class="enumerate1" >
+      <li 
+  class="enumerate" id="x1-22002x1">Wait for a beacon.
+      </li>
+      <li 
+  class="enumerate" id="x1-22004x2">Based on the current state, defined by the key update number for each property,
+      transmit updates.
+      </li>
+      <li 
+  class="enumerate" id="x1-22006x3">Repeat</li></ol>
+<!--l. 185--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-230002.2.2"></a>Gateway Algorithm</h5>
+<!--l. 187--><p class="noindent" >Gateway nodes behave in the following way:
+<!--l. 189--><p class="indent" >
+      <ol  class="enumerate1" >
+      <li 
+  class="enumerate" id="x1-23002x1">Periodically send beacons to notify other nodes that of the gateways existence.
+
+      </li>
+      <li 
+  class="enumerate" id="x1-23004x2">Wait for updates to be received
+      </li>
+      <li 
+  class="enumerate" id="x1-23006x3">If an update received for a given source id and key has a greater key update
+      number than the last update received for that source id and key, record an
+      update. If the key update number is equal to or less than the last update, discard
+      the update.</li></ol>
+<!--l. 196--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.2.3   </span> <a 
+ id="x1-240002.2.3"></a>Assumptions</h4>
+<!--l. 198--><p class="noindent" >In order to simplify the simulation and focus on the message ferrying algorithm,
+a number of assumptions were made regarding data transmission and wireless
+communication.
+      <ul class="itemize1">
+      <li class="itemize">Communication range of 60 meters. When nodes are closer than 60 meters they
+      can communicate and when they are further apart than 60 meters, they cannot.
+      </li>
+      <li class="itemize">No propagation and transmission delay. This assumption was made to ensure
+      ferries receive all updates when moving past source nodes.
+      </li>
+      <li class="itemize">No unintentional loss, the node link is assumed to be reliable. It is assumed
+      that there is no loss caused by radio interference. This assumption was made to
+      eliminate the need for an acknowledgment and retransmission mechanism.
+      </li></ul>
+<!--l. 213--><p class="indent" >   These assumptions are considered valid as there are are number of technologies,
+implemented at a lower network layer, which provides reliable data transfer services.
+
+<!--l. 1--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">2.3   </span> <a 
+ id="x1-250002.3"></a>Validation</h3>
+<!--l. 5--><p class="noindent" >This section presents, an initial simulation which was used to validate the OPNET node
+and process models.
+<!--l. 12--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">2.3.1   </span> <a 
+ id="x1-260002.3.1"></a>Scenario Topology and Details</h4>
+<!--l. 15--><p class="noindent" >The network model is shown in figure <a 
+href="#x1-260014">2.4<!--tex4ht:ref: fig:scenario1 --></a>. It is used to ensure the ferry receives updates
+from source nodes as it passes by them and transmits them to the gateway. There is one
+gateway node, one ferry node, and seven source nodes. The size of the map is 0.75 km x
+0.75 km with source nodes placed evenly apart by 0.375 km. The gateway node is at the
+top left corner, and the ferry is in motion indicated next to the red arrow. The
+speed of the ferry is constant at 60 kmph, as it moves clockwise two times along
+the rectangular path that is highlighted in white. The simulated time was six
+minutes.
+<!--l. 23--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-260014"></a>
+
+<!--l. 25--><p class="noindent" ><img 
+src="images/scenario1-top1r.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;2.4: </span><span  
+class="content">Network Model - Validation Simulation</span></div><!--tex4ht:label?: x1-260014 -->
+
+<!--l. 28--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">2.3.2   </span> <a 
+ id="x1-270002.3.2"></a>Validation Simulation Results</h4>
+<!--l. 33--><p class="noindent" >A statistic measuring the number of updates received per second was created and set to be
+collected for the ferry and gateway nodes. The simulation was run and the results for the
+ferry are shown in figure <a 
+href="#x1-270015">2.5<!--tex4ht:ref: fig:result1-a --></a>. From it, we can see that the ferry is receiving updates each
+time it passes by a source node.
+<!--l. 38--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-270015"></a>
+
+<!--l. 40--><p class="noindent" ><img 
+src="images/scenario1-result-received.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;2.5: </span><span  
+class="content">Update Packets Received by the Ferry Node</span></div><!--tex4ht:label?: x1-270015 -->
+
+<!--l. 43--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 45--><p class="indent" >   Results collected for the gateway may be seen in <a 
+href="#x1-270026">2.6<!--tex4ht:ref: fig:result1-b --></a>. From the figure, it is clear that
+there are two spikes in the graph which corresponds to the ferry transmitting the updates it
+has collected. The ferry node traverses its path twice in this simulation which
+is why there are two spikes. Each source node sends three update packets to
+the ferry node as it passes. Since there are seven source nodes, this accounts
+for the 21 packets received by the gateway node, which can be seen in figure
+<a 
+href="#x1-270026">2.6<!--tex4ht:ref: fig:result1-b --></a>.
+<!--l. 52--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-270026"></a>
+
+<!--l. 54--><p class="noindent" ><img 
+src="images/scenario1-result-gateway.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;2.6: </span><span  
+class="content">Gateway receives the packet as the ferry node passes by its range of
+transmission</span></div><!--tex4ht:label?: x1-270026 -->
+
+<!--l. 57--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;3</span><br /><a 
+ id="x1-280003"></a>Simulation</h2>
+<!--l. 8--><p class="noindent" >This chapter provides an overview of the two simulations which were created. These
+simulations are intended to be as realistic as possible and involve random movement of
+ferry nodes. The ferries were assumed to be vehicles which defined their speed. A number of
+scenarios were tested for each simulation, the parameters varied are explained in section
+<a 
+href="#x1-330003.2">3.2<!--tex4ht:ref: sec:metrics --></a>.
+   <h3 class="sectionHead"><span class="titlemark">3.1   </span> <a 
+ id="x1-290003.1"></a>Network Model</h3>
+<!--l. 25--><p class="noindent" >This section outlines the two network models defining each simulation. Their difference lies
+on the number of ferry and gateway nodes. The parameters common between each are
+explained in section <a 
+href="#x1-320003.1.3">3.1.3<!--tex4ht:ref: sec:commonsettings --></a>.
+<!--l. 29--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">3.1.1   </span> <a 
+ id="x1-300003.1.1"></a>Scenario 1</h4>
+<!--l. 31--><p class="noindent" >The first simulation was created with one gateway node, one ferry node, and ten source
+nodes. The network model may be seen in figure <a 
+href="#x1-300011">3.1<!--tex4ht:ref: fig:scenario2 --></a>. The gateway is placed in the center
+of the map and the ferry node starts next to it. Source nodes are more or less
+evenly distributed and are placed such that they are out of direct communication
+range.
+<!--l. 37--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-300011"></a>
+
+<!--l. 39--><p class="noindent" ><img 
+src="images/scenario2-top.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;3.1: </span><span  
+class="content">Simulation 1 - Network Model (1 Gateway, 1 Ferry)</span></div><!--tex4ht:label?: x1-300011 -->
+
+<!--l. 42--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">3.1.2   </span> <a 
+ id="x1-310003.1.2"></a>Scenario 2</h4>
+<!--l. 46--><p class="noindent" >The second simulation was created with two gateway nodes, two ferry node, and ten source
+nodes. The network model may be seen in figure <a 
+href="#x1-310012">3.2<!--tex4ht:ref: fig:scenario3 --></a>. The gateways are placed in opposing
+quadrants, while both ferries start from the center. Source nodes and gateways are more or
+less evenly distributed and are placed such that they are out of direct communication
+range.
+<!--l. 51--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-310012"></a>
+
+<!--l. 53--><p class="noindent" ><img 
+src="images/scenario3-top.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;3.2: </span><span  
+class="content">Simulation 2 - Network Model (2 Gateways, 2 Ferries)</span></div><!--tex4ht:label?: x1-310012 -->
+
+<!--l. 56--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">3.1.3   </span> <a 
+ id="x1-320003.1.3"></a>Common Settings</h4>
+<!--l. 61--><p class="noindent" >Some of the settings and characteristics common to all the topologies are the
+following:
+      <ul class="itemize1">
+      <li class="itemize">All ferries move in random directions and have a varying speeds of 36kph -
+      72kph in uniform distribution.
+      </li>
+      <li class="itemize">The size of both maps is 1km x 1km
+      </li>
+      <li class="itemize">Properties are updated every 2 seconds with a variance of 0.1 seconds
+      </li>
+      <li class="itemize">Simulations are run for 90 minutes. Property updates were disabled for the last
+      thirty minutes in an effort to obtain statistics valid for a simulation of indefinite
+      length.</li></ul>
+<!--l. 74--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">3.2   </span> <a 
+ id="x1-330003.2"></a>Metrics and Results of Interest </h3>
+<!--l. 77--><p class="noindent" >Two metrics are of primary interest when analyzing the network, update success rate and
+delay.
+<!--l. 79--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">3.2.1   </span> <a 
+ id="x1-340003.2.1"></a>Update Success Rate</h4>
+
+<!--l. 82--><p class="noindent" >Update success rate, or alternatively update loss, is of central importance in the network. It
+is primarily affected by memory limits imposed by the ferry but is also affected by the
+number of ferry and gateway nodes. Defining success rate is somewhat complicated as
+updates may be intentionally discarded before they reach a gateway if they are out of date.
+Additionally, updates may be duplicated multiple time as ferries exchange messages.
+Finally, discarding updates with a key update number less than the most recent
+key update number received by the gateway is desired behaviour. As such, the
+following conditions are used to determine success rate which is measured as
+<span 
+class="cmti-12">success</span>, <span 
+class="cmti-12">failure </span>or <span 
+class="cmti-12">no value </span>for each key update generated by every source node
+property.
+      <ul class="itemize1">
+      <li class="itemize">For updates which reach the gateway:
+           <ul class="itemize2">
+           <li class="itemize">If  the  update  has  a  key  update  number  greater  than  the  last  update
+           received by the gateway (for a given source id and property key) the update
+           counts as a <span 
+class="cmti-12">success</span>.
+           </li>
+           <li class="itemize">If the update has a key update number equal to or less than the last update
+           received by the gateway (for a given source id and property key) the update
+           is not considered and counts as <span 
+class="cmti-12">no value</span>.</li></ul>
+      </li>
+      <li class="itemize">For updates which do not reach the gateway and are discard by every ferry
+      node:
+           <ul class="itemize2">
+           <li class="itemize">If  the  update  has  a  key  update  number  greater  than  the  last  update
+           received by the gateway (for a given source id and property key) the update
+           counts as a <span 
+class="cmti-12">failure</span>.
+
+           </li>
+           <li class="itemize">If the update has a key update number equal to or less than the last update
+           received by the gateway (for a given source id and property key) the update
+           is not considered and counts as <span 
+class="cmti-12">no value</span>.</li></ul>
+      </li></ul>
+<!--l. 102--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">3.2.2   </span> <a 
+ id="x1-350003.2.2"></a>Delay</h4>
+<!--l. 105--><p class="noindent" >The number of ferries and gateways is the primary parameter affecting delay,
+however, ferry memory limits also play a role. Delay is defined as the time an update
+takes to reach the gateway after it has been generated by a source node. Only
+updates which are successfully delivered (as defined in section <a 
+href="#x1-340003.2.1">3.2.1<!--tex4ht:ref: sec:packetloss --></a>) count towards
+delay. As such, it is important for results of delay to be considered within the
+context of update success rate. It should be noted that the lower bound on delay
+is the time it physically takes the ferry to move between the source node and
+gateway.
+<!--l. 112--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">3.2.3   </span> <a 
+ id="x1-360003.2.3"></a>Simulation Parameters Varied</h4>
+<!--l. 114--><p class="noindent" >The following parameters were varied to create additional scenarios for each simulation as
+presented in section <a 
+href="#x1-290003.1">3.1<!--tex4ht:ref: sec:main_net_model --></a>. Their impact on success rate and delay (from sections <a 
+href="#x1-350003.2.2">3.2.2<!--tex4ht:ref: sec:delay --></a> and
+<a 
+href="#x1-340003.2.1">3.2.1<!--tex4ht:ref: sec:packetloss --></a>) were considered.
+<!--l. 117--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-370003.2.3"></a>Memory Limit</h5>
+<!--l. 119--><p class="noindent" >The memory limit, also referred to as capacity, is the buffer size of the ferry. It limits the
+number of unique updates which can be stored at once. It is set in number of updates, not
+
+bytes, and hence is somewhat unrealistic. It is sufficient for the purposes of this scenario
+however.
+<!--l. 124--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-380003.2.3"></a>Seed - Effect of Randomness</h5>
+<!--l. 125--><p class="noindent" >Since ferry movement is random and the number of gateways is limited, it is important to
+consider multiple random when simulating in OPNET.
+<!--l. 129--><p class="noindent" >
+   <h5 class="subsubsectionHead"><a 
+ id="x1-390003.2.3"></a>Source Node Storage</h5>
+<!--l. 131--><p class="noindent" >The node models and algorithm presented thus far has assumed that only ferries store
+updates. A modified node model which allows source nodes to store updates was also
+considered. The effect of enabling source node storage was examined.
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;4</span><br /><a 
+ id="x1-400004"></a>Results</h2>
+<!--l. 4--><p class="noindent" >Simulation results are presented in terms of success rate (section <a 
+href="#x1-410004.1">4.1<!--tex4ht:ref: sec:results_success_rate --></a>) and delay (section
+<a 
+href="#x1-460004.2">4.2<!--tex4ht:ref: sec:results_delay --></a>).
+   <h3 class="sectionHead"><span class="titlemark">4.1   </span> <a 
+ id="x1-410004.1"></a>Success Rate</h3>
+<!--l. 12--><p class="noindent" >As discussed in section <a 
+href="#x1-340003.2.1">3.2.1<!--tex4ht:ref: sec:packetloss --></a>, memory limit is the most important parameter affecting
+success rate.
+<!--l. 15--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">4.1.1   </span> <a 
+ id="x1-420004.1.1"></a>Simulation 1</h4>
+<!--l. 18--><p class="noindent" >The update success rate for the first simulation with one ferry and one gateway is shown in
+<a 
+href="#x1-420011">4.1<!--tex4ht:ref: fig:result_sccess_sim1byseed_dss --></a>. Success rate is shown as a function of ferry memory capacity. Results for two separate
+seeds are shown since ferry movement, and hence delivery times and success rate, is heavily
+affected by randomness. The spike in success rate shown for the first simulation
+(seed of 128) at a memory capacity of four is an artifact of this randomness. It
+can be seen from this figure that success rate increases rapidly with memory
+capacity. There is a leveling effect seen when memory capacity increases beyond
+30. Since there are ten source nodes each with three properties and the storage
+process is intelligent about keeping only the most current updates, no packets
+must be discarded (see section <a 
+href="#x1-200002.2.2">2.2.2<!--tex4ht:ref: sec:algorithm --></a>). The fact that success rate never reaches 1,
+or 100%, is an artifact of the limited simulation time. Were the simulation to
+run forever and ferries to visit every source node, success rate would approach
+1.
+<!--l. 29--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-420011"></a>
+
+<div class="center" 
+>
+<!--l. 30--><p class="noindent" >
+
+<!--l. 31--><p class="noindent" ><img 
+src="images/result_sccess_sim1byseed_dss.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.1: </span><span  
+class="content">Success Rate vs Memory Capacity - Simulation 1 (1 Ferry, 1 Gateway),
+Source Storage Disabled</span></div><!--tex4ht:label?: x1-420011 -->
+</div>
+
+<!--l. 35--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">4.1.2   </span> <a 
+ id="x1-430004.1.2"></a>Simulation 2</h4>
+<!--l. 40--><p class="noindent" >The update success rate for second simulation, with two ferries and two gateways, is shown
+in figure <a 
+href="#x1-430012">4.2<!--tex4ht:ref: fig:result_sccess_sim2byseed_dss --></a>. As in section <a 
+href="#x1-420004.1.1">4.1.1<!--tex4ht:ref: sec:results_success_scenario1 --></a>, success rate is shown as a function of ferry memory
+capacity and results for two separate seeds are shown. It can be seen that variability in the
+success rate between the two seed values is lower than the first scenario. Increasing the
+number of ferries and gateways increases the likely hood a ferry will pass by the node and
+decreases variance.
+<!--l. 46--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-430012"></a>
+
+<!--l. 48--><p class="noindent" ><img 
+src="images/result_sccess_sim2byseed_dss.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.2: </span><span  
+class="content">Success Rate vs Memory Capacity - Simulation 2 (2 Ferries, 2 Gateways),
+Source Storage Disabled</span></div><!--tex4ht:label?: x1-430012 -->
+
+<!--l. 51--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">4.1.3   </span> <a 
+ id="x1-440004.1.3"></a>Comparison of Success Rate</h4>
+<!--l. 55--><p class="noindent" >A comparison of success rate between simulations 1 and 2 is show in figure <a 
+href="#x1-440013">4.3<!--tex4ht:ref: fig:result_sccess_bothsim_128_dss --></a>. It can be
+seen the additional ferry and gateway significantly increase success rate; this
+result is expected. As discussed in section <a 
+href="#x1-420004.1.1">4.1.1<!--tex4ht:ref: sec:results_success_scenario1 --></a>, the success rate should be 1 for
+memory capacities beyond 30. The fact that it is not is a result of limited simulation
+time.
+<!--l. 60--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-440013"></a>
+
+<!--l. 62--><p class="noindent" ><img 
+src="images/result_sccess_bothsim_128_dss.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.3: </span><span  
+class="content">Success Rate vs Memory Capacity - Simulation 1 and 2 , Seed of 128
+and Source Storage Disabled</span></div><!--tex4ht:label?: x1-440013 -->
+
+<!--l. 65--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">4.1.4   </span> <a 
+ id="x1-450004.1.4"></a>Effect of Source Node Storage</h4>
+<!--l. 69--><p class="noindent" >As discussed in section <a 
+href="#x1-390003.2.3">3.2.3<!--tex4ht:ref: sec:source_node_storage --></a>, source nodes can be configured to receive updates from
+ferries, store them and retransmit them; in essence, acting as stationary ferries.
+The impact of enabling source node storage on success rate in simulation 2 can
+be seen in <a 
+href="#x1-450014">4.4<!--tex4ht:ref: fig:result_sccess_sim2byss_128 --></a>. It can be seen that although success rate increased, the change
+was not drastic. This result is somewhat expected given that there were only
+two ferries and all source nodes were relatively close to gateways. It is expected
+that the impact of enabling source node storage would become more pronounced
+by increasing the number of ferries or increasing the distance between source
+nodes and gateways while keeping the relative spacing of source nodes constant
+Enabling source node storage in simulation 1 was seen to have no impact on success
+rate. This is expected as the algorithm used to discard packets in the presence of
+memory constrains would prevent a ferry re-storing up an update it had previously
+discarded.
+<!--l. 88--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-450014"></a>
+
+<!--l. 90--><p class="noindent" ><img 
+src="images/result_sccess_sim2byss_128.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.4: </span><span  
+class="content">Effect of Source Node Storage - Success Rate vs Memory Capacity -
+Simulation 2, Seed of 128</span></div><!--tex4ht:label?: x1-450014 -->
+
+<!--l. 93--><p class="indent" >   </div><hr class="endfigure">
+   <h3 class="sectionHead"><span class="titlemark">4.2   </span> <a 
+ id="x1-460004.2"></a>Delay</h3>
+<!--l. 101--><p class="noindent" >The time between a property value changing and when that change is registered by the
+gateway is of interest and examined. Delay is presented as a cumulative distribution
+function. A CDF was chosen over a PDF as it is more meaningful in the presence of
+random ferry movement. It is important to note that delay results presented here only
+account for updates successfully delivered. Updates lost as defined in section <a 
+href="#x1-340003.2.1">3.2.1<!--tex4ht:ref: sec:packetloss --></a>, with the
+exception of the very last update, do not count towards the measured delay. As such,
+results showing greater delay may not indicate the given scenario has better performance.
+These results must be considered within the context of loss as presented in section
+<a 
+href="#x1-410004.1">4.1<!--tex4ht:ref: sec:results_success_rate --></a>.
+<!--l. 110--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">4.2.1   </span> <a 
+ id="x1-470004.2.1"></a>Simulation 1</h4>
+<!--l. 112--><p class="noindent" >Figures <a 
+href="#x1-470015">4.5<!--tex4ht:ref: fig:result_delay_sim1byseed_mc3 --></a> and <a 
+href="#x1-470026">4.6<!--tex4ht:ref: fig:result_delay_sim1byseed_mc30 --></a> show the delay for simulation 1 (1 ferry and 1 gateway) with memory
+limits of 3 and 30 updates imposed by the ferry respectively. Two seeds are shown for each
+in order to illustrate the effects of randomness. When memory is limited (shown in figure
+<a 
+href="#x1-470015">4.5<!--tex4ht:ref: fig:result_delay_sim1byseed_mc3 --></a>), it can be seen more than half of all updates are delivered within 400 seconds. This
+result is somewhat misleading as the success rate is very poor for this memory setting (see
+section <a 
+href="#x1-420004.1.1">4.1.1<!--tex4ht:ref: sec:results_success_scenario1 --></a>). The results presented in figure <a 
+href="#x1-470026">4.6<!--tex4ht:ref: fig:result_delay_sim1byseed_mc30 --></a> are far more meaningful. A gradual
+increase in the delay is seen with approximately 80% of updates being delivered within 500
+seconds.
+<!--l. 119--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-470015"></a>
+
+<!--l. 121--><p class="noindent" ><img 
+src="images/result_delay_sim1byseed_mc3.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.5: </span><span  
+class="content">Delay - Simulation 1 (1 Ferry, 1 Gateway), Memory Capacity of 3</span></div><!--tex4ht:label?: x1-470015 -->
+
+<!--l. 124--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 126--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-470026"></a>
+
+<!--l. 128--><p class="noindent" ><img 
+src="images/result_delay_sim1byseed_mc30.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.6: </span><span  
+class="content">Delay - Simulation 1 (1 Ferry, 1 Gateway), Memory Capacity of 30</span></div><!--tex4ht:label?: x1-470026 -->
+
+<!--l. 131--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">4.2.2   </span> <a 
+ id="x1-480004.2.2"></a>Simulation 2</h4>
+<!--l. 135--><p class="noindent" >Figures <a 
+href="#x1-480017">4.7<!--tex4ht:ref: fig:result_delay_sim2byseed_mc3 --></a> and <a 
+href="#x1-480028">4.8<!--tex4ht:ref: fig:result_delay_sim2byseed_mc30 --></a> show the delay for simulation 2 with memory limits of 3 and 30 updates
+imposed by the ferries respectively. As in section <a 
+href="#x1-430004.1.2">4.1.2<!--tex4ht:ref: sec:results_success_s2 --></a>, randomness (as distinguished
+between the two seed values) has less effect on the output than simulation 1. Comparing
+the memory constrained cases between simulations (figures <a 
+href="#x1-470015">4.5<!--tex4ht:ref: fig:result_delay_sim1byseed_mc3 --></a> and <a 
+href="#x1-480017">4.7<!--tex4ht:ref: fig:result_delay_sim2byseed_mc3 --></a>), it is clear that the
+second simulation has reduced delay and increased success rate. It can be seen from figure
+<a 
+href="#x1-480028">4.8<!--tex4ht:ref: fig:result_delay_sim2byseed_mc30 --></a> that 90% of updates have a delay of approximately 300 seconds when memory is not
+constrained.
+<!--l. 140--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-480017"></a>
+
+<!--l. 142--><p class="noindent" ><img 
+src="images/result_delay_sim2byseed_mc3.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.7: </span><span  
+class="content">Delay - Simulation 2 (2 Ferries, 2 Gateways), Memory Capacity of 3</span></div><!--tex4ht:label?: x1-480017 -->
+
+<!--l. 145--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 148--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-480028"></a>
+
+<!--l. 150--><p class="noindent" ><img 
+src="images/result_delay_sim2byseed_mc30.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.8: </span><span  
+class="content">Delay - Simulation 2 (2 Ferries, 2 Gateways), Memory Capacity of 30</span></div><!--tex4ht:label?: x1-480028 -->
+
+<!--l. 153--><p class="indent" >   </div><hr class="endfigure">
+   <h4 class="subsectionHead"><span class="titlemark">4.2.3   </span> <a 
+ id="x1-490004.2.3"></a>Comparison of Simulation</h4>
+<!--l. 157--><p class="noindent" >Figures <a 
+href="#x1-490019">4.9<!--tex4ht:ref: fig:result_delay_both_128_mc30 --></a> and <a 
+href="#x1-4900210">4.10<!--tex4ht:ref: fig:result_delay_both_128_mc5 --></a> provide a comparison of delay between the two scenarios. It can be
+seen that the second scenario, with an additional ferry and gateway, has significantly
+reduced average delay. Furthermore, very few updates take longer than approximately 300
+seconds to reach the gateway. When ferry memory capacity is limited to 5 updates, the
+additional ferry and gateway is seen to increase the probability updates are received in a
+timely manner.
+<!--l. 162--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-490019"></a>
+
+<!--l. 164--><p class="noindent" ><img 
+src="images/result_delay_both_128_mc30.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.9: </span><span  
+class="content">Delay - Simulation 1 and 2, Memory Capacity of 30, Seed of 26834</span></div><!--tex4ht:label?: x1-490019 -->
+
+<!--l. 167--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 170--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+
+<a 
+ id="x1-4900210"></a>
+
+<!--l. 172--><p class="noindent" ><img 
+src="images/result_delay_both_128_mc5.png" alt="PIC"  
+>
+<br /> <div class="caption" 
+><span class="id">Figure&#x00A0;4.10: </span><span  
+class="content">Delay - Simulation 1 and 2, Memory Capacity of 5, Seed of 128</span></div><!--tex4ht:label?: x1-4900210 -->
+
+<!--l. 175--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 1--><p class="indent" >   <hr/>
+
+   <h2 class="chapterHead"><span class="titlemark">&#x00A0;5</span><br /><a 
+ id="x1-500005"></a>Conclusion</h2>
+<!--l. 3--><p class="noindent" >First and foremost, OPNET has been shown to be a suitable tool for analyzing message
+ferrying. The node models created to analyze the specialized &#8216;state monitor&#8217; network were
+tested and validated. A more complicated examination was performed with a network
+model involving ten source nodes and varying numbers of ferry and gateway nodes.
+Statistics measuring update success and delay were defined, implemented and collected
+during an OPNET simulation.
+   <h3 class="sectionHead"><span class="titlemark">5.1   </span> <a 
+ id="x1-510005.1"></a>Results</h3>
+<!--l. 12--><p class="noindent" >A number of general conclusions can be drawn from the results presented in section <a 
+href="#x1-400004">4<!--tex4ht:ref: sec:resultsChapter --></a>.
+Adding gateways and ferries was seen to reduces delay, reduces the memory requirements of
+ferries to achieve a desired success rate, and decreases variability in delay (see section
+<a 
+href="#x1-430004.1.2">4.1.2<!--tex4ht:ref: sec:results_success_s2 --></a>). As such, any message ferrying network should have a maximum number
+of ferries and gateways. The success rate was seen to marginally improve when
+enabling source storage. This improvement is expected to increase with additional
+ferries. As such, it may be concluded that networks with few ferries need not
+implement this feature, however it should be enabled for networks with many
+ferries.
+<!--l. 24--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">5.2   </span> <a 
+ id="x1-520005.2"></a>Future Work</h3>
+<!--l. 26--><p class="noindent" >There are four main categories for future work and improvements to the OPNET model in
+order to study task oriented message ferrying.
+<!--l. 28--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">5.2.1   </span> <a 
+ id="x1-530005.2.1"></a>Algorithm Improvements</h4>
+<!--l. 30--><p class="noindent" >Many aspects of the ferrying algorithm implemented in this network are simplistic. For
+
+example, there is no reverse communication from the gateway to message ferries
+indicating updates have been delivered and update messages may be discarded. The
+implementation of an update acknowledgment mechanism could significantly
+improve performance and memory utilization. Additionally, a more intelligent
+algorithm used by ferries to discard packets could also improve overall network
+performance.
+<!--l. 35--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">5.2.2   </span> <a 
+ id="x1-540005.2.2"></a>Model Improvements</h4>
+<!--l. 37--><p class="noindent" >Many assumptions and simplifications were made when considering update and data
+transfer between nodes. For example, near instantaneous data transfer, little to no packet
+loss, and a strict communication range of 60 meters was assumed. Incorporating an existing
+point to point protocol for reliable wireless data transfer, such as WiFi or ZigBee would
+provide more realistic results.x
+<!--l. 41--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">5.2.3   </span> <a 
+ id="x1-550005.2.3"></a>Statistic Improvements</h4>
+<!--l. 43--><p class="noindent" >Due to the unique nature of the network, common ways to measure statistics are not valid.
+As such, custom logic was required to produce all statistics. Measurement of only two
+statistics was implemented, delay and update success rate. Adding additional statistics,
+such as number of active packets in the network and arrival order, would provide additional
+insights into the networks behaviour.
+<!--l. 48--><p class="noindent" >
+   <h4 class="subsectionHead"><span class="titlemark">5.2.4   </span> <a 
+ id="x1-560005.2.4"></a>Applicability and Network Model</h4>
+<!--l. 50--><p class="noindent" >The simulations that were presented involves roughly even source node placement and
+random ferry movement. It is unlikely that a real network would have these characteristics.
+
+Creating and simulating a real-world network model and application would provide more
+realistic results.
+   <hr/>
+
+   <h2 class="likechapterHead"><a 
+ id="x1-570005.2.4"></a>References</h2>
+   <div class="thebibliography">
+   <p class="bibitem" ><span class="biblabel">
+ [1]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="XRouting"></a>R.&#x00A0;Patra, K.&#x00A0;Fall, and S.&#x00A0;Jain, &#8220;Routing in a delay tolerant network,&#8221; in
+   <span 
+class="cmti-12">Proceedings of the 2004 conference on Applications, technologies, architectures,</span>
+   <span 
+class="cmti-12">and protocols for computer communications</span>, 2004.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [2]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xhybrid"></a>Y.&#x00A0;Chen, W.&#x00A0;Zhao, M.&#x00A0;Ammar, and E.&#x00A0;Zegura, &#8220;Hybrid routing in clustered
+   DTNs with message ferrying,&#8221; in <span 
+class="cmti-12">Proceedings of the 1st international MobiSys</span>
+   <span 
+class="cmti-12">workshop on Mobile opportunistic networking</span>,  College  of  Computing,  Georgia
+   Institute of Technology, Atlanta, GA, 30332, 2007.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [3]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xadhocmsgferry"></a>W.&#x00A0;Zhao, M.&#x00A0;Ammar, and E.&#x00A0;Zegura, &#8220;A message ferrying approach for data
+   delivery  in  sparse  mobile  ad  hoc  networks,&#8221;  in  <span 
+class="cmti-12">Proceedings  of  the  5th  ACM</span>
+   <span 
+class="cmti-12">international symposium on Mobile ad hoc networking and computing</span>, College of
+   Computing, Georgia Institute of Technology, Atlanta, Georgia 30332, 2004.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [4]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xbook1"></a>S.-L.  Wu  and  Y.-C.  Tseng,  <span 
+class="cmti-12">Wireless  Ad  Hoc  Networking</span>.      Auerbach
+   Publications, 2007, pp. 439&#8211;459.
+
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [5]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Ximplement"></a>T.&#x00A0;Massey,                                                                          &#8220;Message
+   Ferry Architecture and Implementation,&#8221; in <span 
+class="cmti-12">Georgia Institute of Technology</span>, 2004,
+   <a 
+href="http://www.cs.ucla.edu/~tmassey/MF_Master_Proj.pdf" class="url" >http://www.cs.ucla.edu/<span 
+class="cmsy-8">~</span>tmassey/MF_Master_Proj.pdf</a>.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [6]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xwearable"></a>J.&#x00A0;A.  Davis,  A.&#x00A0;H.  Fagg,  and  B.&#x00A0;N.  Levine,  &#8220;Wearable  Computers  as
+   Packet Transport Mechanisms in Highly-Partitioned Ad-Hoc Networks,&#8221; in <span 
+class="cmti-12">In</span>
+   <span 
+class="cmti-12">Proceedings of the 5th IEEE international Symposium on Wearable Computers</span>,
+   IEEE Computer Society, Washington, DC, 141, October 2001.
+   </p>
+   <p class="bibitem" ><span class="biblabel">
+ [7]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
+ id="Xefficientrouting"></a>R.C.Suganthe and P.Balasubramanie, &#8220;Efficient Routing For Intermittently
+   Connected  Mobile  Ad  hoc  Network,&#8221;  in  <span 
+class="cmti-12">IJCSNS  International  Journal  of</span>
+   <span 
+class="cmti-12">Computer Science and Network Security, 184 VOL.8 No.11, November 2008</span>, 2008,
+   <a 
+href="http://paper.ijcsns.org/07_book/200811/20081126.pdf" class="url" >http://paper.ijcsns.org/07_book/200811/20081126.pdf</a>.
+</p>
+   </div>
+<a 
+ id="Q1-1-77"></a>
+<!--l. 133--><p class="indent" >    <script type="text/javascript"> var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www."); document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E")); </script> <script type="text/javascript"> try { var pageTracker = _gat._getTracker("UA-12568598-3"); pageTracker._trackPageview(); } catch(err) {}</script> 
+    
+</body></html> 
+
+
+

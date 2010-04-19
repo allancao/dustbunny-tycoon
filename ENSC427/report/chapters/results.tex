@@ -1,6 +1,6 @@
 \chapter{Results}
 
-Simulation results are presented in terms of success rate (section \ref{sec:results_success_rate}) and delay (section \ref{sec:results_delay}) 
+Simulation results are presented in terms of success rate (section \ref{sec:results_success_rate}) and delay (section \ref{sec:results_delay}).
 
 %--------------------------------------------------------------------------------------------------------
 % 		Success Rate
@@ -8,16 +8,19 @@ Simulation results are presented in terms of success rate (section \ref{sec:resu
 \section{Success Rate}
 \label{sec:results_success_rate}
 
-\subsection{Scenario 1}
+As discussed in section \ref{sec:packetloss}, memory limit is the most important parameter affecting success rate. 
+%TODO: more?
+
+\subsection{Simulation 1}
 \label{sec:results_success_scenario1}
 
-The update success rate for the first scenario with one ferry and one gateway is shown in \ref{fig:result_sccess_sim1byseed_dss}.
+The update success rate for the first simulation with one ferry and one gateway is shown in \ref{fig:result_sccess_sim1byseed_dss}.
 Success rate is shown as a function of ferry memory capacity. 
-Results for two separate seeds are shown since ferry movement , and hence delivery times and success rate, are random.
+Results for two separate seeds are shown since ferry movement, and hence delivery times and success rate, is heavily affected by randomness.
 The spike in success rate shown for the first simulation (seed of 128) at a memory capacity of four is an artifact of this randomness.
 It can be seen from this figure that success rate increases rapidly with memory capacity.
 There is a leveling effect seen when memory capacity increases beyond 30.
-Since there are ten source nodes each with three properties and the storage process is intelligent about keeping only the most current updates, no packets must be discarded.
+Since there are ten source nodes each with three properties and the storage process is intelligent about keeping only the most current updates, no packets must be discarded (see section \ref{sec:algorithm}).
 %	At this point
 The fact that success rate never reaches 1, or 100\%, is an artifact of the limited simulation time.
 Were the simulation to run forever and ferries to visit every source node, success rate would approach 1.
@@ -30,13 +33,13 @@ Were the simulation to run forever and ferries to visit every source node, succe
     \end{center}
 \end{figure}
 
-\subsection{Scenario 2}
+\subsection{Simulation 2}
 \label{sec:results_success_s2}
 
-The update success rate for second scenario with two ferries and two gateways is shown in figure \ref{fig:result_sccess_sim2byseed_dss}.
+The update success rate for second simulation, with two ferries and two gateways, is shown in figure \ref{fig:result_sccess_sim2byseed_dss}.
 As in section \ref{sec:results_success_scenario1}, success rate is shown as a function of ferry memory capacity and results for two separate seeds are shown.
 It can be seen that variability in the success rate between the two seed values is lower than the first scenario.
-Increasing the number of ferries and gateways increases the likely hood a ferry will pass by the node.
+Increasing the number of ferries and gateways increases the likely hood a ferry will pass by the node and decreases variance.
 %Something about gussians and decreasing variance.
 
 \begin{figure}[htbp]
@@ -67,11 +70,11 @@ The impact of enabling source node storage on success rate in simulation 2 can b
 %	TODO: reword
 It can be seen that although success rate increased, the change was not drastic.
 This result is somewhat expected given that there were only two ferries and all source nodes were relatively close to gateways.
-It is expected that the impact of source node storage will become more pronounced by increasing the number of ferries or increasing the distance between source nodes and gateways while keeping the relative spacing of source nodes constant
+It is expected that the impact of enabling source node storage would become more pronounced by increasing the number of ferries or increasing the distance between source nodes and gateways while keeping the relative spacing of source nodes constant
 %	Terrible
 %	TODO: Explain why
 Enabling source node storage in simulation 1 was seen to have no impact on success rate.
-This is expected as the algorithm used to discard packets in the presence of memory constrains would prevent a ferry picking up an update it has discarded.
+This is expected as the algorithm used to discard packets in the presence of memory constrains would prevent a ferry re-storing up an update it had previously discarded.
 
 
 %\begin{figure}[htbp]
@@ -94,23 +97,23 @@ This is expected as the algorithm used to discard packets in the presence of mem
 %--------------------------------------------------------------------------------------------------------
 \section{Delay}
 \label{sec:results_delay}
-The delay between a property value changing and when that change is registered by the gateway is also of interest.
+The time between a property value changing and when that change is registered by the gateway is of interest and examined.
 Delay is presented as a cumulative distribution function.
-%TODO: why, why not pdf
+A CDF was chosen over a PDF as it is more meaningful in the presence of random ferry movement.
 %
 It is important to note that delay results presented here only account for updates successfully delivered.
-Updates lost (with the exception of the very last update) do not count towards the measured delay.
+Updates lost as defined in section \ref{sec:packetloss}, with the exception of the very last update, do not count towards the measured delay.
 As such, results showing greater delay may not indicate the given scenario has better performance.
 These results must be considered within the context of loss as presented in section \ref{sec:results_success_rate}.
 
-\subsection{Scenario 1}
+\subsection{Simulation 1}
 
-Figures \ref{fig:result_delay_sim1byseed_mc3} and \ref{fig:result_delay_sim1byseed_mc30} show the delay for simulation 1 (1 ferry and 1 gateway) with memory limits of 3 and 30 updates imposed by the ferry.
+Figures \ref{fig:result_delay_sim1byseed_mc3} and \ref{fig:result_delay_sim1byseed_mc30} show the delay for simulation 1 (1 ferry and 1 gateway) with memory limits of 3 and 30 updates imposed by the ferry respectively.
 Two seeds are shown for each in order to illustrate the effects of randomness.
 When memory is limited (shown in figure \ref{fig:result_delay_sim1byseed_mc3}), it can be seen more than half of all updates are delivered within 400 seconds. 
 This result is somewhat misleading as the success rate is very poor for this memory setting (see section \ref{sec:results_success_scenario1}).
 The results presented in figure \ref{fig:result_delay_sim1byseed_mc30} are far more meaningful.
-A gradual increase in the delay is seen with 80\% of updates being delivered within 500 seconds.
+A gradual increase in the delay is seen with approximately 80\% of updates being delivered within 500 seconds.
 
 \begin{figure}[htbp]
     \centering
@@ -119,7 +122,6 @@ A gradual increase in the delay is seen with 80\% of updates being delivered wit
     \label{fig:result_delay_sim1byseed_mc3}
 \end{figure}
 
-
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_sim1byseed_mc30}
@@ -127,11 +129,11 @@ A gradual increase in the delay is seen with 80\% of updates being delivered wit
     \label{fig:result_delay_sim1byseed_mc30}
 \end{figure}
 
-\subsection{Scenario 2}
+\subsection{Simulation 2}
 
-Figures \ref{fig:result_delay_sim2byseed_mc3} and \ref{fig:result_delay_sim2byseed_mc30} show the delay for simulation 2 with memory limits of 3 and 30 updates imposed by the ferries.
-As in section \ref{sec:results_success_s2}, randomness (as distinguished between the two seed values) has less effect on the output than scenario 1.
-Comparing the memory constrained cases (figures \ref{fig:result_delay_sim1byseed_mc3} and \ref{fig:result_delay_sim2byseed_mc3}), it is clear that the second simulation has reduced delay and increased success rate.
+Figures \ref{fig:result_delay_sim2byseed_mc3} and \ref{fig:result_delay_sim2byseed_mc30} show the delay for simulation 2 with memory limits of 3 and 30 updates imposed by the ferries respectively.
+As in section \ref{sec:results_success_s2}, randomness (as distinguished between the two seed values) has less effect on the output than simulation 1.
+Comparing the memory constrained cases between simulations (figures \ref{fig:result_delay_sim1byseed_mc3} and \ref{fig:result_delay_sim2byseed_mc3}), it is clear that the second simulation has reduced delay and increased success rate.
 It can be seen from figure \ref{fig:result_delay_sim2byseed_mc30} that 90\% of updates have a delay of approximately 300 seconds when memory is not constrained.
 
 \begin{figure}[htbp]
@@ -155,7 +157,6 @@ Figures \ref{fig:result_delay_both_128_mc30} and \ref{fig:result_delay_both_128_
 It can be seen that the second scenario, with an additional ferry and gateway, has significantly reduced average delay.
 Furthermore, very few updates take longer than approximately 300 seconds to reach the gateway.
 When ferry memory capacity is limited to 5 updates, the additional ferry and gateway is seen to increase the probability updates are received in a timely manner.
-%	Not really correct
 
 \begin{figure}[htbp]
     \centering

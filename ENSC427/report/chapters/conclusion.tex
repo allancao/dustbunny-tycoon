@@ -1,9 +1,22 @@
 \chapter{Conclusion} 
 
+First and foremost, OPNET has been shown to be a suitable tool for analyzing message ferrying.
+The node models created to analyze the specialized \lq{}state monitor\rq{} network were tested and validated.
+A more complicated examination was performed with a network model involving ten source nodes and varying numbers of ferry and gateway nodes.
+Statistics measuring update success and delay were defined, implemented and collected during an OPNET simulation.
+
+%TODO: Transition
+
 \section{Results}
 
-First and foremost, OPNET has been shown to be a suitable tool for analyzing message ferrying.
-The specialized network considered here 
+A number of general conclusions can be drawn from the results presented in \ref{sec:resultsChapter}.
+Adding gateways and ferries was seen to reduces delay, reduces the memory requirements of ferries to achieve a desired success rate, and decreases variability in delay (see \ref{sec:results_success_s2}).
+As such, any message ferrying network should have a maximum number of ferries and gateways.
+Success rate was seen to marginally improve when enabling source storage.
+This improvement is expected to increase with additional ferries.
+As such, it may be concluded that networks with few ferries need not implement this feature, however it should enabled for networks with many ferries.
+
+%NEED SOMETHING MORE
 
 %An general discussion of results.
 %Include a discussion on the feasibility of a practical implementation and what adoption threshold would be needed.

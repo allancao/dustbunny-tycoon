@@ -1,17 +1,19 @@
-\chapter{Project Premise and Model Design} 
+\chapter{Project Premise and OPNET Model Design} 
+
+This chapter presents the premise and details of a specific network design used to analyze message ferrying in section \ref{sec:premise}.
+A general overview of the OPNET model which was created is then presented in section \ref{sec:model_design}.
+Please refer to appendix \ref{appendix:code} for specific details.
+Finally, the results of an initial simulation used to validate the node models is presented in \ref{sec:validation}.
 
 \section{Premise}
+\label{sec:premise}
 
-%TODO: need to discuss ferry characteristics - task oriented
+%TODO: Intro
 
-
-Message ferrying, also known as store-carry-forward, is the approach of physically carrying data from nodes that are out of range and deliver them to their destination. 
-Some of the advantages of message ferries are that they virtually do not require physical infrastructure and that they also have a low cost. 
-
-	
 \subsection{Application Characteristics and Requirements}
+\label{sec:premise_appchar}
 
-Any application running over a message ferrying network must have the following characteristics:
+Any application making use of message ferrying must have the following characteristics:
 
 \begin{description}
 \item[Delay Tolerance: ]
@@ -19,8 +21,8 @@ Since data is transported by a physical device, significant delays of minutes to
 \item[Loss Tolerance: ]
 Given that ferries have limited memory, loss of data must be expected.
 \item[Small and Independent Messages: ]
-Following from the limited memory capacity of ferries and the high probability of packet loss, a reliable method for segmentation and reassembly of messages should not be expected. 
-Applications should limit the size of messages such that the can be transmitted in their entirety using one network packet.
+Following from the limited memory capacity of ferries and the high probability of data loss, a reliable method for segmentation and reassembly of messages should not be expected. 
+Applications should limit the size of messages such that the can be transmitted in their entirety using one protocol data unit.
 %Use PDU instead of packet?
 %
 (See section \ref{sec:fountain_codes} for future work)
@@ -32,19 +34,11 @@ As such, a very specialized 'state monitoring' network designed for non-critical
 \subsection{State Monitoring Network}
 
 The general premise for this project consists of a network containing numerous, uniquely identifiable source nodes. 
+%TODO: Reword
 Each source node has a limited number of properties, in the form of key/value pairs, specifying a property name (the key) and its current value.
 Properties may change overtime and each change defines a new state for the source node.
 A temperature sensor for example, might support a 'temperature' property, the value of which is the current temperature updated every hour.
 Properties do not have to contain a single value and each may be as large as the payload limit of network packets. %Somewhat of a vague statement
-
-%TODO: introduction to node types
-%	Perhaps put in the Network Elements section below
-%
-%This needs to be broken into an new section or placed in a subsection
-
-
-
-%TODO: new section
 
 The network and message ferrying algorithm is designed to synchronize a central repository with the current state of every source node.
 Only the most recent state (or most recent value) for each property is important, not the history of how that property has changed.
@@ -54,173 +48,173 @@ The message ferries collect data from source nodes when they are in range and tr
 The central repository is assumed to be a server connected to the Internet.
 Ferries pass updates they have collected from source nodes to special gateway nodes.
 These gateway nodes are then responsible for using a reliable delivery mechanism over a standard IP network to update the central repository.
-
-\emph{Insert image showing this process.}
+This last stage is not considered for the implementation presented here.
+Once messages have been delivered to gateway nodes, they are assumed to have been delivered.
 
 %--------------------------------------------------------------------------------------------------------
 % 		Design
 %--------------------------------------------------------------------------------------------------------
-\section{Model Design}
-\subsection{Network Elements}
+\section{OPNET Model Design}
+\label{sec:model_design}
 
+Due to the lack of support in OPNET for message ferrying, all node and process models were creates specifically for this project. 
+An overview of the basic network elements, including node and packets types, is presented in \ref{sec:net_element}.
+A description of the networking algorithm is then presented in section \ref{sec:algorithm}.
+Please refer to appendix \ref{appendix:code} for specific implementation details.
+
+\subsection{Network Elements}
+\label{sec:net_element}
 
 %This section describes the elements present in the network.
 
-\subsubsection{Nodes}
+\subsubsection{Network Nodes}
 
-The network is comprised of three types of nodes:
+The network is comprised of three types of network nodes:
 
 \begin{description}
 
 \item[Source Node: ] 
-Static nodes in the network which have a set of properties (key/value pairs).
-After a property of a source changes, known as a state change, it attempt to notify the central repository by transferring update packets to message ferries.
+Static (non-mobile) nodes in the network which have a set of properties (key/value pairs).
+After a property of a source node changes, known as a state change, it attempt to notify the central repository by transferring update packets to any message ferries which are in range.
 A source node could be, for example, a remote temperature sensor.
 \item[Message Ferry: ] 
-A mobile node which collects updates from source nodes when they are in range.
+A mobile nodes which collects updates from source nodes when they are in range.
 Message ferries store update packets from source nodes within a buffer. 
 When in range, these update packets are forwarded to gateway nodes.
 A source node could be, for example, a specially equipt cell phone or a small computer attached to a vehicle. 
 \item[Gateway: ]
-Gateway nodes download update packets from message ferries and forward them to the central repository over the Internet.
-Transfer of updates between the gateway and central repository is assumed to be reliable. 
-
+Gateway nodes download update packets from message ferries and mark them as received.
 \end{description}
 
-
-Sources have properties (prop1, prop2, etc) which generate messages. These messages get carried to any gateway node by message ferries.
+Source nodes have properties (prop1, prop2, etc) which update messages. 
+These messages get carried to any gateway node by message ferries. 
+The OPNET node model for a source node node may be seen in \ref{fig:source}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.5\textwidth]{images/source}
+    \includegraphics[width=.7\textwidth]{images/source}
     \caption{Source Node Model}
     \label{fig:source}
 \end{figure}
 
-Source node shown in figure \ref{fig:source} is a static node in the network which have a set of properties that generate update messages. The three properties shown in the figure generate updates and the mac process controls wireless access. 	
-
-%\item[Central Repository: ] 
-%The central repository is a server and the final destination for updates sent from source nodes.
-%It maintains a list of the current state of all source nodes.
-%There is only one central repository node.
-
+The OPNET node model for a message ferry is shown in figure \ref{fig:Ferry}.
+The ferry is a mobile node which collects updates from source nodes when they are in range. 
+These updates are then stored in memory (the storage process in figure \ref{fig:Ferry}). 
+The storage process compares the updates, uniquely identified by source ID and property key, and keeps the most recent according to the key update number (see below).
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.5\textwidth]{images/ferry}
-    \caption{Ferry Node}
+    \includegraphics[width=.7\textwidth]{images/ferry}
+    \caption{Ferry Node Model}
     \label{fig:Ferry}
 \end{figure}
 
-Ferry Node shown in figure \ref{fig:Ferry} is a mobile node which collects updates from source nodes when they are in range. These updates are then stored in memory. The storage process compares the updates and keeps the most recent according to the key update. It also checks which update to keep and gets rid of the older ones.
+The OPNET model for a gateway node is shown in figure \ref{fig:Gateway}. 
+The gateway process model seen in the figure is responsible for tracking what updates have been received.
+It makes use of global variables so updates may be received by any gateway.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.5\textwidth]{images/gateway}
-    \caption{Gateway Node}
+    \includegraphics[width=.7\textwidth]{images/gateway}
+    \caption{Gateway Node Model}
     \label{fig:Gateway}
 \end{figure}
 
-Gateway Node shown in figure \ref{fig:Gateway} receives the update messages from ferries and forwards them to their final destination via the Internet. Gateway process records the updates.
+\subsubsection{Properties and Property Process}
 
+Each source node supports three properties as can be seen in figure \ref {fig:source}.
+Furthermore, each property has three main pieces of data as shown below. 
+Updates generated by the property contain these three key pieces of information.
+For the purposes of this project, the value of the property is inconsequential and not considered.
 
-
-\subsubsection{Properties}
-
-Source node has three main pieces of data:
-\begin{itemize}
-\item Source ID
-\item Key
-\item Key update number
-\end{itemize}
-
-Note that the key update number is extremely important because it lets the ferry know of the most recent update.
-
+\begin{description}
+\item[Source ID: ] A unique identifier of the source node a property is associated with
+\item[Key: ] Or property key is a unique for each property within a source node
+\item[Key Update Number: ] A counter which is incremented each time the property value changes. 
+Only the most recent value of a property, as defined by its key update number, is of importance.
+\end{description}
 
 \subsubsection{Packets}
 
-At the network layer, two types of packets are used as follows:
+Two types of packets are used within the OPNET model.
 
 \begin{description}
 \item[Update Packet: ]
-Update packets are generated by source nodes when a message ferry is in range and their state has changed. 
-Source nodes will continue to generate update packets until the state change is acknowledged by the central repository (using an acknowledgment packet).
+Update packets are generated by the property processes of source nodes when their value changes.
+They are transmitted to message ferries which in turn transport them to the gateway.
 \item[Beacon Packet: ] 
-Beacon packets are first generated by ferry nodes to discover if there are source nodes in range. 
-When there are source nodes in range, they give their updates to the ferries. Similar procedure happens between the ferry and source nodes. 
-%TODO:  Why range is 60m
+Beacon packets are used to detect when nodes are in range and are able to communicate.
+Beacon packets are generated periodically be ferry and gateway nodes and trigger transmission of stored update messages by receiving nodes.
 \end{description}
 
 %--------------------------------------------------------------------------------------------------------
 % 		Algorithm
 %--------------------------------------------------------------------------------------------------------
-\subsection{Algorithm and Behavior - Simplified}
+\subsection{Algorithm and Behaviour}
+\label{sec:algorithm}
 
-\subsubsection{Ferry Algorithm}
+A brief overview of the algorithm implemented in each node is presented in this section.
+Pseudo code is presented here; refer to appendix \ref{appendix:a} for the actual implementation.
 
-Ferry nodes do the steps shown below in order:
+\subsubsection{Ferry Node Algorithm}
+
+Ferry nodes behave in the following way. Note that ferry nodes are mobile.
 
 \begin{enumerate}
-\item Move around sending beacons to notify other nodes that there is a ferry in range.
-\item When a source node is in range, the ferry node receives the updates from it.
-\item Ferry nodes only keep the most recent update according to the key update number and age.
+\item Periodically send beacons to notify other nodes that there is a ferry in range.
+These beacons trigger source nodes and other ferries to transmit stored updates.
+\item When updates are received, store them.
+Updates are discard based on the following conditions.
 	\begin{enumerate}
-	\item It compares the updates and keeps the most recent according to the key update.
-	\item If a ferry gets full, it considers the age and gets rid of the oldest update
+	\item If two updates (one received and one in memory) with the same source id and key are detected, discard the updated with the smallest key update number.
+	\item If the memory limit has been reached, discard the oldest update (regardless of source id and key).
 	\end{enumerate}
-\item It then moves till a gateway beacon is received.
-\item Ferry node then sends the updates to the gateway.
+\item When a beacon is received, transmit all updates in memory.
+\item Repeat
 \end{enumerate}
 
-\subsubsection{Source Algorithm}
+\subsubsection{Source Node Algorithm}
 
-Source nodes do the steps shown below in order:
+Source nodes behave in the following way
 
 \begin{enumerate}
-\item They wait till a beacon is receive from the ferry node.
-\item Based on the current state, key update,  they send three properties to the ferry node.
-
+\item Wait for a beacon.
+\item Based on the current state, defined by the key update number for each property, transmit updates.
+\item Repeat
 \end{enumerate}
-
 
 \subsubsection{Gateway Algorithm}
 
-Gateway nodes do the steps shown below in order:
+Gateway nodes behave in the following way:
 
 \begin{enumerate}
-\item Gateway nodes notify ferries that there's a beacon in range.
-\item Ferries then send their most recent update to the gateway nodes.
-\item Gateway nodes receives these updates.
-\item Records that an update has been received.
+\item Periodically send beacons to notify other nodes that of the gateways existence.
+\item Wait for updates to be received
+\item If an update received for a given source id and key has a greater key update number than the last update received for that source id and key, record an update.
+If the key update number is equal to or less than the last update, discard the update.
 \end{enumerate}
-
 
 \subsection{Assumptions}
 
-There were assumptions made to prevent the complexity they would have caused.
+In order to simplify the simulation and focus on the message ferrying algorithm, a number of assumptions were made regarding data transmission and wireless communication.
 
 \begin{itemize}
-\item Communication range of 60m:
-	This means that only nodes within that range can communicate. 
+\item Communication range of 60 meters.
+When nodes are closer than 60 meters they can communicate and when they are further apart than 60 meters, they cannot.
 
-\item No propagation and transmission delay:
-	These might happen when a ferry node goes by quicker and can't catch everything in time. 
-	
-\item No unintentional loss:
-	We assume that there is no loss caused by interference. We're assuming that any loss that happens is 			intentional.
-	
-	
+\item No propagation and transmission delay.
+This assumption was made to ensure ferries receive all updates when moving past source nodes.
+
+\item No unintentional loss, the node link is assumed to be reliable. 
+It is assumed that there is no loss caused by radio interference. 
+This assumption was made to eliminate the need for an acknowledgment and retransmission mechanism.
+
 \end{itemize}
 
-Note that now there are technologies that provide solutions to the problems noted above. 
+These assumptions are considered valid as there are are number of technologies, implemented at a lower network layer, which provides reliable data transfer services.
 
 %--------------------------------------------------------------------------------------------------------
-% 		Other stuff to include
+% 		Validation
 %--------------------------------------------------------------------------------------------------------
-
-
-
-
-% TODO	- Major improvement -> better mac
 
 \input{chapters/validation}

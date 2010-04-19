@@ -3,13 +3,13 @@
 %--------------------------------------------------------------------------------------------------------
 % 		Intro
 %--------------------------------------------------------------------------------------------------------
-\section{Intro}
+%\section{Intro}
 
-In this section, we create realistic scenarios that model the environments of some of its applications.  
-For example, the random movement of a mobile phone user a car moving at varying speeds around source nodes.  
-By examining the performance evaluations of the message ferrying design using parametric studies., it can predict how it will perform in its different environments and applications.
-The varying speed of a car is taken into consideration in the network models and the random movement of mobile phone users.
-These and among other varied parameters are explained in section \ref{sec:metrics}.
+This chapter provides an overview of the two simulations which were created.
+%, we create realistic scenarios that model the environments of some of its applications.  
+These simulations are intended to be as realistic as possible and involve random movement of ferry nodes.
+The ferries were assumed to be vehicles which defined their speed.
+A number of scenarios were tested for each simulation, the parameters varied are explained in section \ref{sec:metrics}.
 
 %More realistic scenario
 %	- Random ferry movement
@@ -20,50 +20,53 @@ These and among other varied parameters are explained in section \ref{sec:metric
 % 		Topology
 %--------------------------------------------------------------------------------------------------------
 \section{Network Model}
+\label{sec:main_net_model}
 
-In this section, the two network models will be explained.
-Their difference lies on the number of ferry, gateway, and source nodes.
-And 
-Their common settings are explained in section \ref{sec:commonsettings}.
-
-%Might not need subsections for Scenario 1 & 2
+This section outlines the two network models defining each simulation. 
+Their difference lies on the number of ferry and gateway nodes.
+The parameters common between each are explained in section \ref{sec:commonsettings}.
 
 \subsection{Scenario 1}		%1 gateway, 1 ferry
-This scenario has one gateway, one ferry node, and ten source nodes.
-The gateway is placed in the center and the ferry node starts next to it.
+
+The first simulation was created with one gateway node, one ferry node, and ten source nodes.
+The network model may be seen in figure \ref{fig:scenario2}.
+The gateway is placed in the center of the map and the ferry node starts next to it.
+Source nodes are more or less evenly distributed and are placed such that they are out of direct communication range.
+
 %picture of the scenario2 (1f1g random movement)
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.5\textwidth]{images/scenario2-top}
-    \caption{Topology of Scenario 2}
+    \includegraphics[width=0.6\textwidth]{images/scenario2-top}
+    \caption{Simulation 1 - Network Model (1 Gateway, 1 Ferry)}
     \label{fig:scenario2}
 \end{figure}
 
-
 \subsection{Scenario 2}		%2 gateways, 2 ferries
-This scenario has two gateways and two ferry nodes. 
-The gateways are placed near the center, while both ferries start from the center.
-The distance between source nodes and the gateways are spaced evenly.
-%picture of the scenario3 (2f2g random movement)
+
+The second simulation was created with two gateway nodes, two ferry node, and ten source nodes.
+The network model may be seen in figure \ref{fig:scenario3}.
+The gateways are placed in opposing quadrants, while both ferries start from the center.
+Source nodes and gateways are more or less evenly distributed and are placed such that they are out of direct communication range.
+
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.5\textwidth]{images/scenario3-top}
-    \caption{Topology of Scenario 3}
+    \includegraphics[width=0.6\textwidth]{images/scenario3-top}
+    \caption{Simulation 2 - Network Model (2 Gateways, 2 Ferries)}
     \label{fig:scenario3}
 \end{figure}
 
-
 \subsection{Common Settings}
 \label{sec:commonsettings}
+
 Some of the settings and characteristics common to all the topologies are the following:
 \begin{itemize}
-	\item All ferries move in random directions and have a varying speeds of 36kph - 72kph in uniform distribution 
-	\item The size of all topologies is 1km x 1km
+	\item All ferries move in random directions and have a varying speeds of 36kph - 72kph in uniform distribution.
+	\item The size both maps is 1km x 1km
 	%\item Beaconing intervals  %TO DO
-	\item Property update interval of every 2s and a variance of 0.1s
-	\item Simulations were run for 90 minutes. Property updates were disabled for the last thirty minutes in an effort to obtain statistics valid for a simulation of indefinite length. 
+	\item Properties are updated every 2 seconds with a variance of 0.1 seconds
+	\item Simulations were run for 90 minutes. 
+	Property updates were disabled for the last thirty minutes in an effort to obtain statistics valid for a simulation of indefinite length. 
 \end{itemize}
-
 
 %--------------------------------------------------------------------------------------------------------
 % 		Metrics and Results of Interest 
@@ -71,40 +74,62 @@ Some of the settings and characteristics common to all the topologies are the fo
 \section{Metrics and Results of Interest }
 \label{sec:metrics}
 
-%Some introduction
-The metrics used are success rate and loss, delay, parameters  %TO DO
+Two metrics are of primary interest when analyzing the network, update success rate and delay.
 
-\subsection{Success Rate and Loss}
+\subsection{Update Success Rate}
 \label{sec:packetloss}
-Because of the nature of the message ferrying algorithm, there may be dropped packets when the update number is older.
-Those dropped packets are not to be accounted for packet loss because it is part of the algorithm`s process.
-So, the packet loss is defined as where it measures the number of packets dropped when the buffer is full, where oldest packets are dropped to accommodate for adding the new packet.
-The packet success rate is simply one minus the packet loss function with respect to the memory limit.
 
-%Result of Interest 1: Success rate
-%	- Main parameter of interest affecting success rate -> memory size
-%	- Need to talk about what constitutes success rate
+Update success rate, or alternatively update loss, is of central importance in the network.
+It is primarily affected by memory limits imposed by the ferry but is also affected by the number of ferry and gateway nodes.
+Defining success rate is somewhat complicated as updates may be intentionally discarded before they reach a gateway if they are out of date.
+Additionally, updates may be duplicated multiple time as ferries exchange messages.
+Finally, discarding updates with a key update number less than the most recent key update number received by the gateway is desired behaviour.
+As such, the following conditions are used to determine success rate which is measured as \emph{success}, \emph{failure} or \emph{no value} for each key update generated by every source node property.
+
+\begin{itemize}
+\item For updates which reach the gateway:
+	\begin{itemize}
+	\item If the update has a key update number greater than the last update received by the gateway (for a given source id and property key) the update counts as a \emph{success}.
+	\item If the update has a key update number equal to or less than the last update received by the gateway (for a given source id and property key) the update is not considered and counts as \emph{no value}.
+	\end{itemize}
+\item For updates which do not reach the gateway and are discard by every ferry node:
+	\begin{itemize}
+	\item If the update has a key update number greater than the last update received by the gateway (for a given source id and property key) the update counts as a \emph{failure}.
+	\item If the update has a key update number equal to or less than the last update received by the gateway (for a given source id and property key) the update is not considered and counts as \emph{no value}.
+	\end{itemize}
+\end{itemize}
 
 \subsection{Delay}
 \label{sec:delay}
-The delay is defined by the time to update the central repository once the update packet is sent out.  
-The parameter affecting this delay is the number of ferries and gateways.
-%Something about delay for lost packets
 
-\subsection{Parameters Varied} %TODO: better section title
-The following parameters are varied to obtain results for the metrics mentioned before in section \ref{sec:delay} and \ref{sec:packetloss}.
+The number of ferries and gateways is the primary parameter affecting delay however ferry memory limits also play a role.
+Delay is defined as the time an update takes to reach the gateway after it has been generated by a source node.
+Only updates which are successfully deliver (as defined in section \ref{sec:packetloss}) 
+count towards delay.
+As such, it is important results for delay be considered within the context of update success rate.
+It should be noted that the lower bound on delay is the time it physically takes the ferry to move between the source node and gateway.
+
+\subsection{Simulation Parameters Varied} %TODO: better section title
+
+The following parameters were varied to create additional scenarios for each simulation as presented in section \ref{sec:main_net_model}. 
+Their impact on success rate and delay (from sections \ref{sec:delay} and \ref{sec:packetloss}) were considered.
   
 \subsubsection{Memory Limit}
-The memory limit is the buffer size limit used.
-It sets the maximum number of packets to handle.  
-
-\subsubsection{Number of Ferries and Gateways}
-The increase of the number of gateways reduced the delay of updating to central repository.  
-This result was expected because we knew that by properly placing another gateway in the area will grant better coverage.  
+\label{sec:mainMemLimit}
+The memory limit, also referred to as capacity, is the buffer size of the ferry.
+It limits the number of unique updates which can be stored at once.
+It is set in number of updates, not bytes, and hence is somewhat unrealistic.
+It is sufficient for the purposes of this scenario however.
 
 \subsubsection{Seed - Effect of Randomness}
-The different seeds used in the simulation results affect the randomness of movement.  
+Since ferry movement is random and the number of gateways is limited, it is important to consider multiple random when simulating in OPNET. 
+
+%TODO: why important
 
 \subsubsection{Source Node Storage}
 \label{sec:source_node_storage}
-This is an option that allows the source nodes to be able to store update packets for the ferry nodes, which will then provide better ranges of transfer.
+The node model and algorithm presented thus far has assumed only ferries store updates. 
+A modified node model which allows source nodes to store updates was also considered.
+The effect of enabling source node storage was examined.
+
+%This is an option that allows the source nodes to be able to store update packets for the ferry nodes, which will then provide better ranges of transfer.

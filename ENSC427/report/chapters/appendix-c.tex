@@ -1,9 +1,9 @@
-%appendix A
+%appendix C
 %p_update_manager
 
 \section{Process: Update Manager}
 
-\subsection{Visual}
+\subsection{Overview}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.7\textwidth]{images/p_update_manager}
@@ -31,19 +31,19 @@
 #define STRM_IN_P3		2
 #define STRM_IN_STORE	3
 #define STRM_OUT_STORE	0
-#define STRM_IN_MAC		4
+#define STRM_IN_MAC	4
 #define STRM_OUT_MAC 	1
 //Interrupt Codes
-#define IC_REQ_STORE_DUMP			73
-#define IC_STORE_DUMP_DONE			74
-#define IC_PROP_UPDATES_DISABLE		83
+#define IC_REQ_STORE_DUMP		73
+#define IC_STORE_DUMP_DONE		74
+#define IC_PROP_UPDATES_DISABLE	83
 #define IC_PROP_UPDATES_ENABLE		84
 #define IC_SEND_BEACON_TIMER		42
-#define IC_PK_UPDATEORACK			37
-#define IC_PK_BEACON				38
-#define IC_Q_DISABLE				54
-#define IC_Q_ENABLE					55
-#define IC_TX_ACQUIRED				67
+#define IC_PK_UPDATEORACK		37
+#define IC_PK_BEACON			38
+#define IC_Q_DISABLE			54
+#define IC_Q_ENABLE			55
+#define IC_TX_ACQUIRED			67
 //Interrupts //Stream
 #define I_S_PROP_PKT		(op_intrpt_type() == OPC_INTRPT_STRM && (op_intrpt_strm() == STRM_IN_P1 || op_intrpt_strm() == STRM_IN_P2 || op_intrpt_strm() == STRM_IN_P3))
 #define I_S_STORE_PKT		(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_STORE)
@@ -58,7 +58,6 @@
 #define I_L_SEND_BEACON_TIMER 	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_SEND_BEACON_TIMER)
 //Other
 #define STORE_UPDATES		(!is_source || enable_source_storage)
-
 List *tx_rights_lst = OPC_NIL;
  
 //PROTOTYPES
@@ -300,7 +299,6 @@ void acquire_tx_rights()
 			op_sim_end("Not nill interrupt pkt", "", "", "");	
 		}
 	}
-	
 	for(i = 0; i < op_prg_list_size(tx_rights_lst); i++)
 	{
 		if(op_prg_list_access(tx_rights_lst, i) == &self_id)
@@ -322,10 +320,12 @@ void acquire_tx_rights()
 
 \end{verbatim}
 }
-\subsection{Init State}
+
+\subsection{init State: Enter Executives}
 %______________________________________Init_____________________________________________________________
 {\tiny
 \begin{verbatim}
+
 char beacon_dist_str[128];
 self_id = op_id_self();
 op_ima_obj_attr_get (self_id, "Source ID", &source_id);
@@ -338,6 +338,7 @@ prop1_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop1");
 prop2_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop2");
 prop3_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "prop3");
 queue_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "hold_queue");
+
 if(tx_rights_lst == OPC_NIL)
 {
 	printf("Creating TX rights list\n");
@@ -359,57 +360,15 @@ op_intrpt_priority_set (OPC_INTRPT_REMOTE, IC_STORE_DUMP_DONE, 9);
 //Absolute lowest
 op_intrpt_priority_set (OPC_INTRPT_SELF, IC_SEND_BEACON_TIMER, 0);
 enable_beacon();
+
 \end{verbatim}
 }
 
-\subsection{Active State}
-%______________________________________Active_____________________________________________________________
-{\tiny
-\begin{verbatim}
-Packet *pPkt;
-if(prop_key_update_counter != prop_last_key_updated)
-{
-	active_update_tacker *pTracker;
-	int i;
-	
-	//Error check
-	for(i = 0; i < op_prg_list_size(active_updates_lst); i++)
-	{
-		//Might be able to just check the tail instead
-	
-		pTracker = (active_update_tacker *)op_prg_list_access(active_updates_lst, i);
-		if(pTracker->update_counter_number == prop_last_key_updated)
-		{
-			if(pTracker->has_one_store == 0)
-			{
-				op_sim_end("Did not receive store interrupt", "", "", "");
-			}
-		}
-	}
-	prop_last_key_updated = prop_key_update_counter;
-	pPkt = op_pk_create_fmt("keyupdate");
-	op_pk_nfd_set_int32(pPkt, "source_id", source_id);		
-	op_pk_nfd_set_int32(pPkt, "key", prop_key);	
-	op_pk_nfd_set_int32(pPkt, "key_update_number", prop_key_update_counter);
-	op_pk_nfd_set_dbl(pPkt, "generated_timestamp", op_sim_time());
-	op_pk_nfd_set_objid(pPkt, "source_prop_objid", self_id);
-	pTracker = (active_update_tacker *) op_prg_mem_alloc (sizeof (active_update_tacker));
-	pTracker->update_counter_number = prop_key_update_counter;
-	pTracker->pkts_alive = 0;
-	pTracker->has_one_store = 0;
-	pTracker->gateway_rx = 0;
-	pTracker->generated_timestamp = op_sim_time();
-	pTracker->mark_for_delete = 3;
-	op_prg_list_insert(active_updates_lst, pTracker, OPC_LISTPOS_TAIL);	
-	op_pk_send(pPkt, 0); //Output stream
-}
-\end{verbatim}
-}
-
-\subsection{tx_start State}
+\subsection{tx_start State: Enter Executives}
 %_____________________________________tx_start____________________________________________________________
 {\tiny
 \begin{verbatim}
+
 if(op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD) != &self_id)
 {
 	op_sim_end("Dont have TX rights", "", "", "");	
@@ -437,9 +396,49 @@ if(op_pk_get(STRM_IN_MAC) != OPC_NIL)
 }
 disable_q();
 disable_prop_updates();
-
 disable_beacon();
 request_storage_dump();
 
 \end{verbatim}
 }
+
+\subsection{tx_done: Enter Executives}
+%______________________________________tx_done_____________________________________________________________
+{\tiny
+\begin{verbatim}
+if(op_pk_get(STRM_IN_STORE) != OPC_NIL)
+{
+	op_sim_end("Store stream not empty", "", "", "");
+}
+enable_q();
+enable_prop_updates();
+
+//Allow the node we just received updates from to transmit
+enable_beacon();
+if(op_prg_list_remove(tx_rights_lst, OPC_LISTPOS_HEAD) != &self_id)
+{
+	op_sim_end("Dont have TX rights", "Leave", "", "");	
+}
+if(op_prg_list_size(tx_rights_lst)>0)
+{
+	if(op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD) == &self_id)
+	{
+		op_sim_end("Stupid OPNET", "This is actually your fault", "", "");	
+	}
+	op_intrpt_schedule_remote(op_sim_time(), IC_TX_ACQUIRED, *((int *)op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD)));
+}
+
+\end{verbatim}
+}
+
+
+\subsection{error State: Enter Executives}
+%____________________________________   error ____________________________________________________________
+{\tiny
+\begin{verbatim}
+//Unrecoverable error
+op_sim_end("Unexpected state", "", "", "");
+\end{verbatim}
+}
+
+

@@ -7,7 +7,7 @@
 
 %small intro
 In this section, we will discuss the simulation to validate our design and implementation. 
-A scenario is created to validate that the updates from source nodes are delivered successfully when in range and to see if the update packets are handled properly by the ferry node as designed.   
+A scenario is created to validate that the updates from source nodes are delivered successfully when in range to the ferry node and the update packets are handled properly by the ferry node as designed.   
 Further detail will be explained in the following subsequent section \ref{sec:scenario1}.
 
 
@@ -28,14 +28,13 @@ Further detail will be explained in the following subsequent section \ref{sec:sc
 In Figure \ref{fig:scenario1}, it shows the topology to test if the gateway receives the update packets sent by the source nodes and if the ferry is picking up these update packets from source nodes when it moves past them.
 There is one gateway node, one ferry node, and seven source nodes. 
 The size of this topology is 0.75km x 0.75km with source nodes placed evenly apart by 0.375km.  
-The speed of the ferry is a constant 60kph, as it moves clockwise along the rectangular path that is highlighted in white.
-
+The speed of the ferry is a constant 60kph, as it moves clockwise two times along the rectangular path that is highlighted in white.  The simulated time is six minutes.
 
 %picture of the rectangular path
 \begin{figure}[h]
     \centering
     \includegraphics[width=.7\textwidth]{images/scenario1-top1r}
-    \caption{Validation Scenario Topology}
+    \caption{Validation scenario topology}
     \label{fig:scenario1}
 \end{figure}
 
@@ -45,18 +44,17 @@ The simulation run time is 6 minutes.
 \label{sec:results-validate}
 
 
-After setting up OPNET to capture the desired statistics, we simulate our design and see if it is successful in delivering packets from the source nodes to the gateway node.
+After setting up OPNET to capture the desired statistics, the design and implementation are simulated.  The results are collected and shown in Figure \ref{fig:result1-a}.  From it, we can see that the ferry is picking up three update packets each time it passes by a source node.  This validates that ......
 
 %result1-a   ferry receives update packets
 \begin{figure}[h]
     \centering
     \includegraphics[width=.5\textwidth]{images/scenario1-result-received}
-    \caption{Scenario1 packets received as the ferry moves along the rectangular path}
+    \caption{Update packets received by the fery node}
     \label{fig:result1-a}
 \end{figure}
 
-In Figure \ref{fig:result1-a}, we have the ferry moving in clockwise again in the defined path, highlighted in white.  
-From Figure \ref{fig:result1-b}, there are two spikes in the graph which corresponds to the task of dumping the packets to the gateway node.  
+The second part of the results is to see the if the gateway receives the update packets collected by the ferry node.  From Figure \ref{fig:result1-b}, there are two spikes in the graph which corresponds to the task of dumping the packets to the gateway node.  
 The ferry node goes around two times for this simulation and that is why we see we two spikes.  
 Each source node sends three update packets to the ferry node as it passes.  
 Since there are seven source nodes, this accounts for the 20 packets received by the gateway node, which can be seen in Figure \ref{fig:result1-b}.
@@ -70,72 +68,3 @@ Since there are seven source nodes, this accounts for the 20 packets received by
     \label{fig:result1-b}
 \end{figure}
 
-
-
-
-%_________________________________________________________________
-%________________________SCENARIO 2_______________________________
-\subsection{Scenario 2 : Performance Evaluations}
-\label{sec:scenario2}
-
-%basic introduction
-This will be used to test the performance of message ferrying algorithm using parametric studies.  
-%Basic introduction - a realistic situation
-
-The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
-
-In this section, we examine the performance evaluations of message ferrying design to focus on two parameters.  
-One of the parameters is to determine a so-called packet loss where we measure the buffer size limit versus the packet dropping threshold within ferries.
-Because of the nature of the algorithm, there may be dropped packets when the update number is older.
-This packet loss is defined as where it measures the number of packets dropped when the buffer is full, and the oldest packets are dropped to accommodate for adding the new packet.  
-We define our packet loss as the number of packets dropped due to the fact that the buffer size limit has been reached.
-In this scenario, to test our design implementation, a simple scenario is created to validate that the node models are working as designed.  
-The other is to find the delay, which is measured by the time to update the central repository.
-
-
-\subsubsection{Scenario Considerations}
-
-The following factors have been considered when designing scenarios:
-\begin{itemize}
-\item Number of sources to ferries to gateways (various ratios)
-\item Speed and trajectories of ferries (random vs set path)
-\item Rate of source node state changes
-%\item Buffer size of ferries and size of property values (affects packet sizes)
-%\item Distances and distributions of ferries and gateways
-\end{itemize}
-
-\subsubsection{Scenario 2: Topology}
-
-In Figure \ref{fig:scenario2}, our scenario for the packet The size of this topology is 1km x 1km.  
-That is the distance between source node 0 and 4 is 1km, while the distance between source node 6 and 2 is also 1km.  
-The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
-
-%overview of the scenario2 (random movement)
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=.5\textwidth]{images/scenario2-top}
-    \caption{Topology of Scenario 2}
-    \label{fig:scenario2}
-\end{figure}
-
-
-\subsection{Results - Not here}
-
-In the following graph, we can see that the buffer size used is proportional to the rate of successful packets delivered to ferries.
-
-%graph of results for buffer size vs. packet loss [uncomment this when ready]
-%\begin{figure}[h]
-%    \centering
-%    \includegraphics[width=.5\textwidth]{images/result1}
-%    \caption{Buffer size versus packet drop rate }
-%    \label{fig:result2}
-%\end{figure}
-
-This result was what we expected.  
-The increase of the buffer size used resulted in fewer packet dropouts.
-
-
-
-%gateway scenario
-The increase of the number of gateways reduced the delay of updating to central repository.  
-This result was expected because we knew that by properly placing another gateway in the area will grant better coverage.  

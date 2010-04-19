@@ -1,10 +1,12 @@
 \chapter{Results}
 
+Simulation results are presented in terms of success rate (section \ref{sec:results_success_rate}) and delay (section \ref{sec:results_delay}) 
+
 %--------------------------------------------------------------------------------------------------------
 % 		Success Rate
 %--------------------------------------------------------------------------------------------------------
 \section{Success Rate}
-
+\label{sec:results_success_rate}
 
 \subsection{Scenario 1}
 \label{sec:results_success_scenario1}
@@ -29,6 +31,7 @@ Were the simulation to run forever and ferries to visit every source node, succe
 \end{figure}
 
 \subsection{Scenario 2}
+\label{sec:results_success_s2}
 
 The update success rate for second scenario with two ferries and two gateways is shown in \ref{fig:result_sccess_sim2byseed_dss}.
 As in section \ref{sec:results_success_scenario1}, success rate is shown as a function of ferry memory capacity and results for two separate seeds are shown.
@@ -90,14 +93,24 @@ This is expected as the algorithm used to discard packets in the presence of mem
 % 		Delay
 %--------------------------------------------------------------------------------------------------------
 \section{Delay}
-
+\label{sec:results_delay}
 The delay between a property value changing and when that change is registered by the gateway is also of interest.
 Delay is presented as a cumulative distribution function.
 %TODO: why, why not pdf
+%
+It is important to note that delay results presented here only account for updates successfully delivered.
+Updates lost (with the exception of the very last update) do not count towards the measured delay.
+As such, results showing greater delay may not indicate the given scenario has better performance.
+These results must be considered within the context of loss as presented in section \ref{sec:results_success_rate}.
 
 \subsection{Scenario 1}
 
-
+Figures \ref{fig:result_delay_sim1byseed_mc3} and \ref{fig:result_delay_sim1byseed_mc30} show the delay for simulation 1 (1 ferry and 1 gateway) with memory limits of 3 and 30 updates imposed by the ferry.
+Two seeds are shown for each in order to illustrate the effects of randomness.
+When memory is limited (shown in figure \ref{fig:result_delay_sim1byseed_mc3}), it can be seen more than half of all updates are delivered within 400 seconds. 
+This result is somewhat misleading as the success rate is very poor for this memory setting (see section \ref{sec:results_success_scenario1}).
+The results presented in figure \ref{fig:result_delay_sim1byseed_mc30} are far more meaningful.
+A gradual increase in the delay is seen with 80\% of updates being delivered within 500 seconds.
 
 \begin{figure}[htbp]
     \centering
@@ -116,35 +129,45 @@ Delay is presented as a cumulative distribution function.
 
 \subsection{Scenario 2}
 
+Figures \ref{fig:result_delay_sim2byseed_mc3} and \ref{fig:result_delay_sim2byseed_mc30} show the delay for simulation 2 with memory limits of 3 and 30 updates imposed by the ferries.
+As in section \ref{sec:results_success_s2}, randomness (as distinguished between the two seed values) has less effect on the output than scenario 1.
+Comparing the memory constrained cases (figures \ref{fig:result_delay_sim1byseed_mc3} and \ref{fig:result_delay_sim2byseed_mc3}), it is clear that the second simulation has reduced delay and increased success rate.
+It can be seen from figure \ref{fig:result_delay_sim2byseed_mc30} that 90\% of updates have a delay of approximately 300 seconds when memory is not constrained.
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_sim2byseed_mc3}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Delay - Simulation 2 (2 Ferries, 2 Gateways), Memory Capacity of 3}
+    \label{fig:result_delay_sim2byseed_mc3}
 \end{figure}
 
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_sim2byseed_mc30}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Delay - Simulation 2 (2 Ferries, 2 Gateways), Memory Capacity of 30}
+    \label{fig:result_delay_sim2byseed_mc30}
 \end{figure}
 
+\subsection{Comparison of Simulation}
 
-\subsection{Comparison}
+Figures \ref{fig:result_delay_both_128_mc30} and \ref{fig:result_delay_both_128_mc5} provide a comparison of delay between the two scenarios.
+It can be seen that the second scenario, with an additional ferry and gateway, has significantly reduced average delay.
+Furthermore, very few updates take longer than approximately 300 seconds to reach the gateway.
+When ferry memory capacity is limited to 5 updates, the additional ferry and gateway is seen to increase the probability updates are received in a timely manner.
+%	Not really correct
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_both_128_mc30}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Delay - Simulation 1 and 2, Memory Capacity of 30, Seed of 26834}
+    \label{fig:result_delay_both_128_mc30}
 \end{figure}
 
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_both_128_mc5}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Delay - Simulation 1 and 2, Memory Capacity of 5, Seed of 128}
+    \label{fig:result_delay_both_128_mc5}
 \end{figure}

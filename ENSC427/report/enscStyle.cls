@@ -133,8 +133,7 @@
 	\null\vfill
 
 	\begin{center}
-		{A Report Submitted in Partial Fulfillment\\
-		of the Requirements for ENSC \@coursecode}
+		{\large ENSC \@coursecode}
 	\end{center}
 	\vskip 2em
 

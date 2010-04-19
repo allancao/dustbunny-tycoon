@@ -24,18 +24,19 @@ Many of the previous research has focused on message ferrying within partitioned
 Our project research is in the category of task oriented ferries.
 Some useful examples of applications can be seen in section \ref{sec:motivations}.
 
-
-\subsection{Mobile Ad Hoc Networks}
+The following sections will discuss furthermore about the different type of networks where message ferrying is applicable to.
+\subsection{Ad Hoc Network Types}
+\subsubsection{Mobile Ad Hoc Networks}
 A mobile ad hoc network (MANET),  is a self-configuring mesh network of mobile devices connected by wireless links.~\cite{book1}
 These mobile devices are free to move independently in any direction and it acts as a router, where it must forward traffic unrelated to its own use.
 
-\subsection{Partitioned Networks}
+\subsubsection{Partitioned Networks}
 Partitioned networks are networks with no single hop or multiple hop route between some or even all node pairs.~\cite{hybrid}
 In a partitioned network, nodes may remain fully disconnected or they may \emph{cluster}, forming subnetworks in which all nodes are connected.
 All current used routing algorithms used in MANETs %TODO: list algorithms?
 fail in the presence of partitioning.~\cite{Routing}
 
-\subsection{Delay Tolerant Networks}
+\subsubsection{Delay Tolerant Networks}
 \label{sec:delay_loss_tolerant}
 %This section is pretty lame
 A delay tolerant network is one in which routing strategies and applications must tolerate significant delays delivering packets.
@@ -46,8 +47,8 @@ This delay may range from a few minutes up to hours or even days.~\cite{Routing}
 \subsection{Message Ferrying \& Store-Carry-Forward Routing}
 \label{sec:ferrying_overview}
 Message ferrying is a technique where mobile nodes in a MANET buffer data and physically carry it between nodes which are unable to communicate.~\cite{adhocmsgferry}
-Store-carry-forward routing is a strategy which makes use of, typically, known or assigned trajectories of these mobile nodes, known as message ferries.
-Some messages are dropped if no route to the destination can be found.  
+Store-carry-forward routing is a strategy which makes use of, typically, known or assigned trajectories of these mobile nodes, known as message ferries.~\cite{Routing}
+Some messages are dropped if no route to the destination can be found.~\cite{implement}
 
 
 %TODO HIPRI: ways message ferrying is used
@@ -57,7 +58,7 @@ Some messages are dropped if no route to the destination can be found.
 
 With the increasing numbers of mobile devices today, such as smartphones, laptops, tablets, netbooks, and more, there are many devices which could be potentially used as message ferries.~\cite{wearable} 
 This project proposes one way to make use of the significant amount of technology we transport with us on a daily basis.
-A message ferrying network could potentially transport small amounts of data over large distances essentially for free.
+A message ferrying network could potentially transport small amounts of data over large distances essentially for free.~\cite{efficientrouting}
 Beyond the use of message ferrying in remote sensor networks, discussed throughout this report, other applications of this technique might include tracking road traffic conditions, in-house utility management, automation for home devices, industrial monitoring, robot to robot communication and more.~\cite{book1}
 
 %Some of these ideas are good but dont really fit in this section:

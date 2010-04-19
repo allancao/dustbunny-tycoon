@@ -74,6 +74,7 @@ Some of the settings and characteristics common to all the topologies are the fo
 The metrics used are success rate and loss, delay, parameters  %TO DO
 
 \subsection{Success Rate and Loss}
+\label{sec:packetloss}
 Because of the nature of the message ferrying algorithm, there may be dropped packets when the update number is older.
 Those dropped packets are not to be accounted for packet loss because it is part of the algorithm`s process.
 So, the packet loss is defined as where it measures the number of packets dropped when the buffer is full, where oldest packets are dropped to accommodate for adding the new packet.
@@ -84,12 +85,13 @@ The packet success rate is simply one minus the packet loss function with respec
 %	- Need to talk about what constitutes success rate
 
 \subsection{Delay}
+\label{sec:delay}
 The delay is defined by the time to update the central repository once the update packet is sent out.  
 The parameter affecting this delay is the number of ferries and gateways.
 %Something about delay for lost packets
 
 \subsection{Parameters Varied} %TODO: better section title
-The following parameters are varied to obtain results for the metrics mentioned before in section \ref{sec:metrics}.
+The following parameters are varied to obtain results for the metrics mentioned before in section \ref{sec:delay} and \ref{sec:packetloss}.
   
 \subsubsection{Memory Limit}
 The memory limit is the buffer size limit used.

@@ -97,7 +97,7 @@ Sources have properties (prop1, prop2, etc) which generate messages. These messa
     \label{fig:source}
 \end{figure}
 
-Source node shown in figure \ref{fig:source} is a static node in the network which have a set of properties that generate update messages. 	
+Source node shown in figure \ref{fig:source} is a static node in the network which have a set of properties that generate update messages. The three properties shown in the figure generate updates and the mac process controls wireless access. 	
 
 %\item[Central Repository: ] 
 %The central repository is a server and the final destination for updates sent from source nodes.
@@ -112,7 +112,7 @@ Source node shown in figure \ref{fig:source} is a static node in the network whi
     \label{fig:Ferry}
 \end{figure}
 
-Ferry Node shown in figure \ref{fig:Ferry} is a mobile node which collects updates from source nodes when they are in range. These updates are then stored in memory.
+Ferry Node shown in figure \ref{fig:Ferry} is a mobile node which collects updates from source nodes when they are in range. These updates are then stored in memory. The storage process compares the updates and keeps the most recent according to the key update. It also checks which update to keep and gets rid of the older ones.
 
 \begin{figure}[h]
     \centering
@@ -121,7 +121,7 @@ Ferry Node shown in figure \ref{fig:Ferry} is a mobile node which collects updat
     \label{fig:Gateway}
 \end{figure}
 
-Gateway Node shown in figure \ref{fig:Gateway} receives the update messages from ferries and forwards them to their final destination via the Internet. 
+Gateway Node shown in figure \ref{fig:Gateway} receives the update messages from ferries and forwards them to their final destination via the Internet. Gateway process records the updates.
 
 
 
@@ -220,7 +220,7 @@ Note that now there are technologies that provide solutions to the problems note
 
 
 
-%TODO: Talk about various process models and their roles
-%	- Major improvement -> better mac
+
+% TODO	- Major improvement -> better mac
 
 \input{chapters/validation}

@@ -60,7 +60,7 @@ These gateway nodes are then responsible for using a reliable delivery mechanism
 %--------------------------------------------------------------------------------------------------------
 % 		Design
 %--------------------------------------------------------------------------------------------------------
-\section{Modal Design}
+\section{Model Design}
 \subsection{Network Elements}
 
 
@@ -98,7 +98,7 @@ Sources have properties (prop1, prop2, etc) which generate messages. These messa
 \end{figure}
 
 Source node shown in figure \ref{fig:source} is a static node in the network which have a set of properties that generate update messages. 	
-%TODO: Dont use "shown above" - use \ref{} for the figure number
+
 %\item[Central Repository: ] 
 %The central repository is a server and the final destination for updates sent from source nodes.
 %It maintains a list of the current state of all source nodes.
@@ -195,15 +195,30 @@ Gateway nodes do the steps shown below in order:
 \end{enumerate}
 
 
+\subsection{Assumptions}
+
+There were assumptions made to prevent the complexity they would have caused.
+
+\begin{itemize}
+\item Communication range of 60m:
+	This means that only nodes within that range can communicate. 
+
+\item No propagation and transmission delay:
+	These might happen when a ferry node goes by quicker and can't catch everything in time. 
+	
+\item No unintentional loss:
+	We assume that there is no loss caused by interference. We're assuming that any loss that happens is 			intentional.
+	
+	
+\end{itemize}
+
+Note that now there are technologies that provide solutions to the problems noted above. 
 
 %--------------------------------------------------------------------------------------------------------
 % 		Other stuff to include
 %--------------------------------------------------------------------------------------------------------
 
-%TODO: Talk about layer 1 and 2 assumptions we are making
-%	- No unintentional loss (ie from rf interference)
-%	- No propagation and transmission delay
-%	- COmmunication range - 60 m - inside nodes can communicate and outisde they cannot
+
 
 %TODO: Talk about various process models and their roles
 %	- Major improvement -> better mac

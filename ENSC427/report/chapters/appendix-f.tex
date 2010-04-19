@@ -1,19 +1,20 @@
 %appendix F
 %Gateway Receiver
 
-\section{Process: Gateway Receiver}
+%\section{Process: Gateway Receiver}
 
-\subsection{Overview}
+\section{Overview}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.7\textwidth]{images/gateway_rcvr}
+    \includegraphics[scale=0.6]{images/gateway_rcvr}
     \caption{Gateway receiver process model}
     \label{fig:appendix-f}
 \end{figure}
 
-% There are no local variables 
+\newpage
+% There are no local variables
 
-\subsection{Header Block}
+\section{Header Block}
 %_____________________________________HEADER______________________________________
 {\tiny
 \begin{verbatim}
@@ -29,7 +30,7 @@ List *create_stat_lst(char *);
 \end{verbatim}
 }
 
-\subsection{Function Block}
+\section{Function Block}
 %______________________________FUNCTION__________________________________
 {\tiny
 \begin{verbatim}
@@ -58,7 +59,7 @@ List *create_stat_lst(char *statName)
 
 \end{verbatim}
 }
-\subsection{init State: Enter Executives}
+\section{init State: Enter Executives}
 %______________________________________Init_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -81,7 +82,7 @@ if(has_inited == 0)
 \end{verbatim}
 }
 
-\subsection{record State: Exit Executives}
+\section{record State: Exit Executives}
 %_____________________________________Record_____________________________________________________________
 {\tiny
 \begin{verbatim}

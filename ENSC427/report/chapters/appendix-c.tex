@@ -1,17 +1,19 @@
 %appendix E
 %Update Manager
 
-\section{Process: Update Manager}
+%\section{Process: Update Manager}
 
-\subsection{Overview}
+\section{Overview}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.5\textwidth]{images/p_update_manager}
+    \includegraphics[scale=0.6]{images/p_update_manager}
     \caption{Update manager process model}
     \label{fig:appendix-c}
 \end{figure}
 
-\subsection{Local variables}
+\newpage
+
+\section{Local variables}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.7\textwidth]{images/state_variable_update_manager}
@@ -19,7 +21,7 @@
     \label{fig:appendix-c_sv}
 \end{figure}
 
-\subsection{Header Block}
+\section{Header Block}
 %_____________________________________HEADER______________________________________
 {\tiny
 \begin{verbatim}
@@ -95,7 +97,7 @@ void acquire_tx_rights(void);
 \end{verbatim}
 }
 
-\subsection{Function Block}
+\section{Function Block}
 %______________________________FUNCTION__________________________________
 {\tiny
 \begin{verbatim}
@@ -331,7 +333,7 @@ void acquire_tx_rights()
 \end{verbatim}
 }
 
-\subsection{init State: Enter Executives}
+\section{init State: Enter Executives}
 %______________________________________Init_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -377,7 +379,7 @@ enable_beacon();
 \end{verbatim}
 }
 
-\subsection{tx start State: Enter Executives}
+\section{tx start State: Enter Executives}
 %______________________________________tx_start_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -415,7 +417,7 @@ request_storage_dump();
 \end{verbatim}
 }
 
-\subsection{tx done State: Enter Executives}
+\section{tx done State: Enter Executives}
 %____________________________________tx_done_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -446,7 +448,7 @@ if(op_prg_list_size(tx_rights_lst)>0)
 \end{verbatim}
 }
 
-\subsection{error State: Enter Executives}
+\section{error State: Enter Executives}
 %__________________________________error______________________________________________________________
 {\tiny
 \begin{verbatim}

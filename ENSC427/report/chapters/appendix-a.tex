@@ -1,19 +1,19 @@
 %appendix A
 %SOURCE KEY SINK MODEL
 
-\section{Process: Source Property}
+%\section{Process: Source Property}
 
-\subsection{Overview}
+\section{Overview}
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.5]{images/p_source_property}
+    \includegraphics[scale=0.6]{images/p_source_property}
     \caption{Source property process model}
     \label{fig:appendix-a}
 \end{figure}
 
 \newpage
 
-\subsection{Local variables}
+\section{Local variables}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.7\textwidth]{images/state_variable_source_property}
@@ -21,7 +21,7 @@
     \label{fig:appendix-a_sv}
 \end{figure}
 
-\subsection{Header Block}
+\section{Header Block}
 %_____________________________________HEADER______________________________________
 {\tiny
 \begin{verbatim}
@@ -61,7 +61,7 @@ void stat_finalize(void);
 \end{verbatim}
 }
 
-\subsection{Function Block}
+\section{Function Block}
 %______________________________FUNCTION__________________________________
 {\tiny
 \begin{verbatim}
@@ -286,7 +286,7 @@ void stat_finalize()
 }
 \end{verbatim}
 }
-\subsection{init State: Enter Executives}
+\section{init State: Enter Executives}
 %______________________________________Init_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -318,7 +318,7 @@ if(is_source_mode)
 \end{verbatim}
 }
 
-\subsection{active State: Enter Executives}
+\section{active State: Enter Executives}
 %______________________________________Active_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -362,7 +362,7 @@ if(prop_key_update_counter != prop_last_key_updated)
 \end{verbatim}
 }
 
-\subsection{stop State: Enter Executives}
+\section{stop State: Enter Executives}
 %_____________________________________Stop_____________________________________________________________
 {\tiny
 \begin{verbatim}

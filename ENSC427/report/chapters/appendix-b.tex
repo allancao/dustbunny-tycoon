@@ -1,9 +1,9 @@
 %appendix B
 %p_storage
 
-\section{Process: Storage}
+%\section{Process: Storage}
 
-\subsection{Overview}
+\section{Overview}
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.5]{images/p_storage}
@@ -11,7 +11,9 @@
     \label{fig:appendix-b}
 \end{figure}
 
-\subsection{Local variables}
+\newpage
+
+\section{Local variables}
 \begin{figure}[h]
     \centering
     \includegraphics[width=.7\textwidth]{images/state_variable_storage}
@@ -19,7 +21,7 @@
     \label{fig:appendix-b_sv}
 \end{figure}
 
-\subsection{Header Block}
+\section{Header Block}
 %_____________________________________HEADER______________________________________
 {\tiny
 \begin{verbatim}
@@ -44,7 +46,7 @@ void gateway_fwrd(void);
 \end{verbatim}
 }
 
-\subsection{Function Block}
+\section{Function Block}
 %______________________________FUNCTION__________________________________
 {\tiny
 \begin{verbatim}
@@ -268,7 +270,7 @@ List *create_stat_lst_loc(const char *statName)
 \end{verbatim}
 }
 
-\subsection{init State: Enter Executives}
+\section{init State: Enter Executives}
 %______________________________________Init_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -296,7 +298,7 @@ updatemanager_id = op_id_from_name (op_topo_parent(self_id), OPC_OBJTYPE_PROC, "
 \end{verbatim}
 }
 
-\subsection{storage State: Enter Executives}
+\section{storage State: Enter Executives}
 %______________________________________Storage_____________________________________________________________
 {\tiny
 \begin{verbatim}

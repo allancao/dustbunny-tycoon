@@ -1,9 +1,9 @@
 %appendix E
 %HOLD QUEUE
 
-\section{Process: Hold Queue}
+%\section{Process: Hold Queue}
 
-\subsection{Overview}
+\section{Overview}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.7\textwidth]{images/hold_queue}
@@ -11,7 +11,9 @@
     \label{fig:appendix-e}
 \end{figure}
 
-\subsection{Local variables}
+\newpage
+
+\section{Local variables}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.7\textwidth]{images/state_variable_hold_queue}
@@ -19,7 +21,7 @@
     \label{fig:appendix-e_sv}
 \end{figure}
 
-\subsection{Header Block}
+\section{Header Block}
 %_____________________________________HEADER______________________________________
 {\tiny
 \begin{verbatim}
@@ -31,7 +33,7 @@
 \end{verbatim}
 }
 
-\subsection{Function Block}
+\section{Function Block}
 %______________________________FUNCTION__________________________________
 {\tiny
 \begin{verbatim}
@@ -39,7 +41,7 @@
 
 \end{verbatim}
 }
-\subsection{init State: Enter Executives}
+\section{init State: Enter Executives}
 %______________________________________Init_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -47,7 +49,7 @@ lst_pkts = op_prg_list_create ();
 \end{verbatim}
 }
 
-\subsection{forward State: Enter Executives}
+\section{forward State: Enter Executives}
 %______________________________________forward_____________________________________________________________
 {\tiny
 \begin{verbatim}
@@ -72,7 +74,7 @@ while(pPkt != OPC_NIL)
 \end{verbatim}
 }
 
-\subsection{hold State: Enter Executives}
+\section{hold State: Enter Executives}
 %_____________________________________hold_____________________________________________________________
 {\tiny
 \begin{verbatim}

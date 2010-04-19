@@ -1,12 +1,12 @@
-%appendix C
-%p_update_manager
+%appendix E
+%Update Manager
 
 \section{Process: Update Manager}
 
 \subsection{Overview}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.7\textwidth]{images/p_update_manager}
+    \includegraphics[width=.5\textwidth]{images/p_update_manager}
     \caption{Update manager process model}
     \label{fig:appendix-c}
 \end{figure}
@@ -23,9 +23,9 @@
 %_____________________________________HEADER______________________________________
 {\tiny
 \begin{verbatim}
-#include	<oms_dist_support.h>
 
-//Streams
+#include	<oms_dist_support.h>
+//STREAMS
 #define STRM_IN_P1		0
 #define STRM_IN_P2		1
 #define STRM_IN_P3		2
@@ -33,7 +33,8 @@
 #define STRM_OUT_STORE	0
 #define STRM_IN_MAC	4
 #define STRM_OUT_MAC 	1
-//Interrupt Codes
+
+//INTERRUPT CODES
 #define IC_REQ_STORE_DUMP		73
 #define IC_STORE_DUMP_DONE		74
 #define IC_PROP_UPDATES_DISABLE	83
@@ -44,24 +45,31 @@
 #define IC_Q_DISABLE			54
 #define IC_Q_ENABLE			55
 #define IC_TX_ACQUIRED			67
-//Interrupts //Stream
-#define I_S_PROP_PKT		(op_intrpt_type() == OPC_INTRPT_STRM && (op_intrpt_strm() == STRM_IN_P1 || op_intrpt_strm() == STRM_IN_P2 || op_intrpt_strm() == STRM_IN_P3))
-#define I_S_STORE_PKT		(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_STORE)
-#define I_S_MAC_PKT		(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_MAC)
+
+//INTERRUPTS
+
+//Stream
+#define I_S_PROP_PKT	(op_intrpt_type() == OPC_INTRPT_STRM && (op_intrpt_strm() == STRM_IN_P1 || op_intrpt_strm() == STRM_IN_P2 || op_intrpt_strm() == STRM_IN_P3))
+#define I_S_STORE_PKT	(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_STORE)
+#define I_S_MAC_PKT	(op_intrpt_type() == OPC_INTRPT_STRM && op_intrpt_strm() == STRM_IN_MAC)
+
 //Packet op_intrpt_strm() == STRM_IN_P1
 #define I_PK_UPDATEORACK	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_UPDATEORACK)
-#define I_PK_BEACON		(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_BEACON)
-#define I_TX_ACQUIRED		((op_intrpt_type() == OPC_INTRPT_SELF || op_intrpt_type() == OPC_INTRPT_REMOTE) && op_intrpt_code() == IC_TX_ACQUIRED)
+#define I_PK_BEACON	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_PK_BEACON)
+#define I_TX_ACQUIRED	((op_intrpt_type() == OPC_INTRPT_SELF || op_intrpt_type() == OPC_INTRPT_REMOTE) && op_intrpt_code() == IC_TX_ACQUIRED)
+
 //Remote
 #define I_R_STORE_DUMP_DONE	(op_intrpt_type() == OPC_INTRPT_REMOTE && op_intrpt_code() == IC_STORE_DUMP_DONE)
+
 //Local (self)
 #define I_L_SEND_BEACON_TIMER 	(op_intrpt_type() == OPC_INTRPT_SELF && op_intrpt_code() == IC_SEND_BEACON_TIMER)
-//Other
-#define STORE_UPDATES		(!is_source || enable_source_storage)
+
+//OTHER
+#define STORE_UPDATES			(!is_source || enable_source_storage)
 List *tx_rights_lst = OPC_NIL;
- 
+
 //PROTOTYPES
- 
+
 //Beacon control
 void enable_beacon();
 void disable_beacon();
@@ -83,6 +91,7 @@ void clear_pk_interrupt(void);
 void printbad_mac_or_prop_strm(void);
 void print_default(void);
 void acquire_tx_rights(void);
+
 \end{verbatim}
 }
 
@@ -90,6 +99,7 @@ void acquire_tx_rights(void);
 %______________________________FUNCTION__________________________________
 {\tiny
 \begin{verbatim}
+
 void schedule_beacon()
 {
 	double next_becon_time = 0;
@@ -98,13 +108,13 @@ void schedule_beacon()
 	{
 		next_becon_time = oms_dist_outcome (disth_beacon_timer);
 	}
-	evh_beacon_tmr = op_intrpt_schedule_self (op_sim_time () + next_becon_time, IC_SEND_BEACON_TIMER);	
+	evh_beacon_tmr = op_intrpt_schedule_self (op_sim_time () + next_becon_time, IC_SEND_BEACON_TIMER);
 	FOUT;
 }
 void enable_beacon()
 {
 	FIN(enable_beacon());
-	schedule_beacon();	
+	schedule_beacon();
 	FOUT;
 }
 void disable_beacon()
@@ -131,7 +141,7 @@ void send_beacon()
 	pPkt = op_pk_create_fmt("beacon");
 	op_pk_nfd_set_int32(pPkt, "source_id", source_id);
 	op_pk_send(pPkt, STRM_OUT_MAC);
-	schedule_beacon();	
+	schedule_beacon();
 	FOUT;
 }
 //Property control
@@ -148,13 +158,13 @@ void disable_prop_updates()
 	FIN(disable_prop_updates());
 	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop1_id);
 	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop2_id);
-	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop3_id);	
+	op_intrpt_schedule_remote(op_sim_time(), IC_PROP_UPDATES_DISABLE, prop3_id);
 	FOUT;
 }
 void request_storage_dump()
 {
 	FIN(request_sotrage_dump());
-	op_intrpt_schedule_remote(op_sim_time(), IC_REQ_STORE_DUMP, storage_id);	
+	op_intrpt_schedule_remote(op_sim_time(), IC_REQ_STORE_DUMP, storage_id);
 	FOUT;
 }
 void send_to_store()
@@ -176,7 +186,7 @@ void send_to_store()
 		if(pPkt_interrupt != OPC_NIL)
 		{
 			op_sim_end("Not nill interrupt pkt", "", "", "");	
-		}	
+		}
 		pPktToForward = op_pk_get(op_intrpt_strm());
 	}
 	op_pk_send(pPktToForward, STRM_OUT_STORE);
@@ -202,29 +212,29 @@ void send_to_mac()
 		if(pPkt_interrupt != OPC_NIL)
 		{
 			op_sim_end("Not nill interrupt pkt", "", "", "");	
-		}	
+		}
 		pPktToForward = op_pk_get(op_intrpt_strm());
 	}
-	op_pk_send(pPktToForward, STRM_OUT_MAC);	
+	op_pk_send(pPktToForward, STRM_OUT_MAC);
 	FOUT;
 }
 void clear_pk_interrupt()
 {
-	FIN(clear_pk_interrupt());	
+	FIN(clear_pk_interrupt());
 	if(is_pkt_interrupt)
 	{
 		is_pkt_interrupt = 0;
 		if(pPkt_interrupt == OPC_NIL)
 		{
 			op_sim_end("Nill interrupt pkt", "", "", "");	
-		}	
+		}
 		op_pk_destroy(pPkt_interrupt);
 		pPkt_interrupt = OPC_NIL;
 	}
 	else
 	{
 		op_sim_end("clear_pk_interrupt called wrong", "", "", "");	
-	}	
+	}
 	FOUT;
 }
 void generate_mac_pk_interrupt()
@@ -233,7 +243,6 @@ void generate_mac_pk_interrupt()
 	char format_name[255];
 	FIN(generate_mac_pk_interrupt());
 	reset_beacon_timer(); //To prevent a bad state
-
 	if(pPkt_interrupt != OPC_NIL)
 	{
 		op_sim_end("Not nill interrupt pkt", "", "", "");	
@@ -256,7 +265,8 @@ void generate_mac_pk_interrupt()
 	else if (strcmp (format_name, "keyupdate") == 0)
 	{
 		op_intrpt_schedule_self(op_sim_time(), IC_PK_UPDATEORACK);	
-	}	
+	}
+	
 	FOUT;
 }
 void disable_q()
@@ -281,14 +291,14 @@ void acquire_tx_rights()
 {
 	int i;
 	FIN(acquire_tx_rights());
-	
 	if(is_pkt_interrupt)
 	{
 		is_pkt_interrupt = 0;
+		
 		if(pPkt_interrupt == OPC_NIL)
 		{
 			op_sim_end("Nill interrupt pkt", "", "", "");	
-		}	
+		}
 		op_pk_destroy(pPkt_interrupt);
 		pPkt_interrupt = OPC_NIL;
 	}
@@ -306,7 +316,7 @@ void acquire_tx_rights()
 			if(i = 0)
 			{
 				op_sim_end("NOOOOO.......", "", "", "");	
-			}		
+			}
 			FOUT;
 		}
 	}
@@ -326,6 +336,7 @@ void acquire_tx_rights()
 {\tiny
 \begin{verbatim}
 
+
 char beacon_dist_str[128];
 self_id = op_id_self();
 op_ima_obj_attr_get (self_id, "Source ID", &source_id);
@@ -344,6 +355,7 @@ if(tx_rights_lst == OPC_NIL)
 	printf("Creating TX rights list\n");
 	tx_rights_lst = op_prg_list_create();
 }
+
 //Property stream priorities
 op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P1, 15);
 op_intrpt_priority_set (OPC_INTRPT_STRM, STRM_IN_P2, 15);
@@ -359,13 +371,14 @@ op_intrpt_priority_set (OPC_INTRPT_SELF, IC_TX_ACQUIRED, 20);
 op_intrpt_priority_set (OPC_INTRPT_REMOTE, IC_STORE_DUMP_DONE, 9);
 //Absolute lowest
 op_intrpt_priority_set (OPC_INTRPT_SELF, IC_SEND_BEACON_TIMER, 0);
+
 enable_beacon();
 
 \end{verbatim}
 }
 
 \subsection{tx_start State: Enter Executives}
-%_____________________________________tx_start____________________________________________________________
+%______________________________________tx_start_____________________________________________________________
 {\tiny
 \begin{verbatim}
 
@@ -375,11 +388,11 @@ if(op_prg_list_access(tx_rights_lst, OPC_LISTPOS_HEAD) != &self_id)
 }
 if(is_pkt_interrupt)
 {
-	is_pkt_interrupt = 0;	
+	is_pkt_interrupt = 0;
 	if(pPkt_interrupt == OPC_NIL)
 	{
 		op_sim_end("Nill interrupt pkt", "", "", "");	
-	}		
+	}
 	op_pk_destroy(pPkt_interrupt);
 	pPkt_interrupt = OPC_NIL;
 }
@@ -402,10 +415,11 @@ request_storage_dump();
 \end{verbatim}
 }
 
-\subsection{tx_done: Enter Executives}
-%______________________________________tx_done_____________________________________________________________
+\subsection{tx_done State: Enter Executives}
+%____________________________________tx_done_____________________________________________________________
 {\tiny
 \begin{verbatim}
+
 if(op_pk_get(STRM_IN_STORE) != OPC_NIL)
 {
 	op_sim_end("Store stream not empty", "", "", "");
@@ -415,6 +429,7 @@ enable_prop_updates();
 
 //Allow the node we just received updates from to transmit
 enable_beacon();
+
 if(op_prg_list_remove(tx_rights_lst, OPC_LISTPOS_HEAD) != &self_id)
 {
 	op_sim_end("Dont have TX rights", "Leave", "", "");	
@@ -431,14 +446,14 @@ if(op_prg_list_size(tx_rights_lst)>0)
 \end{verbatim}
 }
 
-
 \subsection{error State: Enter Executives}
-%____________________________________   error ____________________________________________________________
+%__________________________________error______________________________________________________________
 {\tiny
 \begin{verbatim}
+
 //Unrecoverable error
 op_sim_end("Unexpected state", "", "", "");
+
 \end{verbatim}
 }
-
 

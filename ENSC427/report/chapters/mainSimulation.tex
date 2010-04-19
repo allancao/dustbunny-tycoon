@@ -5,17 +5,14 @@
 %--------------------------------------------------------------------------------------------------------
 \section{Intro}
 
-This will be used to test the performance of message ferrying algorithm using parametric studies.  
-
-The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
-
-In this section, we examine the performance evaluations of message ferrying design to focus on two parameters.  
-One of the parameters is to determine a so-called packet loss where we measure the buffer size limit versus the packet dropping threshold within ferries.
+In this section, we examine the performance evaluations of message ferrying design using parametric studies.
+One of the parameters is to measure a so-called packet loss, by varying the buffer size limit.
 Because of the nature of the algorithm, there may be dropped packets when the update number is older.
 This packet loss is defined as where it measures the number of packets dropped when the buffer is full, and the oldest packets are dropped to accommodate for adding the new packet.  
 We define our packet loss as the number of packets dropped due to the fact that the buffer size limit has been reached.
-In this scenario, to test our design implementation, a simple scenario is created to validate that the node models are working as designed.  
-The other is to find the delay, which is measured by the time to update the central repository.
+The other parameter is to measure the delay which is defined by the time to update the central repository once the update packet is sent out.
+
+
 %More realistic scenario
 %	- Random ferry movement
 %		- Details -> car
@@ -26,7 +23,8 @@ The other is to find the delay, which is measured by the time to update the cent
 %--------------------------------------------------------------------------------------------------------
 \section{Network Model}
 
-In Figure \ref{fig:scenario2}, our scenario for the packet .  The size of this topology is 1km x 1km.  
+In Figure \ref{fig:scenario2}, our scenario for the packet .  
+The size of this topology is 1km x 1km.  
 That is the distance between source node 0 and 4 is 1km, while the distance between source node 6 and 2 is also 1km.  
 The speed of the ferries is random and the direction is random, where the speed is within 36kph to 72kph in a uniform distribution.  
 

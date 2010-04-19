@@ -5,6 +5,7 @@
 %--------------------------------------------------------------------------------------------------------
 \section{Success Rate}
 
+
 \subsection{Scenario 1}
 \label{sec:results_success_scenario1}
 
@@ -58,19 +59,30 @@ The fact that it is not is a result of limited simulation time.
 
 \subsection{Effect of Source Node Storage}
 
-As discussed in section \ref{sec:source_node_storage}
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.8\textwidth]{images/result_sccess_sim1byss_128}
-    \caption{Success Rate vs Memory Capacity - Simulation 1 and 2 , Seed of 128 and Source Storage Disabled}
-    %\label{fig:result_sccess_sim1byss_128}
-\end{figure}
+As discussed in section \ref{sec:source_node_storage}, source nodes can be configured to receive updates from ferries, store them and retransmit them; in essence, acting as stationary ferries.
+The impact of enabling source node storage on success rate in simulation 2 can be seen in \ref{fig:result_sccess_sim2byss_128}.
+%	TODO: reword
+It can be seen that although success rate increased, the change was not drastic.
+This result is somewhat expected given that there were only two ferries and all source nodes were relatively close to gateways.
+It is expected that the impact of source node storage will become more pronounced by increasing the number of ferries or increasing the distance between source nodes and gateways while keeping the relative spacing of source nodes constant
+%	Terrible
+%	TODO: Explain why
+Enabling source node storage in simulation 1 was seen to have no impact on success rate.
+This is expected as the algorithm used to discard packets in the presence of memory constrains would prevent a ferry picking up an update it has discarded.
+
+
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=0.8\textwidth]{images/result_sccess_sim1byss_128}
+%    \caption{Effect of Source Node Storage - Success Rate vs Memory Capacity - Simulation 1, Seed of 128}
+%    \label{fig:result_sccess_sim1byss_128}
+%\end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_sccess_sim2byss_128}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Effect of Source Node Storage - Success Rate vs Memory Capacity - Simulation 2, Seed of 128}
+    \label{fig:result_sccess_sim2byss_128}
 \end{figure}
 
 
@@ -79,21 +91,27 @@ As discussed in section \ref{sec:source_node_storage}
 %--------------------------------------------------------------------------------------------------------
 \section{Delay}
 
+The delay between a property value changing and when that change is registered by the gateway is also of interest.
+Delay is presented as a cumulative distribution function.
+%TODO: why, why not pdf
+
 \subsection{Scenario 1}
+
+
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_sim1byseed_mc3}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Delay - Simulation 1 (1 Ferry, 1 Gateway), Memory Capacity of 3}
+    \label{fig:result_delay_sim1byseed_mc3}
 \end{figure}
 
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{images/result_delay_sim1byseed_mc30}
-    \caption{TODO}
-    %\label{fig:moistureSensor}
+    \caption{Delay - Simulation 1 (1 Ferry, 1 Gateway), Memory Capacity of 30}
+    \label{fig:result_delay_sim1byseed_mc30}
 \end{figure}
 
 \subsection{Scenario 2}

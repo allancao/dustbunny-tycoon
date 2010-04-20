@@ -32,16 +32,14 @@ As such, a very specialized 'state monitoring' network designed for non-critical
 \subsection{State Monitoring Network}
 
 The general premise for this project consists of a network containing numerous, uniquely identifiable source nodes. 
-%TODO: Reword
 Each source node has a limited number of properties, in the form of key/value pairs, specifying a property name (the key) and its current value.
 Properties may change overtime and each change defines a new state for the source node.
 A temperature sensor for example, might support a 'temperature' property, the value of which is the current temperature updated every hour.
-Properties do not have to contain a single value and each may be as large as the payload limit of network packets. %Somewhat of a vague statement
+Properties do not have to contain a single value and each may be as large as the payload limit of network packets. 
 
 The network and message ferrying algorithm is designed to synchronize a central repository with the current state of every source node.
 Only the most recent state (or most recent value) for each property is important, not the history of how that property has changed.
 This limits the number of packets which can exist in the network as only the most recent update must be reported.
-%The significance of this characteristic is described below. 
 The message ferries collect data from source nodes when they are in range and transport it to the central repository.
 The central repository is assumed to be a server connected to the Internet.
 Ferries pass updates they have collected from source nodes to special gateway nodes.
@@ -62,8 +60,6 @@ Please refer to the appendix for specific implementation details.
 
 \subsection{Network Elements}
 \label{sec:net_element}
-
-%This section describes the elements present in the network.
 
 \subsubsection{Network Nodes}
 

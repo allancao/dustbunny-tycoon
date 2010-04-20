@@ -1,28 +1,20 @@
 \documentclass[twoside]{enscStyle}
-%\documentclass{enscStyle}
 
 \usepackage[center]{caption}
 \usepackage{fixltx2e}
-%\usepackage{booktabs}
-%\usepackage{multirow}
-%\usepackage{tabularx}
-%\usepackage{tikz}
-%\usepackage{pgf}
 \usepackage{amsmath,amssymb}
-%\usepackage[utf8]{inputenc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Title Page Info
+% 		Title Page Info
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Message Ferrying: Implementation and Simulation in OPNET}
 
 \coursecode{427}
 
-%Strip student numbers when compiling for HTML
 \author{
     Group 9\\
-    Dan Hendry (danh@sfu.ca)\nothtml{, 301133878}\\
+    Dan Hendry (danh@sfu.ca)\nothtml{, 301133878}\\	%Strip student numbers when compiling for HTML
     Yazan Shehadeh (ysa5@sfu.ca)\nothtml{,  301028275}\\
     Timbo Yuen (tty2@sfu.ca)\nothtml{, 301023080}\\
 }
@@ -37,15 +29,13 @@
 
 \maketitle
 
-%Needed for twoside option:
-\thispagestyle{empty}
+
+\thispagestyle{empty}		%Needed for twoside option:
 
 \cleardoublepage
 
-%\setcounter{page}{1} % the table of contents will be shown as page iii
-
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Abstract
+%		Abstract
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
@@ -57,21 +47,15 @@
 \cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Tables
+% 		Tables
 %%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \tableofcontents
 \addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
 
 \cleardoublepage
 
-%Dont compile the list of tables and figures to html -> no tables/figures yet
 \nothtml{
-
-%\listoftables
-%\addcontentsline{toc}{chapter}{\hspace{13pt}List of Tables}
-%\cleardoublepage
 
 \listoffigures
 \addcontentsline{toc}{chapter}{\hspace{13pt}List of Figures}
@@ -83,10 +67,8 @@
 \pagenumbering{arabic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Main Section
+% 		Main Section
 %%%%%%%%%%%%%%%%%%%%%%%%%
-
-%Add chapters as needed
 
 \input{chapters/introduction}
 
@@ -100,7 +82,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% References
+% 		References
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \bibliography{finalReport}
@@ -112,9 +94,6 @@
 
 \nothtml{
 \begin{appendix}
-%\appendix
-%\renewcommand{\thechapter}{\Alph{chapter}}
-
 \input{chapters/appendix}
 \end{appendix}
 }

@@ -3,18 +3,11 @@
 %--------------------------------------------------------------------------------------------------------
 % 		Intro
 %--------------------------------------------------------------------------------------------------------
-%\section{Intro}
 
 This chapter provides an overview of the two simulations which were created.
-%, we create realistic scenarios that model the environments of some of its applications.  
 These simulations are intended to be as realistic as possible and involve random movement of ferry nodes.
 The ferries were assumed to be vehicles which defined their speed.
 A number of scenarios were tested for each simulation, the parameters varied are explained in section \ref{sec:metrics}.
-
-%More realistic scenario
-%	- Random ferry movement
-%		- Details -> car
-%	- even source spacing
 
 %--------------------------------------------------------------------------------------------------------
 % 		Topology
@@ -33,7 +26,6 @@ The network model may be seen in figure \ref{fig:scenario2}.
 The gateway is placed in the center of the map and the ferry node starts next to it.
 Source nodes are more or less evenly distributed and are placed such that they are out of direct communication range.
 
-%picture of the scenario2 (1f1g random movement)
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.6\textwidth]{images/scenario2-top.png}
@@ -62,7 +54,6 @@ Some of the settings and characteristics common to all the topologies are the fo
 \begin{itemize}
 	\item All ferries move in random directions and have a varying speeds of 36kph - 72kph in uniform distribution.
 	\item The size of both maps is 1km x 1km
-	%\item Beaconing intervals  %TO DO
 	\item Properties are updated every 2 seconds with a variance of 0.1 seconds
 	\item Simulations are run for 90 minutes. 
 	Property updates were disabled for the last thirty minutes in an effort to obtain statistics valid for a simulation of indefinite length. 
@@ -109,7 +100,7 @@ count towards delay.
 As such, it is important for results of delay to be considered within the context of update success rate.
 It should be noted that the lower bound on delay is the time it physically takes the ferry to move between the source node and gateway.
 
-\subsection{Simulation Parameters Varied} %TODO: better section title
+\subsection{Simulation Parameters Varied}
 
 The following parameters were varied to create additional scenarios for each simulation as presented in section \ref{sec:main_net_model}. 
 Their impact on success rate and delay (from sections \ref{sec:delay} and \ref{sec:packetloss}) were considered.
@@ -124,12 +115,9 @@ It is sufficient for the purposes of this scenario however.
 \subsubsection{Seed - Effect of Randomness}
 Since ferry movement is random and the number of gateways is limited, it is important to consider multiple random when simulating in OPNET. 
 
-%TODO: why important
-
 \subsubsection{Source Node Storage}
 \label{sec:source_node_storage}
 The node models and algorithm presented thus far has assumed that only ferries store updates. 
 A modified node model which allows source nodes to store updates was also considered.
 The effect of enabling source node storage was examined.
 
-%This is an option that allows the source nodes to be able to store update packets for the ferry nodes, which will then provide better ranges of transfer.

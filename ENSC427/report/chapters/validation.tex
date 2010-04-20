@@ -1,11 +1,7 @@
 \section{Validation} 
 \label{sec:validation}
 
-%small intro
 This section presents, an initial simulation which was used to validate the OPNET node and process models. 
-
-%A scenario is created to validate that the updates from source nodes are delivered successfully when in range to the ferry node and the update packets are handled properly by the ferry node as designed.   
-%Further detail will be explained in the following subsequent section \ref{sec:scenario1}. %might remove this line
 
 %_________________________________________________________________
 %________________________SCENARIO 1_______________________________
@@ -34,7 +30,6 @@ A statistic measuring the number of updates received per second was created and 
 The simulation was run and the results for the ferry are shown in figure \ref{fig:result1-a}.  
 From it, we can see that the ferry is receiving updates each time it passes by a source node. 
 
-%result1-a   ferry receives update packets
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.5\textwidth]{images/scenario1-result-received.png}
@@ -48,7 +43,6 @@ The ferry node traverses its path twice in this simulation which is why there ar
 Each source node sends three update packets to the ferry node as it passes.  
 Since there are seven source nodes, this accounts for the 21 packets received by the gateway node, which can be seen in figure \ref{fig:result1-b}.
 
-%result1-b   ferry delivers update packets to gateway
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.5\textwidth]{images/scenario1-result-gateway.png}

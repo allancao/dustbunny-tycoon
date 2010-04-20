@@ -10,7 +10,6 @@ Simulation results are presented in terms of success rate (section \ref{sec:resu
 \label{sec:results_success_rate}
 
 As discussed in section \ref{sec:packetloss}, memory limit is the most important parameter affecting success rate. 
-%TODO: more?
 
 \subsection{Simulation 1}
 \label{sec:results_success_scenario1}
@@ -22,7 +21,6 @@ The spike in success rate shown for the first simulation (seed of 128) at a memo
 It can be seen from this figure that success rate increases rapidly with memory capacity.
 There is a leveling effect seen when memory capacity increases beyond 30.
 Since there are ten source nodes each with three properties and the storage process is intelligent about keeping only the most current updates, no packets must be discarded (see section \ref{sec:algorithm}).
-%	At this point
 The fact that success rate never reaches 1, or 100\%, is an artifact of the limited simulation time.
 Were the simulation to run forever and ferries to visit every source node, success rate would approach 1.
 
@@ -41,7 +39,6 @@ The update success rate for second simulation, with two ferries and two gateways
 As in section \ref{sec:results_success_scenario1}, success rate is shown as a function of ferry memory capacity and results for two separate seeds are shown.
 It can be seen that variability in the success rate between the two seed values is lower than the first scenario.
 Increasing the number of ferries and gateways increases the likely hood a ferry will pass by the node and decreases variance.
-%Something about gussians and decreasing variance.
 
 \begin{figure}[htbp]
     \centering
@@ -68,22 +65,11 @@ The fact that it is not is a result of limited simulation time.
 
 As discussed in section \ref{sec:source_node_storage}, source nodes can be configured to receive updates from ferries, store them and retransmit them; in essence, acting as stationary ferries.
 The impact of enabling source node storage on success rate in simulation 2 can be seen in \ref{fig:result_sccess_sim2byss_128}.
-%	TODO: reword
 It can be seen that although success rate increased, the change was not drastic.
 This result is somewhat expected given that there were only two ferries and all source nodes were relatively close to gateways.
 It is expected that the impact of enabling source node storage would become more pronounced by increasing the number of ferries or increasing the distance between source nodes and gateways while keeping the relative spacing of source nodes constant
-%	Terrible
-%	TODO: Explain why
 Enabling source node storage in simulation 1 was seen to have no impact on success rate.
 This is expected as the algorithm used to discard packets in the presence of memory constrains would prevent a ferry re-storing up an update it had previously discarded.
-
-
-%\begin{figure}[htbp]
-%    \centering
-%    \includegraphics[width=0.8\textwidth]{images/result_sccess_sim1byss_128}
-%    \caption{Effect of Source Node Storage - Success Rate vs Memory Capacity - Simulation 1, Seed of 128}
-%    \label{fig:result_sccess_sim1byss_128}
-%\end{figure}
 
 \begin{figure}[htbp]
     \centering
@@ -101,7 +87,6 @@ This is expected as the algorithm used to discard packets in the presence of mem
 The time between a property value changing and when that change is registered by the gateway is of interest and examined.
 Delay is presented as a cumulative distribution function.
 A CDF was chosen over a PDF as it is more meaningful in the presence of random ferry movement.
-%
 It is important to note that delay results presented here only account for updates successfully delivered.
 Updates lost as defined in section \ref{sec:packetloss}, with the exception of the very last update, do not count towards the measured delay.
 As such, results showing greater delay may not indicate the given scenario has better performance.

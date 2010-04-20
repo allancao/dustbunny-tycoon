@@ -1,17 +1,3 @@
-%we need to cite stuff here 
-%~\cite{adhocmsgferry}
-%~\cite{hybrid}
-%~\cite{Routing}
-%~\cite{wearable}
-%~\cite{QoSrouting}
-%~\cite{efficientrouting}
-%~\cite{implement}
-%~\cite{book1}
-%slides -> report
-%2 is 1
-%1 is 3
-%3 is 2
-
 \chapter{Introduction} 
 
 \section{Background}
@@ -26,7 +12,6 @@ Very little research has been found on the topic of task oriented ferries, the f
 Related networking concepts are presented in section \ref{sec:net_types}.
 Potential examples of applications suitable for message ferrying are presented in section \ref{sec:motivations}.
 
-%The following sections will discuss furthermore about the different type of networks where message ferrying is applicable to.
 
 \subsection{Ad Hoc Network Types}
 \label{sec:net_types}
@@ -40,17 +25,14 @@ Much past research on message ferrying has focused on MANETs.
 \label{sec:clustering}
 Partitioned networks are networks with no single hop or multiple hop route between some or even all node pairs.~\cite{hybrid}
 In a partitioned network, nodes may remain fully disconnected or they may \emph{cluster}, forming subnetworks in which all nodes are connected.
-All current used routing algorithms used in MANETs %TODO: list algorithms?
+All current used routing algorithms used in MANETs 
 fail in the presence of partitioning~\cite{Routing}.
 This project assumes disconnected nodes, but does not assume nodes cluster.
-%TODO: Last sentence is bad
 
 \subsubsection{Delay Tolerant Networks}
 \label{sec:delay_loss_tolerant}
-%This section is pretty lame
 A delay tolerant network is one in which routing strategies and applications must tolerate significant delays delivering packets.
 This delay may range from a few minutes up to hours or even days~\cite{Routing}.
-%TODO: Current algorithms - bad
 The network presented in this report is inherently delay tolerant.
 
 \subsection{Message Ferrying \& Store-Carry-Forward Routing}
@@ -67,9 +49,6 @@ This project proposes one way to make use of the technology we transport with us
 A message ferrying network could transport small amounts of data over large distances essentially for free.
 Beyond the use of message ferrying in remote sensor networks, discussed throughout this report, other applications of this technique might include tracking road traffic conditions, in-house utility management, automation for home devices, industrial monitoring, robot to robot communication and more~\cite{book1}.
 
-%Some of these ideas are good but dont really fit in this section:
-%The use of these mesh networks must have low-cost, very low power consumption,low data rate, cheap installation, flexibility, and increase connectivity to make it worthwhile in most cases.
-
 \section{Project Goals}
 
 Message ferrying has typically been examined within the context of improving throughput, reducing delay and increasing reliability within an ad hoc network~\cite{efficientrouting}.
@@ -84,15 +63,3 @@ The goals of this project may be listed as follows.
 \item Evaluate the network using delay and message loss metrics.
 \item Examine the impact of node density, ferry count, and memory limits.
 \end{itemize}
-
-
-%An overview look of our architecture:
-%
-%\begin{figure}[h]
-%    \centering
-%    \includegraphics[width=.5\textwidth]{images/wmn_general}
-%    \caption{Wireless Mesh Network General Architecture Overview~\cite{book1}}
-%    \label{fig:wmn_general}
-%\end{figure}
-%
-%if something referring to this figure, use this \ref{fig:wmn_general}

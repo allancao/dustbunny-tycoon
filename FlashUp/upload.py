@@ -91,10 +91,10 @@ try:
                     currentPrefix = newCardSide1.replace("$", "", 2).strip()
                     if not masterPrefix == "":
                         currentPrefix = masterPrefix + " - " + currentPrefix
-                    currentPrefix = currentPrefix + ": "
+                    currentPrefix = currentPrefix + ":|"
                 elif newCardSide1.startswith("$"):
                     masterPrefix = newCardSide1.replace("$", "", 1).strip()
-                    currentPrefix = masterPrefix + ": "
+                    currentPrefix = masterPrefix + ":|"
                 else:
                     cards.append((currentPrefix + newCardSide1, newCardSide2))
                 

@@ -64,6 +64,7 @@ try:
         wb = None
         ws = None
         try:
+            currentPrefix = ""
             wb = excel.Workbooks.Open(os.path.abspath(srcXl), ReadOnly=True)
             ws = wb.Worksheets[0]
             i = 1
@@ -83,12 +84,17 @@ try:
                     i += 1
                     continue
                 
-                if not newCardSide1.startswith("#"):
-                    cards.append((newCardSide1, newCardSide2))
+                if newCardSide1.startswith("#"):
+                    pass
+                elif newCardSide1.startswith("$"):
+                    currentPrefix = newCardSide1.replace("$", "", 1).strip()
+                    currentPrefix = currentPrefix + ": "
+                else:
+                    cards.append((currentPrefix + newCardSide1, newCardSide2))
                 
                     #Invert - add another card with sides reversed
                     if str(ws.Range("C" + str(i)).Value).strip().lower() == "i":
-                        cards.append((newCardSide2, newCardSide1))
+                        cards.append((currentPrefix + newCardSide2, newCardSide1))
                 
                 i += 1
         finally:

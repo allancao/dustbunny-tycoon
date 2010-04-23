@@ -14,7 +14,7 @@ print "Starting"
 
 #Deck name & output file
 DECK_NAME = os.path.basename(os.path.abspath(os.curdir))
-DECK_FILE = "cards.fc"
+DECK_FILE = DECK_NAME + ".fc"
 
 # FTP and web
 FTP_SERVER = "ftp.sfu.ca"

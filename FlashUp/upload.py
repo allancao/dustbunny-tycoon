@@ -64,6 +64,7 @@ try:
         wb = None
         ws = None
         try:
+            masterPrefix = ""
             currentPrefix = ""
             wb = excel.Workbooks.Open(os.path.abspath(srcXl), ReadOnly=True)
             ws = wb.Worksheets[0]
@@ -86,9 +87,14 @@ try:
                 
                 if newCardSide1.startswith("#"):
                     pass
-                elif newCardSide1.startswith("$"):
-                    currentPrefix = newCardSide1.replace("$", "", 1).strip()
+                elif newCardSide1.startswith("$$"):
+                    currentPrefix = newCardSide1.replace("$", "", 2).strip()
+                    if not masterPrefix == "":
+                        currentPrefix = masterPrefix + " - " + currentPrefix
                     currentPrefix = currentPrefix + ": "
+                elif newCardSide1.startswith("$"):
+                    masterPrefix = newCardSide1.replace("$", "", 1).strip()
+                    currentPrefix = masterPrefix + ": "
                 else:
                     cards.append((currentPrefix + newCardSide1, newCardSide2))
                 

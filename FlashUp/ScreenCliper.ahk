@@ -12,6 +12,36 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+^+v::
+StringReplace, Clipboard, Clipboard, `n, %A_Space%, All
+StringReplace, Clipboard, Clipboard, `r, %A_Space%, All
+Send, ^v
+Return
+
+^+c::
+clipboard =  ; Start off empty to allow ClipWait to detect when the text has arrived.
+Send ^c
+ClipWait, 2
+if ErrorLevel
+{
+    MsgBox, The attempt to copy text onto the clipboard failed.
+    return
+}
+StringReplace, Clipboard, Clipboard, `n, %A_Space%, All
+StringReplace, Clipboard, Clipboard, `r, %A_Space%, All
+IfWinExist, Microsoft Excel
+{
+	WinActivate 
+	Send {F2}
+	Sleep 100
+	Send -%clipboard%|
+}
+else
+{
+	MsgBox No Excel
+}
+return
+
 #s::
 Run, "C:\Windows\Sysnative\SnippingTool.exe"
 KeyWait, LButton, D

@@ -85,6 +85,9 @@ try:
                     i += 1
                     continue
                 
+                newCardSide1 = newCardSide1.rstrip("|")
+                newCardSide2 = newCardSide2.rstrip("|")
+                
                 if newCardSide1.startswith("#"):
                     pass
                 elif newCardSide1.startswith("$$"):

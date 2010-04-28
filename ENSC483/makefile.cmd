@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set FILENAME=project
+set FILENAME=final
 set BIBNAME=References
 
 

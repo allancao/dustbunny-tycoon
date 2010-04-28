@@ -1,0 +1,98 @@
+\documentclass[11pt, twocolumn]{article}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{pgf}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[page]{appendix}
+\usepackage{textcase}
+\usepackage{setspace}
+\usepackage{scalefnt}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{hyperref}
+%\usepackage{fancyhdr}
+
+\setcounter{secnumdepth}{1}
+\renewcommand{\baselinestretch}{1.1}
+
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{1.5ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title Page Info
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{ENSC 483 - Project 2: Magnetic Levitation Control}
+
+%\prof{Professor Mahdi Alavi}
+
+\date{April 28, 2010}
+
+\begin{document}
+\begin{titlepage}
+	\vspace*{2em}
+	\begin{center}
+		{\Huge ENSC 483 - Project 2: Magnetic Levitation Control}
+	\end{center}
+	\null\vfill
+
+	\vskip 2em
+
+	\begin{center}
+		{\Large
+		Dan Hendry (danh@sfu.ca), 301133878\\
+   		Veronica Cojocaru (vca5@sfu.ca), 301055896
+   		}
+	\end{center}
+	\vskip 2em
+	
+	\begin{center}
+		{Simon Fraser University \\
+		School of Engineering Science}
+	\end{center}
+	\vskip 2em
+
+	\begin{center}
+		{April 28, 2010\\
+		Course Instructor: Professor Mahdi Alavi}
+	\end{center}
+\end{titlepage}
+
+\cleardoublepage
+
+\pagenumbering{arabic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main Section
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Add chapters as needed
+
+\input{finalsections/intro}
+
+\input{finalsections/statefeedback}
+
+\input{finalsections/observer}
+
+\input{finalsections/results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% References
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliography{References}
+%\addcontentsline{toc}{chapter}{\hspace{13pt}References}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{appendix}
+
+\input{finalsections/app_code}
+\end{appendix}
+
+\end{document}

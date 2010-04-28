@@ -1,33 +1,20 @@
 \section{Results}
 
-The systemwas implemented as described in the previous sections.
-We tested the system by applyind a step function of 1.89 N, and recording the system response.
-The resulting magnet position can be seen in Figure \ref{fig:position}.
+The system was implemented as described in the previous sections.
+It was tested by applying a step function of 1.89 N, and recording the system response.
+The resulting magnet position can be seen in figure \ref{fig:position} and its velocity in \ref{fig:velocity}.
+Observer results are also presented in this graph.
 
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
     \includegraphics[width=1\textwidth]{position}
-    \caption{System Response: Position}
+    \caption{System Response: Position - Actual (Red) and Observed (Green)}
     \label{fig:position}
 \end{figure}
 
-The magnet velocity is shown in Figure \ref{fig:velocity}.
-
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
     \includegraphics[width=1\textwidth]{velocity}
-    \caption{System Response: Velocity}
+    \caption{System Response: Velocity - Actual (Red) and Observed (Green)}
     \label{fig:velocity}
 \end{figure}
-
-
-%some equations....
-\begin{equation}
-	\label{eq:settling_time}
-	T_{s} = {\frac {y}{\zeta \, \omega_n}}
-\end{equation}
-
-\begin{equation}
-	\label{eq:overshoot}
-	\zeta = -{\frac {ln{OS}}{\sqrt{{\pi}^{2}+{ln{OS}}^{2}}}}
-\end{equation}

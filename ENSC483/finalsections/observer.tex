@@ -1,11 +1,49 @@
 \section{Observer}
 
-An observer was then designed
+An observer was designed to estimate state variable based on the output of the actual system.
 
 \subsection{System Model}
 
-TODO
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{observer}
+    \caption{Observer Block Diagram}
+    \label{fig:observer}
+\end{figure}
+
+The observer block diagram is shown in figure \ref{fig:observer}.
+Estimated state variables are denoted by ${\bf \hat{x}}$.
+The dynamic of the estimated state variables is shown in \ref{eq:obEstDynamic}.
+The error dynamic (with error defined in \ref{eq:obErr}) is shown in equation \ref{eq:obErrDynamic}.
+
+\begin{equation}
+	\label{eq:obEstDynamic}
+	{\bf \dot{\hat{x}}} = ({\bf A} - {\bf B\,k} - {\bf L\,C})\,{\bf \hat{x}} - {\bf L}\,y
+\end{equation}
+
+\begin{equation}
+	\label{eq:obErr}
+	e = x - \hat{x}
+\end{equation}
+
+\begin{equation}
+	\label{eq:obErrDynamic}
+	{\bf \dot{e}} = ({\bf A} - {\bf L\,C})\,{\bf e}
+\end{equation}
 
 \subsection{Gain Determination}
 
-TODO
+The elements of the {\bf L} matrix were chosen to place the poles of the $({\bf A} - {\bf L\,C})$ matrix.
+In order for the observer to track the system state variables, the poles of the error dynamic should be placed in the left hand plane.
+In addition, the error dynamic should have a faster response than system with state feedback.
+As such, the poles were chosen to be four time larger than the poles of the state feedback system.
+This resulted in a stable response for the estimated state variables, $({\bf A} - {\bf B\,k} - {\bf L\,C})$ as show in the figure \ref{fig:obMagResp}, the magnitude response.
+This gives elements of the L matrix as $L_1 = 32$ and $L_2 = 249.67$
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{observerMagnitude}
+    \caption{Estimated State Variable Magnitude Response}
+    \label{fig:obMagResp}
+\end{figure}
+

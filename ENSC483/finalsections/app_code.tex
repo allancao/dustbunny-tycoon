@@ -1,5 +1,118 @@
 \section{Controller Code}
 
-asdf
+{\tiny
+\begin{verbatim}
+;############### Variables - State Feedback ###############
+#define y_eq		q1
+#define ts 		q2
 
-asdf
+#define control_1	q3
+#define control_2	q4
+
+#define y_1		q20
+#define y_last_1	q21
+#define x1_sys_1	q22
+#define x2_sys_1	q23
+
+#define y_2 		q30
+#define y_last_2 	q31
+#define x1_sys_2 	q32
+#define x2_sys_2 	q33
+
+#define k_1 		q5
+#define k_2 		q6
+#define magic_number_1 	q7
+#define magic_number_2 	q8
+
+#define gravity_offset	q9
+
+;############### Variables - Observer ###############
+#define x1_hat 		q40
+#define x2_hat 		q41
+#define x1_hat_dot 	q42
+#define x2_hat_dot 	q43
+
+#define a_11 		q50
+#define a_12 		q51
+#define a_21 		q52
+#define a_22 		q53
+
+#define l_1 		q54
+#define l_2 		q55
+
+;############### Initialize ###############
+
+;Which one are we controlling?
+control_1=0
+control_2=1
+
+ts=0.001768
+control_effort1 = 0
+control_effort2 = 0
+
+;############### Initialize - State feedback ###############
+y_eq=2
+
+x1_sys_1=0
+x2_sys_1=0
+x1_sys_2=0
+x2_sys_2=0
+y_last_1=0
+y_last_2=0
+
+gravity_offset=5588 ;for eq point
+
+k_1=116690.2776
+k_2=1489.45
+magic_number_1=5
+magic_number_2=-7
+
+;############### Initialize - Observer feedback ###############
+x1_hat=0
+x2_hat=0
+x1_hat_dot=0
+x2_hat_dot=0
+
+a_11=-32
+a_12=1.000000
+a_21=-882.754369
+a_22=-8
+
+l_1=32
+l_2=249.670968
+
+;############### Control Loop ###############
+begin
+	;State feedback - bottom (1)
+	if (control_1 != 0)
+	y_1=enc1_pos/10000-y_eq
+	x1_sys_1= y_1
+	x2_sys_1=((y_1 - y_last_1)/ts)
+	y_last_1=y_1
+	control_effort1 = (k_1*(x1_sys_1)+k_2*(x2_sys_1))/magic_number_1-gravity_offset
+	endif
+
+	;State feedback - top (2)
+	if (control_2 != 0)
+	y_2=enc2_pos/10000+y_eq
+	x1_sys_2=y_2
+	x2_sys_2=(y_2 - y_last_2)/ts
+	y_last_2=y_2
+	control_effort2 = (k_1*(x1_sys_2)+k_2*(x2_sys_2))/magic_number_2+gravity_offset-cmd2_pos
+	endif
+
+	;Observer - top
+	x1_hat_dot = a_11*(x1_hat) + a_12*(x2_hat) + l_1*(y_2)
+	x2_hat_dot = a_21*(x1_hat) + a_22*(x2_hat) + l_2*(y_2)
+
+	x1_hat = x1_hat + ts*x1_hat_dot
+	x2_hat = x2_hat + ts*x2_hat_dot
+
+	;Observations
+	q10=x1_sys_2
+	q11=x1_hat
+	q12=x2_sys_2
+	q13=x2_hat
+end
+\end{verbatim}
+}

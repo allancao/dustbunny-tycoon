@@ -1,51 +1,40 @@
 \section{Introduction}
 
-The objectives of the second project were to design an observer and state feebback loop for the linearized system from the first project.
-We want to choose the parameters for the state feedback in order to obtain appropriate values for settling time and overshoot.
-State feedback is also useful for stabilizing a system that would otherwise be unstable.
-The observer is supposed to monitor the actual system and estimate the state variables.
-We implemented this on the top magnet, which uses attractive levitation (and is thus inherently unstable).
+The objectives of the second project were to design an observer and state feedback controller for the linearized system from the first project.
+Parameters for the state feedback were chosen in order to obtain appropriate values for settling time and overshoot.
+State feedback was also used to stabilize the system as it would otherwise be unstable.
+The observer monitors the system and estimates state variables.
+The top magnet of the magnetic levitation apparatus was controlled; a system which is open-loop unstable.
 
-\subsection{System Model}
-
-The linearized model that we started with is as follows.
+The linearized model of the system is given in \ref{eq:finalLinearizedx}; it is unstable yet controllable.
+A steady state location of 2 cm was chosen; all inputs and position measurements are assumed to be relative to this point.
+Force exerted by the magnet is given by \ref{eq:Fmag}.
 
 \begin{equation}
 	\label{eq:finalLinearizedx}
-	{\bf \dot{x}} - {\bf \dot{x}^\star} = 
+	{\bf \dot{x}} = 
 	\left[
 		\begin{array}{cc}
 			 0 & 1 \\
-			 -{\frac {39.24}{z_0 + 6.2}} & 0 \\
+			-6.32 & 0 \\
 		\end{array}
 	\right]
-	\left(
-		{\bf x} - {\bf x^\star}
-	\right)
+	%\left(
+		{\bf x}
+	%\right)
 	+ 
 	\left[
 		\begin{array}{c}
 			 0 \\
-			{\frac {9523.809524}{m\,\left( z_0 + 6.2 \right) ^{4}}} \\
+			 0.00537 \\
 		\end{array}
 	\right]
-	\left(
-		u - u^\star
-	\right)
+	%\left(
+		u
+	%\right)
 \end{equation}
 
-
-\subsection{Initial pole locations and stability}
-
-Currently, the poles of the linearized system are as follows.
-
 \begin{equation}
-	\label{eq:poles}
-	{\bf s} = 
-	\left[
-		\begin{array}{c}
-			0 \\
-			0 \\
-		\end{array}
-	\right]
+	\label{eq:Fmag}
+	F_{mag} = {\frac {u}{1.05 \left(x_1+6.2 \right) ^{4}}}
 \end{equation}

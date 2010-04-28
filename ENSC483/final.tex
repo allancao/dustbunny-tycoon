@@ -1,5 +1,6 @@
 \documentclass[11pt, twocolumn]{article}
 
+\usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{tabularx}
@@ -83,15 +84,17 @@
 % References
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-\bibliography{References}
+%\bibliography{References}
 %\addcontentsline{toc}{chapter}{\hspace{13pt}References}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Appendix
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{appendix}
+\cleardoublepage
 
+\begin{appendix}
+\onecolumn
 \input{finalsections/app_code}
 \end{appendix}
 

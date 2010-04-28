@@ -1,15 +1,62 @@
 \section{State Feedback}
 
-The first step was to stabilize the system using state feedback
+The system was first stabilized using state feedback.
+Input with state feedback is given by equation \ref{eq:sfInput}.
+The term $u_g$ compensates for the effects of gravity and was calculated as 5588 based on equation \ref{eq:Fmag} and a magnet mass of 120 grams.
+
+\begin{equation}
+	\label{eq:sfInput}
+	u = -{\bf k\,x} + u_g
+\end{equation}
 
 \subsection{System Model}
 
-Formulation of state feedback
+The system model with state feedback is shown in equation \ref{eq:sfSysModel}.
+Parameters $k_1$ and $k_2$ are chosen to place the poles in the desired location using the the characteristic equation of the matrix.
+The characteristic equation is given in equation \ref{eq:sfCharEq}.
 
-\subsection{Desired pole location}
+\begin{equation}
+	\label{eq:sfSysModel}
+	{\bf \dot{x}} = 
+	\left[
+		\begin{array}{cc}
+			 0 & 1 \\
+			-6.32+0.00537\,k_1 & 0.00537\,k_2  \\
+		\end{array}
+	\right]
+	%\left(
+		{\bf x}
+	%\right)
+\end{equation}
 
-For overshoot and settling time
+\begin{equation}
+	\label{eq:sfCharEq}
+	s^2 + 0.00537\,k_2\,s + 6.33+0.00537\,k_1
+\end{equation}
+
+\subsection{Pole Location}
+
+Overshoot and settling time for a second order system (with characteristic equation \ref{eq:charEqSecondOrder}) are given by equations \ref{eq:sfSecondOrderTS} and \ref{eq:sfSecondOrderOS}.
+An overshoot of 5\% and settling time of 1 second, gives $\zeta =0.15898$ and $\omega_n = 25.161$.
+As such, poles should be placed at at $P_1 = -4 +24.84\,j$ and $P_2 = -4 - 24.84\,j$.
+
+\begin{equation}
+	\label{eq:charEqSecondOrder}
+	s^2 + 2\,\zeta\,\omega_n\,s + \omega_n^2
+\end{equation}
+
+\begin{equation}
+	\label{eq:sfSecondOrderTS}
+	T_{s} = {\frac {y}{\zeta \, \omega_n}}
+\end{equation}
+
+\begin{equation}
+	\label{eq:sfSecondOrderOS}
+	\zeta = -{\frac {\ln{OS}}{\sqrt{{\pi}^{2}+{\ln{OS}}^{2}}}}
+\end{equation}
 
 \subsection{Gain Determination}
 
-Getting k from desired pole location
+By equating the coefficients of the characteristic equation for a second order system (shown in equation \ref{eq:charEqSecondOrder}) and that shown in \ref{eq:sfCharEq}, state feedback gain may be determined as $k_1 = 116690.3$ and $k_2 = 1489.5$.
+
+%TODO: Equations/something else

@@ -1,94 +1,112 @@
- ;############### Variables ###############
-#define x1_hat q10
-#define x2_hat q11
-#define x1_sys q17
-#define x2_sys q15
+;############### Variables - State Feedback ###############
+#define y_eq		q1
+#define ts 		q2
 
-#define y_2 q87
-#define y_last_2 q88
+#define control_1	q3
+#define control_2	q4
 
-#define x1_sys_2 q85
-#define x2_sys_2 q86
+#define y_1		q20
+#define y_last_1	q21
+#define x1_sys_1	q22
+#define x2_sys_1	q23
 
-#define x1_hat_dot q70
-#define x2_hat_dot q71
+#define y_2 		q30
+#define y_last_2 	q31
+#define x1_sys_2 	q32
+#define x2_sys_2 	q33
 
-#define a_11 q5
-#define a_12 q6
-#define a_21 q7
-#define a_22 q8
+#define k_1 		q5
+#define k_2 		q6
+#define magic_number_1 	q7
+#define magic_number_2 	q8
 
-#define k_1 q9
-#define k_2 q20
-#define l_1 q21
-#define l_2 q22
+#define gravity_offset	q9
 
-#define y q13
-#define ts q14
+;############### Variables - Observer ###############
+#define x1_hat 		q40
+#define x2_hat 		q41
+#define x1_hat_dot 	q42
+#define x2_hat_dot 	q43
 
-#define y_last q50
+#define a_11 		q50
+#define a_12 		q51
+#define a_21 		q52
+#define a_22 		q53
 
-#define x1_hatn q60
-#define x2_hatn q61
-
-#define k_1_w q62
-#define k_2_w q63
-
-#define magic_number q42
+#define l_1 		q54
+#define l_2 		q55
 
 ;############### Initialize ###############
 
+;Which one are we controlling?
+control_1=0
+control_2=1
+
+ts=0.001768
+control_effort1 = 0
+control_effort2 = 0
+
+;############### Initialize - State feedback ###############
+y_eq=2
+
+x1_sys_1=0
+x2_sys_1=0
+x1_sys_2=0
+x2_sys_2=0
+y_last_1=0
+y_last_2=0
+
+gravity_offset=5588 ;for eq point
+
+k_1=116690.2776
+k_2=1489.45
+magic_number_1=5
+magic_number_2=-7
+
+;############### Initialize - Observer feedback ###############
 x1_hat=0
 x2_hat=0
-x1_hatn=0
-x2_hatn=0
-x1_sys=0
-x2_sys=0
-
-y_last=0
-y_last_2=0
+x1_hat_dot=0
+x2_hat_dot=0
 
 a_11=-32
 a_12=1.000000
 a_21=-882.754369
 a_22=-8
-k_1=116690.2776
-k_2=1489.454
+
 l_1=32
 l_2=249.670968
 
-magic_number = -7
-k_1_w=116690.2776
-k_2_w=1489.45
-
-ts=0.001768
-
-control_effort1 = 0
-control_effort2 = 0
 ;############### Control Loop ###############
 begin
-	y=enc2_pos/10000+2
-	x1_sys = y
-	x2_sys = ((y-y_last)/ts)
-	y_last = y
-	control_effort2 = (k_1_w*(x1_sys)+k_2_w*(x2_sys))/magic_number +5588
+	;State feedback - bottom (1)
+	if (control_1 != 0)
+	y_1=enc1_pos/10000-y_eq
+	x1_sys_1= y_1
+	x2_sys_1=((y_1 - y_last_1)/ts)
+	y_last_1=y_1
+	control_effort1 = (k_1*(x1_sys_1)+k_2*(x2_sys_1))/magic_number_1-gravity_offset
+	endif
 
-	y_2=enc1_pos/10000-2
-	x1_sys_2 = y_2
-	x2_sys_2 = ((y_2-y_last_2)/ts)
-	y_last_2 = y_2
-	control_effort1 = (k_1_w*(x1_sys_2)+k_2_w*(x2_sys_2))/5 -5588
+	;State feedback - top (2)
+	if (control_2 != 0)
+	y_2=enc2_pos/10000+y_eq
+	x1_sys_2=y_2
+	x2_sys_2=(y_2 - y_last_2)/ts
+	y_last_2=y_2
+	control_effort2 = (k_1*(x1_sys_2)+k_2*(x2_sys_2))/magic_number_2+gravity_offset-cmd2_pos
+	endif
 
-	;control_effort2 = (k_1*(x1_hat)+k_2*(x2_hat))/15 +5588
+	;Observer - top
+	x1_hat_dot = a_11*(x1_hat) + a_12*(x2_hat) + l_1*(y_2)
+	x2_hat_dot = a_21*(x1_hat) + a_22*(x2_hat) + l_2*(y_2)
 
-	;x1_hatn = a_11*(x1_hat) + a_12*(x2_hat) + l_1*(y)
-	;x2_hatn = a_21*(x1_hat) + a_22*(x2_hat) + l_2*(y-(x1_hat))
-	;x1_hat=x1_hatn
-	;x2_hat=x2_hatn
+	x1_hat = x1_hat + ts*x1_hat_dot
+	x2_hat = x2_hat + ts*x2_hat_dot
 
-	x1_hat_dot = a_11*(x1_hat) + a_12*(x2_hat) - l_1*(y)
-	x2_hat_dot = a_21*(x1_hat) + a_22*(x2_hat) - l_2*(y)
-
-	x1_hat = y; x1_hat + ts*x1_hat_dot
-	x2_hat = x2_hat + ts*x2_hat_dot 
+	;Observations
+	q10=x1_sys_2
+	q11=x1_hat
+	q12=x2_sys_2
+	q13=x2_hat
 end

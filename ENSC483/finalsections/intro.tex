@@ -1,17 +1,51 @@
 \section{Introduction}
 
-What are we doing.
-
-Attractive levitation.
-
-Design state feedback and observer.
-
-Not using the observer for control: why - stupid machine.
+The objectives of the second project were to design an observer and state feebback loop for the linearized system from the first project.
+We want to choose the parameters for the state feedback in order to obtain appropriate values for settling time and overshoot.
+State feedback is also useful for stabilizing a system that would otherwise be unstable.
+The observer is supposed to monitor the actual system and estimate the state variables.
+We implemented this on the top magnet, which uses attractive levitation (and is thus inherently unstable).
 
 \subsection{System Model}
 
-Matricies and values
+The linearized model that we started with is as follows.
+
+\begin{equation}
+	\label{eq:finalLinearizedx}
+	{\bf \dot{x}} - {\bf \dot{x}^\star} = 
+	\left[
+		\begin{array}{cc}
+			 0 & 1 \\
+			 -{\frac {39.24}{z_0 + 6.2}} & 0 \\
+		\end{array}
+	\right]
+	\left(
+		{\bf x} - {\bf x^\star}
+	\right)
+	+ 
+	\left[
+		\begin{array}{c}
+			 0 \\
+			{\frac {9523.809524}{m\,\left( z_0 + 6.2 \right) ^{4}}} \\
+		\end{array}
+	\right]
+	\left(
+		u - u^\star
+	\right)
+\end{equation}
+
 
 \subsection{Initial pole locations and stability}
 
-Current location of the poles
+Currently, the poles of the linearized system are as follows.
+
+\begin{equation}
+	\label{eq:poles}
+	{\bf s} = 
+	\left[
+		\begin{array}{c}
+			0 \\
+			0 \\
+		\end{array}
+	\right]
+\end{equation}

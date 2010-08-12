@@ -1,0 +1,31 @@
+\subsubsection{Net Stiffness and Efficiency}
+%6) Calculate the net stiffness of each truss structure (applied force vs deflection) and determine its overall efficiency (stiffness/structure weight). To calculate the weight of each structure, assume brass has a density of 8.49 g/cm3. -> 8490 kg / (m^3)
+%7)	Observe how the structure efficiency changes with the truss designs. What design features make the truss structure more or less efficient? 
+
+The relative stiffness of each truss is given in table \ref{tbl:stiffness}.
+%TODO: more info
+It can clearly be seen that the fifth design has the greatest efficiency by a large margin.
+The primary feature distinguishing it from the other designs is its height of 10 cm instead of the other designs having heights of 5 cm.
+
+\begin{table*}[hp]
+	\centering
+	\caption{Stiffness and Efficiency}
+	\label{tbl:stiffness}
+	\vspace{6pt}
+	\begin{tabular}{ccccccc}
+		\toprule
+		Design &  \multicolumn{3}{c}{Stiffness} & \multicolumn{3}{c}{Efficiency} \\
+		\cmidrule(r){2-4}
+		\cmidrule(r){5-7}
+		 & Applied Force & Deflection & Stiffness & Material Length & Weight  & Efficiency \\
+		\midrule
+		1 & 1 N & 0.029 mm  & 34.5 & 0.604 m & 40.6 g & 849 \\
+		2 & 1 N & 0.0112 mm & 89.3 & 1.374 m & 92.4 g & 967 \\
+		3 & 1 N & 0.0107 mm & 93.5 & 1.1242 m & 75.6 g & 1237 \\
+		4 & 1 N & 0.0148 mm & 67.6 & 0.8162 m & 54.9 g &  1232 \\
+		5 & 1 N & 0.0036 mm & 277.8 & 0.9243 m & 62.1 g & 4471 \\
+		%6 & 1 N & 0.0042 mm & 238.1 & 0.9106 m & 62.1 g & 3890 \\
+		\bottomrule
+	\end{tabular}
+\end{table*}
+

@@ -1,0 +1,38 @@
+\subsubsection{Buckling}
+%Calculate the critical buckling load for each member of the truss structure undergoing compressive load. Note that the length of the member is the distance between the nearest 2 points of attachment with other members (not only the anchor points). Calculate the factor of safety for buckling failure for each truss structure
+
+A factor of safety with regards to buckling is an important design requirement. 
+%TODO: reword
+Table \ref{tbl:buckling} lists the lengths of every member in each design which experiences compression.
+The force for which a member of the specified length will buckle is given.
+Eulerian buckling for columns is assumed with a theoretical fixity constant of 1,  corresponding to two pined ends.
+The maximum force predicted by the finite element analysis in any member of the given length is listed which may then be used to compute the factor of safety. 
+For an additional factor of safety, the smallest Young's modulus for brass is also assumed (96 GPa).
+
+
+\begin{table*}[hp]
+	\centering
+	\caption{Force of Buckling - 5 N Load}
+	\label{tbl:buckling}
+	\vspace{6pt}
+	\begin{tabular}{ccccc}
+		\toprule
+		Design & Member Length & Buckling Force & Maximum Force Predicted & Factor of Safety \\
+		\midrule
+		1 & 30 cm & 52.5 N & 30.4 N & 1.72 \\
+		\midrule
+		2 & 5 cm & 1891 N & 25 N & 75.6 \\
+		 & 7.07 cm & 946 N & 7.07 N & 133.7 \\
+		\midrule
+		3 & 7.07 cm & 946 N & 7.07 N & 133 \\
+		 & 10 cm & 472 N & 25 N & 18.9 \\
+		\midrule
+		4 & 15 cm & 210 N & 15 N & 14 \\
+		 & 15.8 cm & 189 N & 15.8 N & 12 \\
+		\midrule
+		 & 10 cm & 472 N & 15 N & 31.5 \\
+		5 & 14 cm & 241 N & 7.071 N  & 34.1 \\
+		 & 20 cm & 118 N & 5 N & 23.6 \\
+		\bottomrule
+	\end{tabular}
+\end{table*}

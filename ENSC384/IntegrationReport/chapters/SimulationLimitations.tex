@@ -1,0 +1,17 @@
+\section{Limitations of Simulation}
+\label{sec:SimulationLimitations}
+
+The controller presented in this report was designed almost exclusively by experimental and heuristic methods.
+Virtually no result produced via analytical means or simulation was incorporated into the controller as they were found to be generally inaccurate.
+Although it is likely controller gains, switching thresholds, filter pass-bands, stability conditions and other tunable parameters could be found analytically and/or modeled accurately, such a process was found to be impractical and unnecessary, especially given the project time constraints. 
+The following list details various reasons analytical analysis and simulation was impractical; many follow from the fact that the controller operates in the near optimal, nonlinear region of the hardware. 
+
+\begin{itemize}
+%\item the simulations are done within the bounds of the physical system constraints. 
+%\item simulating the nonlinear limitations is very difficult and it requires a lot of work to achieve accurate results. 
+\item Motor acceleration was seen to be limited by current saturation within the power-supply, not the motor. The saturating characteristics of the power-supply are complex, difficult to measure and model, and have a large impact on system performance. 
+\item Software PWM is highly dependent on sampling rate and hardware speed characteristics. Mixing sampling rates within a simulation introduces secondary complexities.
+\item Position is a discreet variable due to the encoder being used.
+\item Mechanical vibration was seen to be a significant issue and dictated certain controller design features. These vibrations are difficult to simulate.
+\item External forces with non-linear characteristics, such as torsion in the magnet wire are unknown.
+\end{itemize}

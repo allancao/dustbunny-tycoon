@@ -1,0 +1,97 @@
+%\documentclass[11pt, twocolumn]{enscStyle}
+\documentclass[12pt]{enscStyle}
+
+\renewcommand{\baselinestretch}{1.5}
+
+%#######################################
+% 	Title page info
+%#######################################
+
+\title{Designing HAL}
+
+\prof{Professor Golnaraghi}
+
+\coursecode{ENSC 384}
+
+\date{\today}
+
+\author{
+	Dan Hendry (30113878) \\
+	Brian Hook (200046894) \\ 
+	John Jamel (301080425)
+}
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\maketitle
+
+\cleardoublepage
+
+% This will result in the table of contents being shown on page ii
+% Is this what we want?
+\setcounter{page}{2} 
+
+%#######################################
+%	References
+%#######################################
+
+\addcontentsline{toc}{section}{\hspace{13pt}Contents}
+\tableofcontents
+
+\cleardoublepage
+
+\phantomsection
+\addcontentsline{toc}{section}{\hspace{13pt} List of Tables}
+\listoftables
+
+\cleardoublepage
+
+\phantomsection
+\addcontentsline{toc}{section}{\hspace{13pt} List of Figures}
+\listoffigures
+
+\cleardoublepage
+
+\pagenumbering{arabic}
+
+%#######################################
+% 	Main Section
+%#######################################
+
+\input{chapters/Intro}
+
+\input{chapters/ProblemDefinition}
+
+\input{chapters/ProposedSolution}
+
+\input{chapters/TheoryOfOperation}
+
+\input{chapters/SoftwareModel}
+
+\input{chapters/ResultsAndObservations}
+
+\input{chapters/Conclusion}
+
+\input{chapters/FutureWork}
+
+%#######################################
+%	References
+%#######################################
+
+%\cleardoublepage
+
+%\bibliography{References}
+%\addcontentsline{toc}{chapter}{\hspace{13pt}References}
+
+%#######################################
+%	Appendix
+%#######################################
+
+%\begin{appendix}
+%\input{chapters/simulink}
+%\end{appendix}
+
+\end{document}
+

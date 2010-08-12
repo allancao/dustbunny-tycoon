@@ -1,0 +1,22 @@
+\section{Limitations and Improvements}
+
+Despite the controller itself having near optimal performance there are many ways to improve overall performance and increase its robustness and reliability.
+These changes include:
+
+\begin{itemize}
+
+\item Use a power supply able to output more current such that it is the motor, not power supply which saturates.
+
+\item The limited controller sampling rate was not fast enough for robust and effective software PWM. A dedicated microcontroller or digital PWM generation circuit should be used. 
+
+\item \q{Slip} was observed, potentially caused by limited encoder or software PWM resolution. This could be corrected by using a more accurate encoder or positioning mechanism, such as laser sensors. 
+
+
+\item The controller switching threshold is important and sensitive, having a large impact on  performance. 
+In this project, thresholds were found manually and selected based on one of two movement modes ($45^\circ$ and $90^\circ$). 
+This was sufficient; however, a more robust design would compute the threshold based on speed and position.  
+
+\item Adding a physical damping could minimize physical vibrations.
+
+\end{itemize}
+

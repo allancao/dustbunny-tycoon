@@ -1,0 +1,14 @@
+\section{Competition and General System Configuration} 
+\label{sec:competition}
+
+The competition % describe more - probably unecessary
+involves picking up a metal puck using a mechanical arm and electromagnet, moving it $90^\circ$, then dropping it in a hole. 
+The mechanical arm starts at $0^\circ$, the puck at $45^\circ$ relative to the arm and the hole is positioned at $-45^\circ$.
+Position graphs throughout this report show the arm moving from $0^\circ$, to $45^\circ$, then to $-45^\circ$ and finally returning to $0^\circ$.
+The final step, although not required by the competition, was added for convenience. 
+The y-axis for position graphs shows position in radians, not degrees.
+
+A Sennsoray Model 626 data acquisition card was used to read encoder positions, read voltages using analog-to-digital converters, and control the circuit using digital-to-analog converters.
+The Simulink controller time-step was set to $200 \mu s$, the maximum sampling and control rate supported by the hardware.
+The motor was controlled using an H-bridge %First reference - might want additional explanation
+motor controller circuit and powered with 9.5 Volts by a power-supply with a rated current capacity of 2.5 Amps.

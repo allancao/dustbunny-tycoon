@@ -1,0 +1,11 @@
+\section{Overview}
+
+This report details controller design and system integration for the Mechatronics Design II project competition.
+It describes the creation and tuning of a \q{switching} proportional, integral, derivative (PID) controller using Simulink.
+Four major areas are covered.
+First, basic support functionality required by the controller is discussed including the use of filters, software pulse width modulation (PWM) and voltage control (sections \ref{sec:filters} through \ref{sec:voltagecontrol}).
+Second, a discussion of the optimal controller and the process of parameter tuning is presented in addition to the limitations of simulation for this particular controller (sections \ref{sec:idealcontroller} through \ref{sec:SimulationLimitations}). 
+% how to achieve the desired the response. %work in somehow
+Next, other key portions of the Simulink diagram are discussed in addition to the methods used for measuring system performance (sections \ref{sec:StabilityDetector} through \ref{sec:Timing}).
+Finally, the final system performance is presented along with a discussion of potential improvements (sections \ref{sec:Performance} through \ref{sec:Conclusion}).
+The complete Simulink block diagram may be found in appendix \ref{sec:fullsimulink}.

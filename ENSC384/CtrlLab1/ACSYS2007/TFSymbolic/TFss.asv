@@ -1,0 +1,229 @@
+function TFss(A,B,C,D,U,X0)
+% Performs state space analysis on Matrices A,B,C,D, with initial
+% conditions XO and 
+disp('-------------------------------------------------------------');
+disp('       State Space Analysis');
+disp('-------------------------------------------------------------');
+    try
+        %Check for valid numeric matrices
+        ii = 1;
+        Asym = str2num(A);
+        if isempty(Asym)
+            error('A is empty');
+        end
+        ii = 2;
+        Bsym = str2num(B);
+        if isempty(Bsym)
+            error('B is empty');
+        end
+        ii = 3;
+        Csym = str2num(C);
+        if isempty(Csym)
+            error('C is empty');
+        end
+        ii = 4;
+        Dsym = str2num(D);
+        if isempty(Dsym)
+            error('D is empty');
+        end
+        ii = 5;
+        Usym = str2num(U);
+        ii = 6;
+        ICVect = str2num(X0);
+    catch
+        disp('Invalid Entry:');
+        switch ii
+            case 1
+                disp(['A = ' A]);
+            case 2
+                disp(['B = ' B]);
+            case 3
+                disp(['C = ' C]);
+            case 4
+                disp(['D = ' D]);
+            case 5
+                disp(['U = ' U]);
+            case 6
+                disp(['x(0) = ' X0]);
+        end
+        disp('Matrices must be numeric.');
+        return
+    end
+    syms s;
+    [nrowA,ncolA]=size(Asym);
+    [nrowB,ncolB]=size(Bsym);
+    [nrowC,ncolC]=size(Csym);
+    [nrowD,ncolD]=size(Dsym);
+    
+    % Be forgiving with the IC vector:
+    if all(size(ICVect) == [1,nrowA])
+        ICVect = ICVect';
+    end
+    
+    SYS = ss(Asym,Bsym,Csym,Dsym);
+    SYS = tf(SYS);
+    
+    if nrowA~=ncolA
+        disp(' error: A is not a square matrix')
+    elseif nrowA == nrowB && ncolA == ncolC && nrowC == nrowD && ncolB == ncolD
+        % Checking if dimensions match up...
+        % Preparing for Command Window display
+        % Show inputs
+        disp('Inputs:')
+        displaySS(Asym,Bsym,'A=','B=','input',1);
+        displaySS(Csym,Dsym,'C=','D=','input',0);
+        % Show State Space equations
+        disp('State Space Representation:')
+        displaySS(Asym,Bsym,'A=','B=','representation',1);
+        displaySS(Csym,Dsym,'C=','D=','representation',0);
+
+        
+        SIA=s*eye(nrowA)-Asym;
+        disp('Determinant of (s*I-A): ')
+        detSIA=det(SIA); pretty(detSIA);
+        disp('Characteristic Equation of the Transfer Function:')
+        chareq = poly2sym(poly(Asym),'s'); pretty(chareq);
+        eigA=eval(solve(detSIA));
+        disp('The eigen values of A and poles of the Transfer Function are: ')
+        for ii = 1:length(eigA)
+            disp(['                                       ' num2str(eigA(ii))])
+        end
+        disp('Inverse of (s*I-A) is: ')
+        SIAinv=inv(SIA);
+        pretty(SIAinv)
+        
+        disp(' State transition matrix (phi) of A: ')
+        SIAtime=ilaplace(SIAinv);
+        phi=SIAtime;
+        pretty(phi)
+        
+        disp(' Transfer function between u(t)and y(t) is: ')
+        Gr=Csym*SIAinv*Bsym;
+        pretty(simplify(Gr)), 
+        if numel(Usym) == 1  
+                if ~isempty(ICVect) && all(size(ICVect) == [nrowA,1])
+                    disp('Initial Conditions:')
+                        disp(['                                 x(0)= ' num2str(ICVect(1))])
+                    for ii = 2:length(eigA)
+                        disp(['                                       ' num2str(ICVect(ii))])
+                    end
+                    disp(' States (X) in Laplace Domain: ')
+                    X=factor(SIAinv*(ICVect+Bsym*Usym));
+                    pretty(simplify(X)),  
+                    disp(' Inverse Laplace x(t): ')
+                    x=ilaplace(X);
+                    pretty(x),                                       
+                    disp(' Output Y(s) (with initial conditions): ')
+                    Y=Csym*X+Dsym*Usym;
+                    pretty(simplify(Y)),          
+                    disp(' Inverse Laplace y(t): ')
+                    y=ilaplace(Y);
+                    pretty(y),
+                else
+                    if ~isempty(ICVect)
+                        disp('Initial Conditions not valid');
+                        disp(['x(0) must be a vector of length ' num2str(nrowA) '.']);
+                    else
+                        disp('No Initial Conditions Specified');
+                    end
+                    disp(' States (X) in Laplace Domain: ')
+                    X=factor(SIAinv*(Bsym*Usym));
+                    pretty(simplify(X))
+                    disp(' Inverse Laplace x(t): ')
+                    x=ilaplace(X);
+                    pretty(x)                                      
+                    disp(' Output Y(s): ')
+                    Y=Csym*X;
+                    pretty(simplify(Y))
+                    disp(' Inverse Laplace y(t): ')
+                    y=ilaplace(Y);
+                    pretty(y)                                                    
+                end
+%                 % Display Output Response on a plot (Removed at Farid's
+%                                                            Request)
+%                 if ishandle(99)
+%                     delete(99)
+%                 end
+%                 fig = figure(99);
+%                 set(fig,'Units','Normalized','Position',[0.2 0.2 0.6 0.6],...
+%                     'Name','Time Response','NumberTitle','off');
+%                 subplot(3,1,1);
+%                 [Y,T] = step(SYS);
+%                 plot(T,Y,'b-'); grid on; title('Step Response'); xlabel('Time (s)'); ylabel('Amplitude');
+%                 subplot(3,1,1);
+%                 [Y,T] = step(SYS);
+%                 plot(T,Y,'b-'); grid on; title('Step Response'); xlabel('Time (s)'); ylabel('Amplitude');
+%                 subplot(3,1,2);
+%                 [Y,T] = impulse(SYS,T(end));
+%                 plot(T,Y,'b-'); grid on; title('Impulse Response'); xlabel('Time (s)'); ylabel('Amplitude');
+%                 subplot(3,1,3);
+%                 if all(size(ICVect) == [nrowA,1])
+%                     [Y,T] = initial(ss(Asym,Bsym,Csym,Dsym),ICVect,T(end));
+%                     plot(T,Y,'b-'); grid on; title('Natural Response'); xlabel('Time (s)'); ylabel('Amplitude');
+%                 else
+%                     [Y,T] = initial(ss(Asym,Bsym,Csym,Dsym),zeros(1,nrowA),T(end));
+%                     plot(T,Y,'b-'); grid on; title('Natural Response'); xlabel('Time (s)'); ylabel('Amplitude');
+%                 end
+         elseif isempty(Usym)
+            disp('U is empty. Ending Program...');
+        else
+            disp('U must be scalar. Ending Program...')
+        end
+    else
+        disp('error: Entries must be in the following format:')
+        disp('A - nxn')
+        disp('B - nx1')
+        disp('C - 1xn')
+        disp('D - nx1')
+    end
+    
+    
+
+function displaySS(A,B,Astr,Bstr,show, btflag)
+        Sep = '     '; Sep2 = '|'; 
+        [nrowA,ncolA] = size(A);
+        if nrowA > 2
+            xcol = ' '; dxcol = '  ';
+            pluscol = '   '; ucol = ' '; ycol = '  '; eqcol = '   '; 
+        else
+            xcol = 'x'; dxcol = 'Dx';
+            pluscol = ' + '; ucol = 'u'; ycol = ' y'; eqcol = ' = '; 
+        end
+        
+        for ii = 2:nrowA
+            Astr = strvcat(Astr,' ');
+            Sep = [Sep;'     '];
+            Sep2 = [Sep2;'|'];
+            Bstr = strvcat(Bstr,' ');
+            
+            if ii == ceil(nrowA/2)
+                xcol = [xcol; 'x'];
+                dxcol = [dxcol; 'Dx'];
+                pluscol = [pluscol; ' + '];
+                ucol = [ucol; 'u'];
+                ycol = [ycol; ' y'];
+                eqcol = [eqcol; ' = '];
+            else
+                xcol = [xcol; ' '];
+                dxcol = [dxcol; '  '];
+                pluscol = [pluscol; '   '];
+                ucol = [ucol; ' '];
+                ycol = [ycol; '  '];
+                eqcol = [eqcol; '   '];
+            end
+        end
+        
+        if btflag
+            lhs = dxcol;
+        else
+            lhs = ycol;
+        end
+        
+        switch show 
+            case 'input'
+                disp([Astr Sep2 num2str(A) Sep2 Sep Bstr Sep2 num2str(B) Sep2 Sep]);
+                disp(' ');
+            case 'representation'
+                disp([lhs eqcol Sep2 num2str(A) Sep2 xcol pluscol Sep2 num2str(B) Sep2 ucol]);
+                disp(' ');
+        end

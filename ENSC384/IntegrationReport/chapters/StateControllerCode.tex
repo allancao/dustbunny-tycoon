@@ -1,0 +1,214 @@
+\chapter{State Controller Code}
+\label{sec:statecontroller}
+
+{\footnotesize
+\begin{lstlisting}
+function [pos,mag,movestate,droptime] = fcn(stable, trig, time,dstab,dpick,ddrop,mode)
+% This block supports the Embedded MATLAB subset.
+% See the help menu for details. 
+
+persistent state;
+persistent delayuntill;
+persistent skipnext;
+
+persistent startdrop;
+persistent lastdroptime;
+
+persistent lastpos;
+persistent lastmag;
+persistent lastmovestate;
+
+if isempty(state)
+   state = 0;
+   delayuntill = 0;
+   lastpos = 0;
+   lastmag = 0;
+   lastmovestate = 0;
+   skipnext = false;
+   startdrop = 0;
+   lastdroptime = 0;
+end
+
+pos = lastpos;
+mag = lastmag;
+movestate = lastmovestate;
+droptime = lastdroptime;
+
+if (time < delayuntill) || skipnext
+    skipnext = false;
+    %statedbg = state;
+    return
+end
+
+laststate = state;
+
+% Standard
+if mode == 0
+switch state
+    case 0
+        % Wait for user to trigger start
+        pos = 0;
+        mag = 0;
+        movestate = 0;
+        if trig
+            state = state + 1;
+            pos = 90;
+            %skipnext = true;
+        end
+    case 1
+        % Move to 90 then wait 
+        if trig && stable
+            state = state + 2;
+            pos = 45;
+            movestate = 1; 
+            %skipnext = true;
+        end
+    case 3
+        % Move to 45 then wait for manual trigger
+        pos = 45;
+        movestate = 1; 
+        if stable && trig
+            state = state + 1 ;
+            pos = 90;
+            %skipnext = true;
+            startdrop = time;
+        end
+    case 4
+        % Move to 90 then wait 
+        if stable
+            state = state + 1 ;
+            delayuntill = time + dstab;
+        end
+    case 5
+        % Pickup mag then wait
+        if stable
+            mag = 1;
+            movestate = 0;    
+            state = state + 1 ;
+            delayuntill = time + dpick;
+        end
+    case 6
+        % Start move to 0
+        pos = 0;
+        state = state + 1 ;
+        %skipnext = true;
+    case 7
+        % Move to 0, drop and wait
+        if stable
+            state = state + 1 ;
+            mag = 0;
+            delayuntill = time + ddrop;
+            lastdroptime = time - startdrop;
+        end
+    case 8
+        % Repeat
+        pos = 45;
+        mag = 0;
+        movestate = 1;
+        state = 3;
+        %skipnext = true;
+    otherwise
+        state = 0;
+end
+
+% Competition - 45 -> 90 -> 0
+elseif mode == 1
+switch state
+    case 0
+        % Start up
+        pos = 0;
+        mag = 0;
+        movestate = 1;
+        state = state + 1;
+        delayuntill = time + 1;
+    case 1
+        % Go to pickup
+        pos = 45;
+        state = state + 1;
+        %skipnext = true;
+    case 2
+        % Wait for additional stable time 
+        if stable
+            state = state + 1 ;
+            delayuntill = time + dstab;
+        end
+    case 3
+        %Pickup
+        if stable
+            state = state + 1 ;
+            mag = 1;
+            movestate = 0;
+            %skipnext = true;
+            delayuntill = time + dpick;
+        end
+    case 4
+        % Move to drop
+        movestate = 0;
+        pos = -45;
+        state = state + 1;
+        %skipnext = true;
+    case 5
+        % drop
+        if stable
+            mag = 0;
+            state = state + 1;
+            delayuntill = time + ddrop;
+            lastdroptime = time - 1;
+        end
+    case 6
+        mag = 0;
+        pos = 0;
+        movestate = 1;
+    otherwise
+        state = 0;
+end 
+
+% Competition - 90 -> 0
+elseif mode == 2
+switch state
+    case 0
+        % Start up - wait for 1 second
+        pos = 0;
+        mag = 0;
+        movestate = 2;
+        state = state + 1;
+        delayuntill = time + 1;
+    case 1
+        % Start up - get mag
+        mag = 1;
+        state = state + 1;
+        delayuntill = time + dpick;
+    case 2
+        % Go to drop
+        pos = -90;
+        state = state + 1;
+    case 3
+        % Wait for additional stable time 
+        if stable
+            state = state + 1 ;
+            mag = 0;
+            delayuntill = time + ddrop;
+            lastdroptime = time - 1;
+        end
+    case 4
+        %End
+        pos = 0;
+        mag = 0;
+        movestate = 0;
+    otherwise
+        state = 0;
+end 
+end
+
+lastpos = pos;
+lastmag = mag;
+lastmovestate = movestate;
+%statedbg = state;
+
+if laststate ~= state
+    skipnext = true;
+end
+
+droptime = lastdroptime;
+\end{lstlisting}
+}

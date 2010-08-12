@@ -1,0 +1,38 @@
+\section{Design Revisions}
+\label{sec:missingmember}
+
+%This section discusses various revisions and modifications which could be made to the design to improve performance.
+
+%\subsection{Missing Member}
+%\label{sec:missingmember}
+
+A critical oversight made during initial design and construction of the truss significantly reduced performance.
+An important member (member \emph{M1} in figure \ref{fig:diagram}) was neglected.
+%
+When evaluating truss designs to resist vertical deflection and maximize efficiency, cantilever end conditions were assumed. 
+As such, the displacement at joint \emph{J1} (figure \ref{fig:diagram}) was assumed to be negligible.
+By failing to include member \emph{M1}, there was no structure able to sufficiently resist deflection of joint \emph{J1}, invalidating many assumptions and the results related to overall deflection.
+
+A finite element analysis may be used to estimate the performance gained by adding the additional member. 
+Using \emph{SolidWokrs} as the simulator, two tests were performed, one with the additional member and one without.
+The SolidWorks FEM predicted a deflection of 3.95 mm for the design without member \emph{M1}; comparable to the deflection observed during testing of 3.1 mm. 
+By adding member \emph{M1}, the predicted deflection decreased to 1.66 mm; more than doubling the efficiency of the structure.
+Given this result, adding the member is likely the single most important action which could be taken to improve the overall efficiency performance of the structure.
+
+%Terrible, need to reword
+
+\section{Conclusion}
+
+%This conclusion is pretty bad:
+
+Using analytical and finite element analysis, two separate truss structures were designed  for the vertical and horizontal planes, each having slightly different requirements and constraints.
+Each was found to be optimal (at least within the context of designs considered) for resisting bending in the plane of interest. 
+A final truss structure was designed, analyzed and constructed which incorporated both truss components. %Yuck
+Based on mechanical testing, finite element models were found to predict vertical deflection reasonably well but performed less well when predicting horizontal deflection.
+%More?
+
+%Include:
+%	- ?
+%	- Analysis not terribly accurate
+%	- Could be improved by adding member
+%	- Likely the optimal design (?)

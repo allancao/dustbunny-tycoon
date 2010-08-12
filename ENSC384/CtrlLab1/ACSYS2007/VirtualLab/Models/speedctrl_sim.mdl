@@ -1,0 +1,1393 @@
+Model {
+  Name			  "speedctrl_sim"
+  Version		  7.0
+  MdlSubVersion		  0
+  GraphicalInterface {
+    NumRootInports	    0
+    NumRootOutports	    0
+    ParameterArgumentNames  ""
+    ComputedModelVersion    "1.146"
+    NumModelReferences	    0
+    NumTestPointedSignals   0
+  }
+  SavedCharacterEncoding  "windows-1252"
+  SaveDefaultBlockParams  on
+  SampleTimeColors	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  off
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  off
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ShowTestPointIcons	  on
+  ShowViewerIcons	  on
+  SortedOrder		  off
+  ExecutionContextIcon	  off
+  ShowLinearizationAnnotations on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  DataTypeOverride	  "UseLocalSettings"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  BlockNameDataTip	  off
+  BlockParametersDataTip  off
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  CloseFcn		  "save_system(vars.simfilename); sim(vars.simfilename);vars.simtime = str2num(get_param(vars.simfilename,'StopTime'));set(guiel.hSimtime,'String',num2str(vars.simtime));if strcmp(vars.simfilename(end-2:end),'sim') vars.L= motorParams(1,1); vars.R= motorParams(1,2); vars.J= motorParams(1,3);vars.b= motorParams(1,4); vars.Kb= motorParams(1,5); vars.Km= motorParams(1,6);if (min(size(motorParams)) == 9) vars.P= motorParams(1,7); vars.I= motorParams(1,8); vars.D= motorParams(1,9);else;vars.P= NaN; vars.I= NaN; vars.D= NaN;end;clear motorParams; [vars.numericTF vars.symbolTF] = calcTF2(vars);end,"
+  StopFcn		  "save_system(vars.simfilename);"
+  Created		  "Sat May 05 17:53:46 2001"
+  Creator		  "Farid Golnaraghi"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "danh"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Mon Jul 26 09:12:18 2010"
+  RTWModifiedTimeStamp	  199977684
+  ModelVersionFormat	  "1.%<AutoIncrement:146>"
+  ConfigurationManager	  "none"
+  SimulationMode	  "normal"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  AccelSystemTargetFile	  "accel.tlc"
+  AccelTemplateMakefile	  "accel_default_tmf"
+  AccelMakeCommand	  "make_rtw"
+  TryForcingSFcnDF	  off
+  RecordCoverage	  off
+  CovPath		  "/"
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeVarName	  "covCumulativeData"
+  CovCumulativeReport	  off
+  CovReportOnPause	  on
+  ExtModeBatchMode	  off
+  ExtModeEnableFloating	  on
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigDurationFloating "auto"
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  BufferReuse		  on
+  ShowModelReferenceBlockVersion off
+  ShowModelReferenceBlockIO off
+  Array {
+    Type		    "Handle"
+    Dimension		    1
+    Simulink.ConfigSet {
+      $ObjectID		      1
+      Version		      "1.3.0"
+      Array {
+	Type			"Handle"
+	Dimension		7
+	Simulink.SolverCC {
+	  $ObjectID		  2
+	  Version		  "1.3.0"
+	  StartTime		  "0.0"
+	  StopTime		  "3"
+	  AbsTol		  "auto"
+	  FixedStep		  "auto"
+	  InitialStep		  "auto"
+	  MaxNumMinSteps	  "-1"
+	  MaxOrder		  5
+	  ConsecutiveZCsStepRelTol "10*128*eps"
+	  MaxConsecutiveZCs	  "1000"
+	  ExtrapolationOrder	  4
+	  NumberNewtonIterations  1
+	  MaxStep		  "auto"
+	  MinStep		  "auto"
+	  MaxConsecutiveMinStep	  "1"
+	  RelTol		  "1e-3"
+	  SolverMode		  "Auto"
+	  Solver		  "ode45"
+	  SolverName		  "ode45"
+	  ZeroCrossControl	  "UseLocalSettings"
+	  AlgebraicLoopSolver	  "TrustRegion"
+	  SolverResetMethod	  "Fast"
+	  PositivePriorityOrder	  off
+	  AutoInsertRateTranBlk	  off
+	  SampleTimeConstraint	  "Unconstrained"
+	  RateTranMode		  "Deterministic"
+	}
+	Simulink.DataIOCC {
+	  $ObjectID		  3
+	  Version		  "1.3.0"
+	  Decimation		  "1"
+	  ExternalInput		  "[t, u]"
+	  FinalStateName	  "xFinal"
+	  InitialState		  "xInitial"
+	  LimitDataPoints	  on
+	  MaxDataPoints		  "10000"
+	  LoadExternalInput	  off
+	  LoadInitialState	  off
+	  SaveFinalState	  off
+	  SaveFormat		  "Array"
+	  SaveOutput		  on
+	  SaveState		  off
+	  SignalLogging		  on
+	  InspectSignalLogs	  off
+	  SaveTime		  on
+	  StateSaveName		  "xout"
+	  TimeSaveName		  "tout"
+	  OutputSaveName	  "yout"
+	  SignalLoggingName	  "logsout"
+	  OutputOption		  "RefineOutputTimes"
+	  OutputTimes		  "[]"
+	  Refine		  "1"
+	}
+	Simulink.OptimizationCC {
+	  $ObjectID		  4
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    4
+	    Cell		    "ZeroExternalMemoryAtStartup"
+	    Cell		    "ZeroInternalMemoryAtStartup"
+	    Cell		    "NoFixptDivByZeroProtection"
+	    Cell		    "OptimizeModelRefInitCode"
+	    PropName		    "DisabledProps"
+	  }
+	  Version		  "1.3.0"
+	  BlockReduction	  off
+	  BooleanDataType	  off
+	  ConditionallyExecuteInputs on
+	  InlineParams		  off
+	  InlineInvariantSignals  off
+	  OptimizeBlockIOStorage  on
+	  BufferReuse		  on
+	  EnforceIntegerDowncast  on
+	  ExpressionFolding	  on
+	  ExpressionDepthLimit	  2147483647
+	  FoldNonRolledExpr	  on
+	  LocalBlockOutputs	  on
+	  RollThreshold		  5
+	  SystemCodeInlineAuto	  off
+	  StateBitsets		  off
+	  DataBitsets		  off
+	  UseTempVars		  off
+	  ZeroExternalMemoryAtStartup on
+	  ZeroInternalMemoryAtStartup on
+	  InitFltsAndDblsToZero	  on
+	  NoFixptDivByZeroProtection off
+	  EfficientFloat2IntCast  off
+	  OptimizeModelRefInitCode off
+	  LifeSpan		  "inf"
+	  BufferReusableBoundary  on
+	  SimCompilerOptimization "Off"
+	  AccelVerboseBuild	  off
+	}
+	Simulink.DebuggingCC {
+	  $ObjectID		  5
+	  Version		  "1.3.0"
+	  RTPrefix		  "error"
+	  ConsistencyChecking	  "none"
+	  ArrayBoundsChecking	  "none"
+	  SignalInfNanChecking	  "none"
+	  SignalRangeChecking	  "none"
+	  ReadBeforeWriteMsg	  "UseLocalSettings"
+	  WriteAfterWriteMsg	  "UseLocalSettings"
+	  WriteAfterReadMsg	  "UseLocalSettings"
+	  AlgebraicLoopMsg	  "warning"
+	  ArtificialAlgebraicLoopMsg "warning"
+	  SaveWithDisabledLinksMsg "warning"
+	  SaveWithParameterizedLinksMsg	"none"
+	  CheckSSInitialOutputMsg on
+	  CheckExecutionContextPreStartOutputMsg off
+	  CheckExecutionContextRuntimeOutputMsg	off
+	  SignalResolutionControl "TryResolveAllWithWarning"
+	  BlockPriorityViolationMsg "warning"
+	  MinStepSizeMsg	  "warning"
+	  TimeAdjustmentMsg	  "none"
+	  MaxConsecutiveZCsMsg	  "error"
+	  SolverPrmCheckMsg	  "none"
+	  InheritedTsInSrcMsg	  "warning"
+	  DiscreteInheritContinuousMsg "warning"
+	  MultiTaskDSMMsg	  "warning"
+	  MultiTaskCondExecSysMsg "none"
+	  MultiTaskRateTransMsg	  "error"
+	  SingleTaskRateTransMsg  "none"
+	  TasksWithSamePriorityMsg "warning"
+	  SigSpecEnsureSampleTimeMsg "warning"
+	  CheckMatrixSingularityMsg "none"
+	  IntegerOverflowMsg	  "warning"
+	  Int32ToFloatConvMsg	  "warning"
+	  ParameterDowncastMsg	  "error"
+	  ParameterOverflowMsg	  "error"
+	  ParameterUnderflowMsg	  "none"
+	  ParameterPrecisionLossMsg "warning"
+	  ParameterTunabilityLossMsg "warning"
+	  UnderSpecifiedDataTypeMsg "none"
+	  UnnecessaryDatatypeConvMsg "none"
+	  VectorMatrixConversionMsg "none"
+	  InvalidFcnCallConnMsg	  "error"
+	  FcnCallInpInsideContextMsg "Use local settings"
+	  SignalLabelMismatchMsg  "none"
+	  UnconnectedInputMsg	  "warning"
+	  UnconnectedOutputMsg	  "warning"
+	  UnconnectedLineMsg	  "warning"
+	  SFcnCompatibilityMsg	  "none"
+	  UniqueDataStoreMsg	  "none"
+	  BusObjectLabelMismatch  "warning"
+	  RootOutportRequireBusObject "warning"
+	  AssertControl		  "UseLocalSettings"
+	  EnableOverflowDetection off
+	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceVersionMismatchMessage "none"
+	  ModelReferenceIOMismatchMessage "none"
+	  ModelReferenceCSMismatchMessage "none"
+	  ModelReferenceSimTargetVerbose off
+	  UnknownTsInhSupMsg	  "warning"
+	  ModelReferenceDataLoggingMessage "warning"
+	  ModelReferenceSymbolNameMessage "warning"
+	  ModelReferenceExtraNoncontSigs "error"
+	  StateNameClashWarn	  "warning"
+	  StrictBusMsg		  "None"
+	  LoggingUnavailableSignals "error"
+	}
+	Simulink.HardwareCC {
+	  $ObjectID		  6
+	  Version		  "1.3.0"
+	  ProdBitPerChar	  8
+	  ProdBitPerShort	  16
+	  ProdBitPerInt		  32
+	  ProdBitPerLong	  32
+	  ProdIntDivRoundTo	  "Undefined"
+	  ProdEndianess		  "Unspecified"
+	  ProdWordSize		  32
+	  ProdShiftRightIntArith  on
+	  ProdHWDeviceType	  "32-bit Generic"
+	  TargetBitPerChar	  8
+	  TargetBitPerShort	  16
+	  TargetBitPerInt	  32
+	  TargetBitPerLong	  32
+	  TargetShiftRightIntArith on
+	  TargetIntDivRoundTo	  "Undefined"
+	  TargetEndianess	  "Unspecified"
+	  TargetWordSize	  32
+	  TargetTypeEmulationWarnSuppressLevel 0
+	  TargetPreprocMaxBitsSint 32
+	  TargetPreprocMaxBitsUint 32
+	  TargetHWDeviceType	  "Specified"
+	  TargetUnknown		  on
+	  ProdEqTarget		  on
+	}
+	Simulink.ModelReferenceCC {
+	  $ObjectID		  7
+	  Version		  "1.3.0"
+	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
+	  CheckModelReferenceTargetMessage "error"
+	  ModelReferenceNumInstancesAllowed "Multi"
+	  ModelReferencePassRootInputsByReference on
+	  ModelReferenceMinAlgLoopOccurrences off
+	}
+	Simulink.RTWCC {
+	  $BackupClass		  "Simulink.RTWCC"
+	  $ObjectID		  8
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    1
+	    Cell		    "IncludeHyperlinkInReport"
+	    PropName		    "DisabledProps"
+	  }
+	  Version		  "1.3.0"
+	  SystemTargetFile	  "grt.tlc"
+	  GenCodeOnly		  off
+	  MakeCommand		  "make_rtw"
+	  GenerateMakefile	  on
+	  TemplateMakefile	  "grt_default_tmf"
+	  GenerateReport	  off
+	  SaveLog		  off
+	  RTWVerbose		  on
+	  RetainRTWFile		  off
+	  ProfileTLC		  off
+	  TLCDebug		  off
+	  TLCCoverage		  off
+	  TLCAssert		  off
+	  ProcessScriptMode	  "Default"
+	  ConfigurationMode	  "Optimized"
+	  ConfigAtBuild		  off
+	  IncludeHyperlinkInReport off
+	  LaunchReport		  off
+	  TargetLang		  "C"
+	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
+	  IncludeERTFirstTime	  on
+	  GenerateTraceInfo	  off
+	  RTWCompilerOptimization "Off"
+	  Array {
+	    Type		    "Handle"
+	    Dimension		    2
+	    Simulink.CodeAppCC {
+	      $ObjectID		      9
+	      Array {
+		Type			"Cell"
+		Dimension		9
+		Cell			"IgnoreCustomStorageClasses"
+		Cell			"InsertBlockDesc"
+		Cell			"SFDataObjDesc"
+		Cell			"SimulinkDataObjDesc"
+		Cell			"DefineNamingRule"
+		Cell			"SignalNamingRule"
+		Cell			"ParamNamingRule"
+		Cell			"InlinedPrmAccess"
+		Cell			"CustomSymbolStr"
+		PropName		"DisabledProps"
+	      }
+	      Version		      "1.3.0"
+	      ForceParamTrailComments off
+	      GenerateComments	      on
+	      IgnoreCustomStorageClasses on
+	      IncHierarchyInIds	      off
+	      MaxIdLength	      31
+	      PreserveName	      off
+	      PreserveNameWithParent  off
+	      ShowEliminatedStatement on
+	      IncAutoGenComments      off
+	      SimulinkDataObjDesc     off
+	      SFDataObjDesc	      off
+	      IncDataTypeInIds	      off
+	      MangleLength	      1
+	      CustomSymbolStrGlobalVar "$R$N$M"
+	      CustomSymbolStrType     "$N$R$M"
+	      CustomSymbolStrField    "$N$M"
+	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrBlkIO    "rtb_$N$M"
+	      CustomSymbolStrTmpVar   "$N$M"
+	      CustomSymbolStrMacro    "$R$N$M"
+	      DefineNamingRule	      "None"
+	      ParamNamingRule	      "None"
+	      SignalNamingRule	      "None"
+	      InsertBlockDesc	      off
+	      SimulinkBlockComments   on
+	      EnableCustomComments    off
+	      InlinedPrmAccess	      "Literals"
+	      ReqsInCode	      off
+	    }
+	    Simulink.GRTTargetCC {
+	      $BackupClass	      "Simulink.TargetCC"
+	      $ObjectID		      10
+	      Array {
+		Type			"Cell"
+		Dimension		12
+		Cell			"IncludeMdlTerminateFcn"
+		Cell			"CombineOutputUpdateFcns"
+		Cell			"SuppressErrorStatus"
+		Cell			"ERTCustomFileBanners"
+		Cell			"GenerateSampleERTMain"
+		Cell			"MultiInstanceERTCode"
+		Cell			"PurelyIntegerCode"
+		Cell			"SupportNonFinite"
+		Cell			"SupportComplex"
+		Cell			"SupportAbsoluteTime"
+		Cell			"SupportContinuousTime"
+		Cell			"SupportNonInlinedSFcns"
+		PropName		"DisabledProps"
+	      }
+	      Version		      "1.3.0"
+	      TargetFcnLib	      "ansi_tfl_tmw.mat"
+	      TargetLibSuffix	      ""
+	      TargetPreCompLibLocation ""
+	      GenFloatMathFcnCalls    "ANSI_C"
+	      UtilityFuncGeneration   "Auto"
+	      GenerateFullHeader      on
+	      GenerateSampleERTMain   off
+	      GenerateTestInterfaces  off
+	      IsPILTarget	      off
+	      ModelReferenceCompliant on
+	      CompOptLevelCompliant   on
+	      IncludeMdlTerminateFcn  on
+	      CombineOutputUpdateFcns off
+	      SuppressErrorStatus     off
+	      IncludeFileDelimiter    "Auto"
+	      ERTCustomFileBanners    off
+	      SupportAbsoluteTime     on
+	      LogVarNameModifier      "rt_"
+	      MatFileLogging	      on
+	      MultiInstanceERTCode    off
+	      SupportNonFinite	      on
+	      SupportComplex	      on
+	      PurelyIntegerCode	      off
+	      SupportContinuousTime   on
+	      SupportNonInlinedSFcns  on
+	      EnableShiftOperators    on
+	      ParenthesesLevel	      "Nominal"
+	      PortableWordSizes	      off
+	      ModelStepFunctionPrototypeControlCompliant off
+	      ExtMode		      off
+	      ExtModeStaticAlloc      off
+	      ExtModeTesting	      off
+	      ExtModeStaticAllocSize  1000000
+	      ExtModeTransport	      0
+	      ExtModeMexFile	      "ext_comm"
+	      ExtModeIntrfLevel	      "Level1"
+	      RTWCAPISignals	      off
+	      RTWCAPIParams	      off
+	      RTWCAPIStates	      off
+	      GenerateASAP2	      off
+	    }
+	    PropName		    "Components"
+	  }
+	}
+	PropName		"Components"
+      }
+      Name		      "Configuration"
+      CurrentDlgPage	      "Solver"
+    }
+    PropName		    "ConfigurationSets"
+  }
+  Simulink.ConfigSet {
+    $PropName		    "ActiveConfigurationSet"
+    $ObjectID		    1
+  }
+  BlockDefaults {
+    Orientation		    "right"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      BusCreator
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
+    }
+    Block {
+      BlockType		      Derivative
+      LinearizePole	      "inf"
+    }
+    Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParamMin		      "[]"
+      ParamMax		      "[]"
+      ParameterDataTypeMode   "Same as input"
+      ParameterDataType	      "fixdt(1,16,0)"
+      ParameterScalingMode    "Best Precision: Matrix-wise"
+      ParameterScaling	      "[]"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchByCopyingInsideSignal off
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Step
+      Time		      "1"
+      Before		      "0"
+      After		      "1"
+      SampleTime	      "-1"
+      VectorParams1D	      on
+      ZeroCross		      on
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
+    }
+    Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      VariableName	      "simulink_output"
+      MaxDataPoints	      "1000"
+      Decimation	      "1"
+      SampleTime	      "0"
+      FixptAsFi		      off
+    }
+    Block {
+      BlockType		      TransferFcn
+      Numerator		      "[1]"
+      Denominator	      "[1 2 1]"
+      AbsoluteTolerance	      "auto"
+      ContinuousStateAttributes	"''"
+      Realization	      "auto"
+    }
+    Block {
+      BlockType		      Constant
+      Value		      "1"
+      VectorParams1D	      on
+      SamplingMode	      "Sample based"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Inherit from 'Constant value'"
+      OutDataType	      "fixdt(1,16,0)"
+      ConRadixGroup	      "Use specified scaling"
+      OutScaling	      "[]"
+      SampleTime	      "inf"
+      FramePeriod	      "inf"
+    }
+    Block {
+      BlockType		      Saturate
+      UpperLimit	      "0.5"
+      LowerLimit	      "-0.5"
+      LinearizeAsGain	      on
+      ZeroCross		      on
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      LockScale		      off
+      RndMeth		      "Floor"
+    }
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  System {
+    Name		    "speedctrl_sim"
+    Location		    [464, 93, 1229, 667]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+    TiledPageScale	    1
+    ShowPageBoundaries	    off
+    ZoomFactor		    "100"
+    ReportName		    "simulink-default.rpt"
+    Block {
+      BlockType		      BusCreator
+      Name		      "Bus\nCreator"
+      Ports		      [2, 1]
+      Position		      [605, 221, 610, 259]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "PID Controller"
+      Ports		      [1, 2]
+      Position		      [225, 152, 255, 183]
+      AncestorBlock	      "simulink_extras/Additional\nLinear/PID Controller"
+      MinAlgLoopOccurrences   off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      MaskType		      "PID Controller"
+      MaskDescription	      "Enter expressions for proportional, integral, and derivative terms.\nP+I/s+Ds"
+      MaskHelp		      "This block implements a PID controller where parameters are entered for the Proportional, Integral and Derivative terms. Unmask this block to see how it works. The derivative term is implemented using a true derivative block."
+      MaskPromptString	      "Proportional:|Integral:|Derivative:"
+      MaskStyleString	      "edit,edit,edit"
+      MaskTunableValueString  "on,on,on"
+      MaskCallbackString      "||"
+      MaskEnableString	      "on,on,on"
+      MaskVisibilityString    "on,on,on"
+      MaskToolTipString	      "on,on,on"
+      MaskVarAliasString      ",,"
+      MaskVariables	      "P=@1;I=@2;D=@3;"
+      MaskDisplay	      "disp('PID')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      ".1|0|0"
+      MaskTabNameString	      ",,"
+      System {
+	Name			"PID Controller"
+	Location		[410, 282, 776, 636]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In_1"
+	  Position		  [25, 65, 45, 85]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  BusCreator
+	  Name			  "Bus\nCreator"
+	  Ports			  [3, 1]
+	  Position		  [210, 203, 215, 257]
+	  ShowName		  off
+	  Inputs		  "3"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "D"
+	  Position		  [95, 129, 115, 151]
+	  Gain			  "D"
+	  ParameterDataType	  "sfix(16)"
+	  ParameterScaling	  "2^0"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Derivative
+	  Name			  "Derivative"
+	  Position		  [150, 128, 190, 152]
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Integral"
+	  Position		  [110, 57, 145, 93]
+	  Numerator		  "[I]"
+	  Denominator		  "[1 0]"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Kd out"
+	  Position		  [125, 257, 145, 273]
+	  Value			  "D"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Ki out"
+	  Position		  [125, 222, 145, 238]
+	  Value			  "I"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Kp out"
+	  Position		  [125, 187, 145, 203]
+	  Value			  "P"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Proportional"
+	  Position		  [120, 13, 140, 37]
+	  Gain			  "P"
+	  ParameterDataType	  "sfix(16)"
+	  ParameterScaling	  "2^0"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum"
+	  Ports			  [3, 1]
+	  Position		  [245, 57, 265, 93]
+	  Inputs		  "+++"
+	  CollapseMode		  "All dimensions"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out_1"
+	  Position		  [290, 65, 310, 85]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	  InitialOutput		  "0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Parameters"
+	  Position		  [255, 223, 285, 237]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "Proportional"
+	  SrcPort		  1
+	  Points		  [65, 0; 0, 40]
+	  DstBlock		  "Sum"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Integral"
+	  SrcPort		  1
+	  DstBlock		  "Sum"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Derivative"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, -55]
+	  DstBlock		  "Sum"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "In_1"
+	  SrcPort		  1
+	  Points		  [15, 0]
+	  Branch {
+	    Points		    [0, 0]
+	    Branch {
+	      DstBlock		      "Integral"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [0, -50]
+	      DstBlock		      "Proportional"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    Points		    [0, 65]
+	    DstBlock		    "D"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Sum"
+	  SrcPort		  1
+	  DstBlock		  "Out_1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "D"
+	  SrcPort		  1
+	  DstBlock		  "Derivative"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Kd out"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, -20]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Bus\nCreator"
+	  SrcPort		  1
+	  DstBlock		  "Parameters"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Kp out"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, 15]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Ki out"
+	  SrcPort		  1
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  2
+	}
+      }
+    }
+    Block {
+      BlockType		      Step
+      Name		      "Step"
+      Position		      [60, 155, 90, 185]
+      Time		      "0"
+      After		      "5"
+      SampleTime	      "0"
+      Port {
+	PortNumber		1
+	Name			"Input"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      Step
+      Name		      "Step\nDisturbance\n(N.m)"
+      Position		      [225, 220, 255, 250]
+      Time		      "0"
+      After		      "0"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "SubSystem2"
+      Ports		      [2, 2]
+      Position		      [285, 142, 450, 218]
+      ShowName		      off
+      MinAlgLoopOccurrences   off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      MaskPromptString	      "Armature Inductance (L [H])|Armature Resistance (R [ohm])|Motor and Load Inertia (J [kg.m^2])|Viscous damping friction (b[kg.m^2/s])|Back emf constant (Kb [V/rad/s])|Motor constant (Km [N.m/A])"
+      MaskStyleString	      "edit,edit,edit,edit,edit,edit"
+      MaskTunableValueString  "on,on,on,on,on,on"
+      MaskCallbackString      "|||||"
+      MaskEnableString	      "on,on,on,on,on,on"
+      MaskVisibilityString    "on,on,on,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on,on"
+      MaskVarAliasString      ",,,,,"
+      MaskVariables	      "L=@1;R=@2;J=@3;b=@4;Kb=@5;Km=@6;"
+      MaskDisplay	      "disp('DC Motor (Speed Output)')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "0.00056|1.35|0.0037491| 0.0074|0.10|0.10"
+      MaskTabNameString	      ",,,,,"
+      Port {
+	PortNumber		1
+	Name			"Output"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+      System {
+	Name			"SubSystem2"
+	Location		[63, 114, 1003, 618]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In"
+	  Position		  [40, 78, 70, 92]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "Disturbance"
+	  Position		  [510, 140, 540, 150]
+	  NamePlacement		  "alternate"
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Amplifier\nGain"
+	  Position		  [175, 70, 205, 100]
+	  Gain			  "2"
+	  ParameterDataType	  "sfix(16)"
+	  ParameterScaling	  "2^0"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  BusCreator
+	  Name			  "Bus\nCreator"
+	  Ports			  [6, 1]
+	  Position		  [495, 310, 500, 395]
+	  ShowName		  off
+	  Inputs		  "6"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "Current\nSaturation"
+	  Position		  [385, 70, 415, 100]
+	  UpperLimit		  "+4"
+	  LowerLimit		  "-4"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Electrical"
+	  Position		  [295, 67, 355, 103]
+	  Denominator		  "[L R]"
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "Input\nVoltage\nSaturation"
+	  Position		  [110, 70, 140, 100]
+	  UpperLimit		  "+10"
+	  LowerLimit		  "-10"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "J out"
+	  Position		  [105, 325, 130, 345]
+	  Value			  "J"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Kb out"
+	  Position		  [105, 445, 130, 465]
+	  Value			  "Kb"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Km out"
+	  Position		  [105, 405, 130, 425]
+	  Value			  "Km"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "L out"
+	  Position		  [105, 250, 130, 270]
+	  Value			  "L"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Mechanical"
+	  Position		  [570, 66, 655, 104]
+	  Denominator		  "[J b]"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Motor Gain"
+	  Position		  [455, 70, 485, 100]
+	  Gain			  "Km"
+	  ParameterDataType	  "sfix(16)"
+	  ParameterScaling	  "2^0"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Motor feedback"
+	  Position		  [410, 170, 440, 200]
+	  Gain			  "Kb"
+	  ParameterDataType	  "sfix(16)"
+	  ParameterScaling	  "2^0"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "R out"
+	  Position		  [105, 290, 130, 310]
+	  Value			  "R"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum1"
+	  Ports			  [2, 1]
+	  Position		  [515, 75, 535, 95]
+	  NamePlacement		  "alternate"
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|++"
+	  CollapseMode		  "All dimensions"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum3"
+	  Ports			  [2, 1]
+	  Position		  [235, 75, 255, 95]
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  CollapseMode		  "All dimensions"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "b out"
+	  Position		  [105, 365, 130, 385]
+	  Value			  "b"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out"
+	  Position		  [750, 78, 780, 92]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out2"
+	  Position		  [570, 348, 600, 362]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "Disturbance"
+	  SrcPort		  1
+	  DstBlock		  "Sum1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Motor Gain"
+	  SrcPort		  1
+	  DstBlock		  "Sum1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Sum1"
+	  SrcPort		  1
+	  DstBlock		  "Mechanical"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Motor feedback"
+	  SrcPort		  1
+	  Points		  [-160, 0]
+	  DstBlock		  "Sum3"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Electrical"
+	  SrcPort		  1
+	  DstBlock		  "Current\nSaturation"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Mechanical"
+	  SrcPort		  1
+	  Points		  [0, 0; 20, 0]
+	  Branch {
+	    DstBlock		    "Out"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 100]
+	    DstBlock		    "Motor feedback"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Sum3"
+	  SrcPort		  1
+	  DstBlock		  "Electrical"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In"
+	  SrcPort		  1
+	  DstBlock		  "Input\nVoltage\nSaturation"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Amplifier\nGain"
+	  SrcPort		  1
+	  DstBlock		  "Sum3"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Input\nVoltage\nSaturation"
+	  SrcPort		  1
+	  DstBlock		  "Amplifier\nGain"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Current\nSaturation"
+	  SrcPort		  1
+	  DstBlock		  "Motor Gain"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "L out"
+	  SrcPort		  1
+	  Points		  [50, 0; 0, 55]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "R out"
+	  SrcPort		  1
+	  Points		  [30, 0; 0, 25; 315, 0]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "J out"
+	  SrcPort		  1
+	  Points		  [30, 0; 0, 10]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "b out"
+	  SrcPort		  1
+	  Points		  [30, 0; 0, -15]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  4
+	}
+	Line {
+	  SrcBlock		  "Km out"
+	  SrcPort		  1
+	  Points		  [45, 0; 0, -40]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  5
+	}
+	Line {
+	  SrcBlock		  "Kb out"
+	  SrcPort		  1
+	  Points		  [60, 0; 0, -65]
+	  DstBlock		  "Bus\nCreator"
+	  DstPort		  6
+	}
+	Line {
+	  SrcBlock		  "Bus\nCreator"
+	  SrcPort		  1
+	  DstBlock		  "Out2"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum2"
+      Ports		      [2, 1]
+      Position		      [180, 160, 200, 180]
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|+-"
+      CollapseMode	      "All dimensions"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace"
+      Position		      [655, 105, 715, 135]
+      VariableName	      "output"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Structure With Time"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace1"
+      Position		      [650, 50, 710, 80]
+      VariableName	      "input"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Structure With Time"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace2"
+      Position		      [650, 224, 725, 256]
+      VariableName	      "motorParams"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Array"
+    }
+    Line {
+      Name		      "Output"
+      Labels		      [0, 0]
+      SrcBlock		      "SubSystem2"
+      SrcPort		      1
+      Points		      [35, 0]
+      Branch {
+	Points			[0, 140; -300, 0]
+	DstBlock		"Sum2"
+	DstPort			2
+      }
+      Branch {
+	Labels			[1, 0]
+	Points			[150, 0]
+	DstBlock		"To Workspace"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Sum2"
+      SrcPort		      1
+      DstBlock		      "PID Controller"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "PID Controller"
+      SrcPort		      1
+      DstBlock		      "SubSystem2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Step\nDisturbance\n(N.m)"
+      SrcPort		      1
+      Points		      [5, 0; 0, -35]
+      DstBlock		      "SubSystem2"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "PID Controller"
+      SrcPort		      2
+      Points		      [10, 0; 0, 75]
+      DstBlock		      "Bus\nCreator"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Bus\nCreator"
+      SrcPort		      1
+      DstBlock		      "To Workspace2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "SubSystem2"
+      SrcPort		      2
+      Points		      [135, 0]
+      DstBlock		      "Bus\nCreator"
+      DstPort		      1
+    }
+    Line {
+      Name		      "Input"
+      Labels		      [1, 0]
+      SrcBlock		      "Step"
+      SrcPort		      1
+      Points		      [35, 0]
+      Branch {
+	DstBlock		"Sum2"
+	DstPort			1
+      }
+      Branch {
+	Labels			[2, 0]
+	Points			[0, -105]
+	DstBlock		"To Workspace1"
+	DstPort			1
+      }
+    }
+    Annotation {
+      Name		      "Experiment 1: Speed Control"
+      Position		      [347, 21]
+    }
+    Annotation {
+      Name		      "Double-click on the\nDC motor block to modify \nthe motor parameters.\n\nRight-click on the DC motor\nblock and select \"Look under\nMask\" to see the simulation\nDC motor model."
+      Position		      [522, 350]
+      HorizontalAlignment     "left"
+      DropShadow	      on
+    }
+  }
+}

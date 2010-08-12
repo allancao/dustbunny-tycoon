@@ -1,0 +1,72 @@
+%\documentclass[11pt, twocolumn]{enscStyle}
+\documentclass[12pt]{enscStyle}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%#######################################
+% 	Title page info
+%#######################################
+
+\title{Control Homework 2}
+
+\prof{Professor Golnaraghi}
+
+\coursecode{ENSC 384}
+
+\date{\today}
+
+\author{
+	Dan Hendry (30113878) \\
+	Brian Hook (200046894) \\ 
+	John Jamel (301080425)
+}
+
+\begin{document}
+
+%\pagenumbering{roman}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tables
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\tableofcontents
+%\addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
+
+%\cleardoublepage
+
+%\pagenumbering{arabic}
+
+%#######################################
+% 	Main Section
+%#######################################
+
+\input{chapters/Intro}
+
+\input{chapters/BasicCompensation}
+
+\input{chapters/BackEMF}
+
+\input{chapters/Impact}
+
+%#######################################
+%	References
+%#######################################
+
+%\cleardoublepage
+
+%\bibliography{References}
+%\addcontentsline{toc}{chapter}{\hspace{13pt}References}
+
+%#######################################
+%	Appendix
+%#######################################
+
+\begin{appendix}
+\onecolumn
+\input{chapters/simulink}
+\end{appendix}
+
+\end{document}

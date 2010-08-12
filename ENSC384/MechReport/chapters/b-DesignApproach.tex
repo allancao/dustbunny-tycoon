@@ -1,0 +1,54 @@
+\section{Design Approach}
+\label{sec:b}
+
+We began the design process by considering the factors involved in building a truss that would maximize efficiency for applied loads, in both the vertical and horizontal planes. 
+This involved searching for a truss design that would simultaneously minimize both overall deflection and total weight. 
+Using 2D finite element analysis tools available to us, we investigated different truss designs and determined key elements that could produce high efficiency. 
+The 2D analysis was limited in that it made many assumptions and could not be relied upon to give accurate results when applied to three 3D structures. 
+In order to overcome this problem, we specifically chose to design our truss by connecting a 2D vertical truss together with a 2D horizontal truss. 
+In doing so, we were able to greatly simplify the design, and thus permit us to do a thorough mathematical analysis of applied forces in both directions. 
+
+In our first task, ten different vertical structures were analyzed using finite element analysis and an optimal design was chosen (as presented in Lab Report 1) that could carry a maximum of 5N as well as the total weight of the structure. 
+From our analysis, we knew that failure due to deflection was not the most serious problem, though buckling in long members still remained a concern. 
+The vertical design we chose optimized for maximum efficiency while also incorporating resistance to buckling in the vertical plane. 
+One weakness in our analysis that emerged was that we assumed cantilever end conditions instead of the correct conditions for attaching the truss to the motor. 
+This means that we likely underestimated the potential vertical deflection of our structure. %by a factor of 2.5, though given the relatively small deflection of the the truss, we don't consider this to be a critical error.  
+%	We were WAY off
+
+Our second task, and the focus of the rest of this report, was to design a truss to resist deflection in the horizontal plane. 
+Three designs were analyzed in MATLAB %and SolidWorks  %SW was 3D
+and the deflection of the optimal design was verified by analytical hand calculations. 
+The results were compared, and the optimal design was chosen, from which a 3D model (vertical + horizontal) was generated using SolidWorks. 
+We felt that since the horizontal truss didn't carry the weight of the structure, an optimal design would focus more on minimizing the weight rather than minimizing deflection. 
+%	- Not entirely correct
+By minimizing weight, we would use less overall brass, which ensured a sufficient surplus in the event of construction errors. 
+In addition, keeping the weight down was an important design decision for reducing the total strain upon the motor during operation. 
+We also believed that it would give us an advantage during the final competition of faster acceleration/deceleration of the truss due to a lower moment of inertia.
+
+Part of our horizontal design considerations were to create a structure with enough width such that we could add two support members to stabilize the upper members of the vertical truss. 
+These two members are labeled \emph{M2} in figure \ref{fig:diagram}.
+The motor mounts were designed to be attached symmetrically to the truss - two washers at the back and one washer closer to the front. 
+This was done to evenly balance the weight of the truss. 
+Also, to ensure that failure would not occur at the motor mounts, we attached them to the top of brass members which were in in turn attached on top of the horizontal members of the truss. 
+This means that the when the truss is attached to the motor, the weight of the structure is not being borne by the solder that attaches the washers to the brass members.
+%	This should probably go in f-Drawing
+
+The magnet mount was purposely designed to account for potential height differences at the end of the truss. 
+These differences could either come by unforeseen deflection or by alterations in the basic set-up for the competition. 
+In order to accommodate this, we designed our magnet to be mounted slightly higher than required with the option of adding extra washers to bring the magnet lower. 
+This provided a useful degree of flexibility in our design.
+
+Our analysis and qualitative experiments determined that joints were far more likely to fail than the members themselves. 
+This caused us to take special efforts during construction to ensure joints were well soldered. 
+Firstly, we created jigs to hold the brass members in place while solder was applied to joints. 
+Secondly, a grinder was used on members to create close fits at the joints. 
+Lastly, we took special care while soldering to use good technique such that joints would receive maximum support. 
+
+Task throughout the project were broken down as follows:
+\begin{itemize}
+\item Dan Hendry - Created SolidWorks 3D model and contributed to editing of report.
+\item Brian Hook - Evaluation of design alternatives. Contributed to editing of the report.
+\item John Jamel - Performed analytical analysis using Method of Joints. Also contributed to lab and report introductions.
+\item Reza Khatami - Created MATLAB finite element models. Contributed to design approach section of report.
+\end{itemize}
+

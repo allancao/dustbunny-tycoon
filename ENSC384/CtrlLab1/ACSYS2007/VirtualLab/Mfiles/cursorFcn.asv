@@ -1,0 +1,48 @@
+
+% codeblk.cursorFcn
+function [CursorWindow cursorTxt CursorBar] = cursorFcn(guiel, cnst, input, response_type, axlims, mousePos)
+
+
+
+CursorWindow = guiel.CursorWindow;
+cursorTxt = guiel.cursorTxt;
+CursorBar = guiel.CursorBar;
+
+CYAN = 0.95*[1 1 1];
+LIGHTGREY = [0.9 0.9 1];
+
+currTime = get(guiel.oTrace(1),'XData');
+currPos = get(guiel.oTrace(1),'YData');
+
+mouseIndex = find(currTime >= mousePos(1,1),1,'first');
+
+if isempty(mouseIndex) mouseIndex = length(currTime); end
+
+set(CursorBar,'XData',[currTime(mouseIndex) currTime(mouseIndex)],'YData',axlims);
+copyString = ['[' num2str(currTime(mouseIndex),'%15.15f') ',' num2str(currPos(mouseIndex),'%15.15f') ',' num2str(input.signals.values(mouseIndex),'%15.15f') ']' ];
+% hold on
+% plot(guiel.hAX(1),output.time(mouseIndex),output.values(mouseIndex),'rs','MarkerFaceColor','r','MarkerEdgeColor','k','MarkerSize',4);
+set(guiel.oTrace(3),'XData',currTime(mouseIndex),'YData',currPos(mouseIndex),'Marker','s',...
+    'MarkerFaceColor','r','MarkerEdgeColor','k','MarkerSize',4,'EraseMode','xor');
+if ~ishandle(guiel.CursorWindow)
+    CursorWindow = uipanel(guiel.APPWINDOW,'Units','pixels','Position',[cnst.cpwidth+cnst.displaywidth-250 cnst.displayheight/2-100 cnst.bwidth 3*cnst.bheight],...
+        'BackGroundColor',LIGHTGREY,'BorderType','beveledout','ButtonDownFcn','','Visible','on');
+    cursorTxt = uicontrol('Parent',CursorWindow,'Style','text','Units','Normalized','FontSize',6,...
+                'Position',[0 0 1 0.8],'BackGroundColor',CYAN,...
+                'String',strvcat(['Time: ' num2str(currTime(mouseIndex))],[response_type ': ' num2str(currPos(mouseIndex))],['Input: ' num2str(input.signals.values(mouseIndex))]),...
+                'fontsize',10,'FontWeight','Demi','BackgroundColor',CYAN);
+    CursorWindowBar = uicontrol('Parent',CursorWindow,'Style','text','Units','Normalized','Enable','off',...
+                'Position',[0 0.8 1 0.2],'BackGroundColor',LIGHTGREY,'String','Cursor Values',...
+                'ButtonDownFcn','hoverBox(guiel.APPWINDOW,guiel.CursorWindow,gcbo);');
+    uicontrol('Parent',CursorWindow,'Units','Normalized','Style','PushButton','String','X',...
+                'Position',[0.9 0.8 0.09 0.2],'Callback',...
+                'delete(guiel.CursorWindow);set(guiel.oTrace(3),''XData'',[0],''YData'',[0],''Marker'',''none'');set(guiel.hAX(1),''ButtonDownFcn'',''''); eval(codeblk.cleanButtonFcns);');
+    uicontrol('Parent',CursorWindow,'Units','pixels','Style','Pushbutton','String','Copy Point',...
+                'Position',[20 2 handles.cnst.bwidth-40 20],...
+                'UserData',cursorTxt,...
+                'Callback',['clipboard(''copy'',get(get(gcbo,''UserData''),''UserData''));']);
+else
+    set(cursorTxt,'String',strvcat(['Time: ' num2str(currTime(mouseIndex))],[response_type ': ' num2str(currPos(mouseIndex))],['Input: ' num2str(input.signals.values(mouseIndex))]),'UserData',copyString);
+end
+
+drawnow;

@@ -1,0 +1,55 @@
+\section{Verification and Testing}
+
+This section details lab activities to test and verify the circuit. 
+After the provided circuit components were soldered to the PCB, two tests were performed.
+The first found the experimental transfer function between amplifer input voltage and voltage output to the motors.
+The second test estimated the power dissipated by the MOSFET transistors.
+
+\subsection{Amplifier Transfer Function}
+\label{sec:tf}
+
+To obtain the response of the motor to an applied input, the input voltage to the amplifier was adjusted using a potentiometer, 
+Multimeters were used to capture to between the potentiometer output and ground (the amplifier input voltage input) and the associated voltage drop across the motor (output voltage).
+During testing, an unloaded motor was connected to the amplifier.
+By taking roughly thirty measurements for input voltages in the range of 0 to 4V, it was possible to establish the experimental relationship seen in figure 5, for a given circuit input voltage of 8V.
+
+%TODO: Why so different
+
+\subsection{Heat Sink Design}
+
+Given the high-power nature of the MOSFET drive transistors, it is important to ensure they do not exceed their maximum operating temperature.
+To this end, the maximum thermal resistance factor, $\theta_{JA}$ for which the MOSFETs may operate safely was calculated.
+The thermal resistance factor is given by equation \ref{eq:theta}.
+
+\begin{equation}
+	\label{eq:theta}
+	\theta_{JA} = {\frac{T_J - T_A} {P_D}}
+\end{equation}
+
+In this equation $T_A$ represents the ambient temperature, for which $25^{\circ}C$ was used. 
+The $T_J$ value, or maximum silicon junction temperature, is supplied by the manufacturer and was seen to be $175^{\circ}C$ for both types of transistors.
+% TODO: reference datasheet
+The $P_D$ value is the power dissipated and is calculated by subtracting the power measured at the load from the power measured at the supply.
+To determine the load power, two multimeters were used to measure voltage drop across the motor and current through the motor. 
+During the test, the motor was loaded by attempting to hold the shaft.
+The supply power was similarly calculated by measuring input voltage and current to the entire circuit.
+It was assumed that that the power dissipation for components other than the MOSFETs was negligible.
+For a loaded motor, it was seen that, Input: 10v @ 0.65 A, Output: 8.25v @ 0.70 A, producing the $P_D$ value in equation \ref{eq:PD} . 
+
+\begin{equation}
+	\label{eq:PD}
+	P_D =  P_S - P_L = \left({10 V}{\times}{.65 A}) - ({8.25 V}{\times}{.70 A}\right)
+	    { = 0.725 W }
+\end{equation}
+
+Based on the experimentally observed power dissipation, the maximum thermal junction resistance may be calculated.
+This is shown in equation \ref{eq:theta2}, assuming all power is dissipated by a single MOSFET.
+It should be noted that due to the H-bridge design, power dissipation is actually split across two different transistors.
+The Junction-to-Ambient thermal resistance for both MOSFET transistors is less than  $63^{\circ}C/W$.
+As such, it is clear that based on experimentally observed power dissipation, there is no need for a heat sink.
+
+\begin{equation}
+	\label{eq:theta2}
+	\theta_{JA_{MAX}} = \left({175 - 25}\right) {0.725 }
+	{ = 206  ^{\circ}C/W}
+\end{equation}

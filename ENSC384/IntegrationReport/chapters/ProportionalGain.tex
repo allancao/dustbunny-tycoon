@@ -1,0 +1,15 @@
+\section{Determining Proportional Gain}
+
+Due to the nature of the saturating, switching PID as described in section \ref{sec:idealcontroller}, the exact proportional, derivative and integral gains are relatively unimportant compared to the switching thresholds.
+A PID controller is used, essentially, to compensate for error in the switching threshold.
+
+Two system characteristics act to bound the range of values proportional gain is able to take.
+First, it must be large enough saturate the PWM amplifier in order to realize a near optimal controller.
+Second, it cannot be so large that the discreet nature of encoder position measurements becomes apparent in the control signal causing instability or excessive vibration.
+Within this range, it is also limited by a need to keep the natural frequency of the system below that of the software PWM amplifier.
+Finally, it needs to be set large enough to overcome the limited resolution of the software PWM such that fast, accurate positioning is possible.
+%	Somewhat at odds with the sentence above.
+It was the last condition that was the primary driver, after extensive experimentation, for setting proportional gain at 25.
+
+
+%In the beginning, a proportional gain was increased as high as possible to increase response time and saturate controller to achieve desired position. As Proportional gain increases, the overshoot of the system increases, the settling time and rise time of the system remain unchanged. This causes an increase of the natural frequency which can be a problem due to the low PWM frequency.

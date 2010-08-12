@@ -1,0 +1,155 @@
+%\documentclass[11pt, twocolumn]{enscStyle}
+\documentclass[12pt]{enscStyle}
+
+\usepackage{listings}
+
+\renewcommand{\baselinestretch}{1.5}
+
+%#######################################
+% 	Title page info
+%#######################################
+
+\title{Come Together, Right Now} %This is pretty lame
+
+\prof{Professor Siamak Arzanpour}
+
+\coursecode{ENSC 384}
+
+\date{\today}
+
+\author{
+	Dan Hendry (30113878) \\
+	Brian Hook (200046894) \\ 
+	John Jamel (301080425)
+}
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\maketitle
+
+\cleardoublepage
+
+% This will result in the table of contents being shown on page ii
+% Is this what we want?
+\setcounter{page}{2} 
+
+%#######################################
+%	References
+%#######################################
+
+%\addcontentsline{toc}{section}{\hspace{13pt}Contents}
+\addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
+\tableofcontents
+
+\cleardoublepage
+
+%\phantomsection
+%\addcontentsline{toc}{section}{\hspace{13pt} List of Tables}
+%\listoftables
+
+\cleardoublepage
+
+\phantomsection
+%\addcontentsline{toc}{section}{\hspace{13pt} List of Figures}
+\addcontentsline{toc}{chapter}{\hspace{13pt} List of Figures}
+\listoffigures
+
+\cleardoublepage
+
+\pagenumbering{arabic}
+
+%#######################################
+% 	Main Section
+%#######################################
+
+\chapter{Introduction}
+
+\input{chapters/Intro}
+
+\input{chapters/Competition}
+
+%
+% Basics
+%
+\chapter{Support Components}
+
+\input{chapters/Filters}
+
+\input{chapters/Conditioning}
+
+\input{chapters/SoftwarePWM}
+
+\input{chapters/VoltageControl}
+
+%
+% Controller
+%
+\chapter{Controller Design}
+
+\input{chapters/IdealController}
+
+\input{chapters/SwitchingThresholds}
+
+\input{chapters/ProportionalGain}
+
+\input{chapters/DerivativeGain}
+
+\input{chapters/IntegralGain}
+
+\input{chapters/SimulationLimitations}
+
+%
+% Other Simulink Components
+%
+\chapter{Other Simulink and System Components}
+
+\input{chapters/StabilityDetector}
+
+%\input{chapters/StateControl}
+
+\input{chapters/Timing}
+
+
+%
+% Wrapping up
+%
+\chapter{Conclusion} %TODO: Change
+
+\input{chapters/Performance}
+
+\input{chapters/Improvements}
+
+\input{chapters/Conclusion}
+
+%#######################################
+%	References
+%#######################################
+
+\cleardoublepage
+
+\bibliography{References}
+%\addcontentsline{toc}{section}{\hspace{13pt}References}
+\addcontentsline{toc}{chapter}{\hspace{13pt}References}
+
+%#######################################
+%	Appendix
+%#######################################
+
+\cleardoublepage
+
+\begin{appendix}
+
+\renewcommand{\baselinestretch}{1.1}
+
+\input{chapters/FullSimulink}
+
+\cleardoublepage
+
+\input{chapters/StateControllerCode}
+
+\end{appendix}
+
+\end{document}
+

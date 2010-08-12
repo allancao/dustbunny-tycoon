@@ -1,0 +1,123 @@
+% function acsys()
+% acsys()  -	A MATLAB based application written for Automatic Control System 8th edition
+% by Kuo and Golnaraghi, Published by John Wiley and Sons, All rights reserved.
+% This toolbox is used for preliminary
+% control system analyses in time and frequency domains.
+% This application makes extensive use of the GUI capabilities
+% of Matlab R12.1 To run the application, just type "acsys" 
+% at the matlab prompt. After this point all operations are 
+% done with custom GUI controls.
+%
+% © Farid Golnaraghi 2001, 2002, 2007
+% Simon Fraser University, Vancouver, British Columbia, Canada
+% Version 2007
+% Last Modified: 2007/12/05
+%=============================================================
+
+tmp.vmargin = 10;       %Some Layout Variables
+tmp.hmargin = 30;       % - deleted at the end of the file
+tmp.bwidth = 250;
+tmp.bheight = 25;
+
+% Create the Figure
+if ishandle(266)
+    delete(266);
+end
+
+intro.MWKSMENU= figure(266);
+set(intro.MWKSMENU,'Units','Normal','Position',[0.15 0.17 0.65 0.5],...
+	'Name','Automatic Control SYStems (ACSYS) © 2007 Farid Golnaraghi and Benjamin Kuo',...
+   'color',0.8*[.9 .9 1],'NumberTitle','off','Menubar','None','Resize','off',...
+   'CloseRequestFcn','try stop(timerfind(''Tag'',''introtimer'')); delete(timerfind(''Tag'',''introtimer'')); end; closereq');
+
+% Set the position and size
+set(intro.MWKSMENU,'Units','pixels');
+temppos = get(intro.MWKSMENU,'Position');
+temppos = [temppos(1) temppos(2) tmp.bwidth+2*tmp.hmargin 454];
+set(intro.MWKSMENU,'Position',temppos);
+
+% Axes for the little intro animation
+intro.axhandle = axes('Parent',intro.MWKSMENU,'Units','pixels','Position',[40 temppos(4)*3/4-40 temppos(3)-80 temppos(4)/4],...
+    'DeleteFcn','');
+clear temppos;
+
+% Some parametric equation that looks alright...
+intro.adat = [cos(6*[0:0.05:pi]);sin(4*[0:0.05:pi]);sin(6*[0:0.05:pi])];
+
+% Initialize the plot...
+intro.idx = 1;
+intro.idx2 = ceil(length(intro.adat)/2);
+hold on;
+for ii = 1:9
+    intro.trace(ii) = plot3(intro.adat(1,intro.idx+ii),intro.adat(2,intro.idx+ii),intro.adat(3,intro.idx+ii),'Parent',intro.axhandle,...
+        'MarkerSize',ii,'Marker','o','MarkerFaceColor','r','MarkerEdgeColor','r','erasemode','xor');
+    intro.trace2(ii) = plot3(intro.adat(1,intro.idx2+ii),intro.adat(2,intro.idx2+ii),intro.adat(3,intro.idx2+ii),'Parent',intro.axhandle,...
+        'MarkerSize',ii,'Marker','o','MarkerFaceColor','b','MarkerEdgeColor','b','erasemode','xor');
+end
+clear ii;
+
+%Write the name
+text(0,0,0,'$ACSYS$','Fontsize',50,'Interpreter','latex','HorizontalAlignment','center','verticalAlignment','middle','Parent',intro.axhandle);
+text(-1,-1,-0.5476,'$Automatic\cdot Control\cdot SYStems$','Fontsize',11,'Interpreter','latex','HorizontalAlignment','center','verticalAlignment','top','Parent',intro.axhandle);
+hold off;
+
+% Setup the axes
+set(intro.axhandle,'Visible','off','Projection','perspective','CameraPosition',[-11 -11 9],'CameraTarget',[0 0 0],...
+    'Xlim',[-1 1],'Ylim',[-1 1],'Zlim',[-1 1],...
+    'XLimMode','manual','YLimMode','manual','ZLimMode','manual');
+try
+if isvalid(intro.pTimer) 
+    stop(intro.pTimer); 
+    delete(intro.pTimer); 
+end
+end
+% Setup the animation timer
+intro.pTimerPeriod = round(1000/20)/1000;
+intro.pTimer = timer('Period',intro.pTimerPeriod,'BusyMode','drop','Tag','introtimer','TimerFcn',...
+    ['try, varss = get(' num2str(intro.axhandle,'%15.15f') ',''UserData'');'...
+    'intro.pTimer = varss{1}; intro.adat = eval(varss{2});'... 
+    'intro.trace = varss{3}; intro.trace2 = varss{4}; clear varss;'...
+    'intro.step = 1;'...
+    'intro.count = get(intro.pTimer,''UserData'') +1;'...
+    'intro.idx = mod([1:9]+intro.count*intro.step,length(intro.adat)*ones(1,9))+1;'...
+    'intro.idx2 = mod([1:9]+intro.count*intro.step+ceil(length(intro.adat)/2),length(intro.adat)*ones(1,9))+1;'...
+    'for ii = 1:9,'...
+    '    set(intro.trace(ii),''XData'',intro.adat(1,intro.idx(ii)),''Ydata'',intro.adat(2,intro.idx(ii)),''ZData'',intro.adat(3,intro.idx(ii)));'...
+    '    set(intro.trace2(ii),''XData'',intro.adat(1,intro.idx2(ii)),''Ydata'',intro.adat(2,intro.idx2(ii)),''ZData'',intro.adat(3,intro.idx2(ii)));'...
+    'end; clear ii; drawnow;'...
+    'set(intro.pTimer,''UserData'',intro.count); clear intro; end'],...
+    'UserData',1,...
+    'StopFcn','',...
+    'ErrorFcn','',...
+    'ExecutionMode','fixedspacing');
+
+% Store some data in secure places so that the animation can be restarted
+set(intro.axhandle,'UserData',{intro.pTimer , '[cos(6*[0:0.05:pi]);sin(4*[0:0.05:pi]);sin(6*[0:0.05:pi])];', intro.trace , intro.trace2},...
+    'ButtonDownFcn',...
+    ['try start(timerfind(''Tag'',''introtimer'')); end'],'DeleteFcn','');
+
+set(get(intro.axhandle,'Children'),'ButtonDownFcn',...
+    ['try start(timerfind(''Tag'',''introtimer'')); end']);
+
+set(intro.MWKSMENU,'UserData',intro.axhandle,'ButtonDownFcn',...
+    ['try start(timerfind(''Tag'',''introtimer'')); end']);
+
+% Draw the launch buttons
+uicontrol('Units','pixels','Position',[tmp.hmargin 6*tmp.bheight+11*tmp.vmargin tmp.bwidth tmp.bheight],'Style','PushButton',...
+   'String','Transfer function Symbolic','Fontsize',10,'FontWeight','Demi','Callback',['addpath([pwd filesep ''TFSymbolic'']); try stop(timerfind(''Tag'',''introtimer'')); end; tfsymbolic']);
+uicontrol('units','pixels','position',[tmp.hmargin 5*tmp.bheight+10*tmp.vmargin tmp.bwidth tmp.bheight],'style','pushbutton',...
+    'string','State Space Tool','Fontsize',10,'Fontweight','Demi','Callback',['addpath([pwd filesep ''Controls and Statetool'']); try stop(timerfind(''Tag'',''introtimer'')); end; Statetool']);
+uicontrol('Units','pixels','Position',[tmp.hmargin 4*tmp.bheight+9*tmp.vmargin tmp.bwidth tmp.bheight],'Style','PushButton',...
+   'String','Controller Design Tool','Fontsize',10,'FontWeight','Demi','Callback',['addpath([pwd filesep ''Controls and Statetool'']); try stop(timerfind(''Tag'',''introtimer'')); end; Controls']);
+uicontrol('Units','pixels','Position',[tmp.hmargin 3*tmp.bheight+8*tmp.vmargin tmp.bwidth tmp.bheight],'Style','PushButton',...
+   'String','Sim Lab','Fontsize',10,'FontWeight','Demi','Callback',['addpath([pwd filesep ''VirtualLab'']); try stop(timerfind(''Tag'',''introtimer'')); end; simlab']);
+uicontrol('Units','pixels','Position',[tmp.hmargin 2*tmp.bheight+7*tmp.vmargin tmp.bwidth tmp.bheight],'Style','PushButton',...
+   'String','Virtual Lab','Fontsize',10,'FontWeight','Demi','Callback',['addpath([pwd filesep ''VirtualLab'']); try stop(timerfind(''Tag'',''introtimer'')); end; virtuallab']);
+uicontrol('Units','pixels','Position',[tmp.hmargin tmp.bheight+6*tmp.vmargin tmp.bwidth tmp.bheight],'Style','PushButton',...
+   'String','Quarter Car Sim','Fontsize',10,'FontWeight','Demi','Callback',['addpath([pwd filesep ''CarSim'']); try stop(timerfind(''Tag'',''introtimer'')); end; quartercarsim']);
+uicontrol('Units','pixels','Position',[tmp.hmargin 3*tmp.vmargin tmp.bwidth tmp.bheight],'Style','PushButton',...
+   'String','Close and Exit','Fontsize',10,'FontWeight','Demi','Callback','close(gcf);');
+
+clear tmp;
+
+start(intro.pTimer)

@@ -1,0 +1,207 @@
+	%   drawModel  Draws the robot arm setup for the Puck
+    %               drop experiment on the axes that is passed
+	%
+	%   [anim, rd, hght, axHandle] = drawModel(axHandle) returns three
+	%   structures needed with all the constants needed for the animation
+
+
+function [anim, rd, hght, axHandle] = drawModel(axHandle,params,pos)
+
+%--------------------------------------------------
+% Points around Cylinder;
+%--------------------------------------------------
+anim.N = 32;
+anim.phi = 0:2*pi/anim.N:2*pi;
+%--------------------------------------------------
+% Graphic Properties
+%--------------------------------------------------
+anim.lineweight = 1.5;
+anim.color = 'k';
+anim.puckcolor = 'y';
+anim.armcolor = 'r';
+anim.basecolor = 0.9*[1 1 1];
+anim.magcolor = 'b';
+anim.holecolor = 'k';
+anim.standcolor = 'k';
+%--------------------------------------------------
+% Dimensions for graphic
+%--------------------------------------------------
+% Radii in mm
+rd = struct;
+
+hght.dropheight = params(2);
+rd.arm = params(1);
+
+rd.base = rd.arm+100;
+rd.step = rd.arm-100;
+rd.stand = 40;
+rd.hole = 40;
+rd.mag = 17;
+rd.puck = 30;
+rd.d = 30;
+
+% Heights
+hght.bot = 0;
+hght.base = 20;
+hght.step = 25;
+hght.puck = 15;
+hght.mag = hght.dropheight+hght.base+hght.puck;
+hght.stand = hght.mag+40;
+hght.arm = hght.stand+35;
+
+% Define Faces for arm drawing - reference anim.vert
+anim.fac = [1 2 3 4; ...
+            2 6 7 3; ...
+            4 3 7 8; ...
+            1 5 8 4; ...
+            1 2 6 5; ...
+            5 6 7 8];
+% Array of points in a circle
+anim.xb = repmat(cos(anim.phi),[2 1]);
+anim.yb = repmat(sin(anim.phi),[2 1]);
+%--------------------------------------------------
+% Prepare 3D Axes
+%--------------------------------------------------
+
+if ishandle(axHandle)
+    xparent = get(axHandle,'Parent');
+    delete(axHandle);
+end
+MARGIN = 0.02;
+axHandle=axes('Parent',xparent,'Units','Normalized','HitTest','off',...
+                  'Position',pos,'Visible','Off','Drawmode','Normal',...
+                  'GridLineStyle','none','DataAspectRatio',[1 1 1],...
+                  'Projection','Orthographic',...
+                  'XLimMode','manual','Xlim',[-rd.base rd.base],...
+                  'YLimMode','manual','Ylim',[-rd.base rd.base],...
+                  'ZLimMode','manual','Zlim',[0 hght.arm],...
+                  'CameraPosition',[0 -rd.base 2.5*hght.arm],'CameraTarget',[0 0 0],...
+                  'NextPlot','add');
+
+%--------------------------------------------------
+% Draw a Cylinder
+%--------------------------------------------------
+anim.DRAW_CYL = ['surf(axHandle,anim.x, anim.y, anim.z,''FaceColor'',anim.color,''edgecolor'',''none'');'...
+                'patch(''Parent'',axHandle,''XData'',anim.x(1,:),''YData'',anim.y(1,:),'...
+                '''ZData'',anim.z(1,:),''FaceColor'',anim.color,''edgecolor'',''k'',''LineWidth'',anim.lineweight);'...
+                'patch(''Parent'',axHandle,''XData'',anim.x(2,:),''YData'',anim.y(2,:),'...
+                '''ZData'',anim.z(2,:),''FaceColor'',anim.color,''edgecolor'',''k'',''LineWidth'',anim.lineweight);'];
+
+% Assume zero off the start
+anim.dropAngle = 0;
+anim.oC = 0;
+
+%--------------------------------------------------
+% Draw Model Elements
+%--------------------------------------------------
+% Base
+anim.x = rd.base*anim.xb;
+anim.y = rd.base*anim.yb;
+anim.z = [hght.bot*ones(length(anim.x),1)' ; hght.base*ones(length(anim.x),1)'];
+anim.color = anim.basecolor;
+eval(anim.DRAW_CYL);
+
+% Step
+anim.x = rd.step*anim.xb;
+anim.y = rd.step*anim.yb;
+anim.z = [hght.base*ones(length(anim.x),1)' ; hght.step*ones(length(anim.x),1)'];
+anim.color = anim.basecolor;
+eval(anim.DRAW_CYL);
+
+% Stand
+anim.x = rd.stand*anim.xb;
+anim.y = rd.stand*anim.yb;
+anim.z = [hght.step*ones(length(anim.x),1)' ; (hght.stand-0.2)*ones(length(anim.x),1)'];
+anim.color = anim.standcolor;
+eval(anim.DRAW_CYL);
+
+% Hole
+anim.x0 = rd.arm*cosd(anim.dropAngle);
+anim.y0 = rd.arm*sind(anim.dropAngle);
+anim.x = rd.hole*anim.xb + anim.x0;
+anim.y = rd.hole*anim.yb + anim.y0;
+anim.z = (hght.base+0.02)*ones(length(anim.x),1)';
+anim.hole = patch('Parent',axHandle,'XData',anim.x(1,:),'YData',anim.y(1,:),'ZData',anim.z,...
+    'FaceColor',anim.holecolor,'edgecolor','k','LineWidth',anim.lineweight);
+
+% Robot Arm
+anim.x0 = rd.arm*cosd(anim.oC);
+anim.y0 = rd.arm*sind(anim.oC);
+anim.xoff = rd.d*cosd(anim.oC-45);
+anim.yoff = rd.d*sind(anim.oC-45);
+% Define Vertices and Faces
+anim.vert = [ -anim.xoff, -anim.yoff, hght.stand;...
+            anim.yoff, -anim.xoff, hght.stand;...
+            anim.x0+anim.xoff, anim.y0+anim.yoff,hght.stand;...
+            anim.x0-anim.yoff, anim.y0+anim.xoff, hght.stand;...
+            -anim.xoff, -anim.yoff, hght.arm;...
+            anim.yoff, -anim.xoff, hght.arm;...
+            anim.x0+anim.xoff, anim.y0+anim.yoff, hght.arm;...
+            anim.x0-anim.yoff, anim.y0+anim.xoff, hght.arm;];
+anim.swingArm = patch('Parent',axHandle,'Faces',anim.fac,'Vertices',anim.vert,'FaceColor',anim.armcolor);
+
+% Magnet
+anim.x0 = rd.arm*cosd(anim.oC);
+anim.y0 = rd.arm*sind(anim.oC);
+anim.x = rd.mag*anim.xb+anim.x0;
+anim.y = rd.mag*anim.yb+anim.y0;
+anim.z = [hght.mag*ones(length(anim.x),1)' ; hght.stand*ones(length(anim.x),1)'];
+
+anim.mag(1) = surf(axHandle,anim.x, anim.y, anim.z,'FaceColor',anim.magcolor,'edgecolor','none');
+anim.mag(2) = patch('Parent',axHandle,'XData',anim.x(1,:),'YData',anim.y(1,:),'ZData',anim.z(1,:),...
+    'FaceColor',anim.magcolor,'edgecolor','k','LineWidth',anim.lineweight);
+anim.mag(3) = patch('Parent',axHandle,'XData',anim.x(2,:),'YData',anim.y(2,:),'ZData',anim.z(2,:),...
+    'FaceColor',anim.magcolor,'edgecolor','k','LineWidth',anim.lineweight);
+
+
+% Puck
+
+anim.x = rd.puck*anim.xb+rd.arm*cosd(anim.oC);
+anim.y = rd.puck*anim.yb+rd.arm*sind(anim.oC);
+anim.z = [(hght.mag-hght.puck)*ones(length(anim.x),1)' ; hght.mag*ones(length(anim.x),1)'];
+
+anim.puck(1) = surf(axHandle,anim.x, anim.y, anim.z,'FaceColor',anim.puckcolor,'edgecolor','none');
+anim.puck(2) = patch('Parent',axHandle,'XData',anim.x(1,:),'YData',anim.y(1,:),'ZData',anim.z(1,:),...
+    'FaceColor',anim.puckcolor,'edgecolor','k','LineWidth',anim.lineweight);
+anim.puck(3) = patch('Parent',axHandle,'XData',anim.x(2,:),'YData',anim.y(2,:),'ZData',anim.z(2,:),...
+    'FaceColor',anim.puckcolor,'edgecolor','k','LineWidth',anim.lineweight);
+
+
+% Grid
+
+%         vars.angle=0:0.01:2*pi;
+%         x1=0.25*rd.step*cos(vars.angle);
+%         y1=0.25*rd.step*sin(vars.angle);
+%         x2=0.5*rd.step*cos(vars.angle);
+%         y2=0.5*rd.step*sin(vars.angle);
+%         x3=0.75*rd.step*cos(vars.angle);
+%         y3=0.75*rd.step*sin(vars.angle);
+%         x4=rd.step*cos(vars.angle);
+%         y4=rd.step*sin(vars.angle);
+%         x5=25*cos(vars.angle);
+%         y5=25*sin(vars.angle);
+%         
+%         z = hght.step*1.02*ones(1,length(x1));
+% 
+%         
+%         %patch('Parent',guiel.hAX(2),'XData',x4,'YData',y4,'ZData',ones(1,length(x4))'FaceColor',[1 1 1]);
+%   
+%         hold on;              
+%         %axis equal; axis square; axis off;
+%         plot3(axHandle,x1,y1,z,'r:',x2,y2,z,'r:',x3,y3,z,'r:',x4,y4,z,'r-','EraseMode','none');
+%         
+         vars.angle = [0 1/6 2/6 3/6 4/6 5/6 6/6]*pi;
+
+   % Trace six lines through the circular plot
+        plot3(axHandle,rd.base*[cos(vars.angle(1)),cos(-vars.angle(7))],rd.base*[sin(vars.angle(1)),sin(-vars.angle(7))],[hght.base*1.02 hght.base*1.02],'r:');
+        plot3(axHandle,rd.base*[cos(vars.angle(2)),cos(-vars.angle(6))],rd.base*[sin(vars.angle(2)),sin(-vars.angle(6))],[hght.base*1.02 hght.base*1.02],'r:');
+        plot3(axHandle,rd.base*[cos(vars.angle(3)),cos(-vars.angle(5))],rd.base*[sin(vars.angle(3)),sin(-vars.angle(5))],[hght.base*1.02 hght.base*1.02],'r:');
+        plot3(axHandle,rd.base*[cos(vars.angle(4)),cos(-vars.angle(4))],rd.base*[sin(vars.angle(4)),sin(-vars.angle(4))],[hght.base*1.02 hght.base*1.02],'r:');
+        plot3(axHandle,rd.base*[cos(vars.angle(5)),cos(-vars.angle(3))],rd.base*[sin(vars.angle(5)),sin(-vars.angle(3))],[hght.base*1.02 hght.base*1.02],'r:');
+        plot3(axHandle,rd.base*[cos(vars.angle(6)),cos(-vars.angle(2))],rd.base*[sin(vars.angle(6)),sin(-vars.angle(2))],[hght.base*1.01 hght.base*1.01],'r:');
+
+        for ii = 0:30:330
+            text(rd.arm*cosd(ii),rd.arm*sind(ii),hght.step*1.02,num2str(ii),'Fontsize',9,'VerticalAlignment','middle','HorizontalAlignment','center','Parent',axHandle)
+        end
+
+drawnow

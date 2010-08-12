@@ -1,0 +1,107 @@
+%\documentclass[11pt, twocolumn]{enscStyle}
+\documentclass[12pt]{enscStyle}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%#######################################
+% 	Title page info
+%#######################################
+
+\title{Shockingly Fun}
+
+\prof{Professor M. Moallem}
+
+\coursecode{ENSC 384}
+
+\date{\today}
+
+\author{
+	Dan Hendry (30113878) \\
+	Brian Hook (200046894) \\ 
+	John Jamel (301080425) \\
+	Reza Khatami (301075855) 
+}
+
+\begin{document}
+
+%\pagenumbering{roman}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tables
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\tableofcontents
+%\addcontentsline{toc}{chapter}{\hspace{13pt}Contents}
+
+%\cleardoublepage
+
+%\pagenumbering{arabic}
+
+%#######################################
+% 	Main Section
+%#######################################
+
+% Intro
+% 	- John
+\input{chapters/Intro}
+
+%
+%Design and simulation
+%	- Dan
+%
+%Section Oscillator
+% Design
+%	Find R and C Values
+%	Given Frequency
+%	Use f = 1/(T1+ T2) from lecture notes
+%	R3 & R4 From given circuit diagram
+%	Just plug in to equations which were given
+% Simulation 
+%	Using LT Spice
+%	-> Todo
+% 
+\input{chapters/CircuitDesign}
+
+%
+%Section: Verification and Test
+%	- 
+%
+% Gain characteristics
+% 	- Transfer function
+% 	- Data plots
+% 	- How we got them (testing process)
+% 	
+%
+% Heat sink and power dissipation
+% 	- Based on measured power draw
+% 	- How we got them (testing process)
+% 	
+\input{chapters/VerificationAndTesting}
+
+% Conclusion
+% 	- John
+\input{chapters/Conclusion}
+
+
+%#######################################
+%	References
+%#######################################
+
+%\cleardoublepage
+
+%\bibliography{References}
+%\addcontentsline{toc}{chapter}{\hspace{13pt}References}
+
+%#######################################
+%	Appendix
+%#######################################
+
+%\begin{appendix}
+%\onecolumn
+%\input{finalsections/app_code}
+%\end{appendix}
+
+\end{document}

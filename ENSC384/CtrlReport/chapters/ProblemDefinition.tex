@@ -1,0 +1,37 @@
+\section{Problem Definition}
+
+\subsection{Determination of Truss Inertia}
+
+The project's truss inertia, $J_{truss}$ (mass moment of inertia about the rotational axis), is a fundamental quantity that is dependent upon the design specifications of the truss and is initially unknown. 
+Since  $J_{truss}$ appears in mathematical equations associated with the controller, it must be determined in order to allow for proper position/speed control of the system.
+One method for calculating the truss inertia is to model and analyze a given truss design using 3-D CAD software.
+A second way, which can also be used to check modeled values, it to create an experimental test, using parameters provided by the motor manufacturer, to estimate the  $J_{truss}$ value. 
+A possible inaccuracy with this method is that not all system parameters are necessarily known with reasonable certainty. 
+In this report, an experimental method is described and the results are compared with theoretical values determined from the modeling performed at an earlier stage of the project.
+
+\subsection{Controller Design}
+
+%TODO: Fix me.
+%Controller has three parameters to choose $K_p$, $K_i$, $K_d$.
+%Choice of parameters changes system response.
+%Choose based on desired response - in our case overshoot and settling time.
+
+%\emph{Insert simple PID block diagram here}
+
+In order to obtain a suitable overall system response, a feedback controller of some type is needed.
+This report describes the design of a proportional, integral, derivative controller.
+Such controller is accurate and relatively easier to implement and simulate than other types. 
+Furthermore, in most cases the more complex controller is, the more it costs, the less reliable it is, and it is more difficult to design. 
+A PID controller requires careful choice of its gains, $K_p$, $K_d$, and $K_i$, to achieve the desired response and to meet design specifications. 
+
+\subsection{Simulation} 
+
+To verify the system response given controller gains determined using system theory, a simulation is invaluable.
+Simulation allows additional experimentation based on a more realistic model which incorporates saturation in an effort tune gain parameters. 
+A simulation also allows experimentation with no possibility of damaging physical components. %Yuck 
+
+\subsection{Amplifier Control} 
+
+The PWM amplifier being used was found to be generally nonlinear, and difficult to control.
+A new approach to amplifier control is presented which eliminates a large portion of the circuitry. 
+

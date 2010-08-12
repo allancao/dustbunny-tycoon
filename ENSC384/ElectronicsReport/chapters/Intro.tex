@@ -1,0 +1,15 @@
+\section{Introduction}
+
+The Bidirectional DC Motor Speed Controller Kit controls the speed of the DC motor in this project in both the forward and reverse direction. 
+The direction and speed is controlled using a voltage input signal, initial set with a potentiometer. 
+%The pot causes the motor to start spinning in one direction and when the pot turned in the other direction causes the motor to spin in the opposite direction. 
+At a \q{center} input voltage, the motor is at rest.
+For input voltages greater than this value, the voltage applied to the motor increases causing it to spin in one direction.
+For input voltages less than this \q{center} input voltage, the motors direction is reversed.
+
+The motor is controlled by a pulse width modulation (PWM) amplifier and driven by four MOSFET transistors in an H-bridge configuration.
+This report first will briefly discuss the design of the oscillator for a nominal PWM frequency of 300Hz.
+The results of a simulation performed in the LTSpice software package are then presented.
+Secondly, the report will illustrate the input/output characterization of the circuit for a series of input voltages based on data gathered during simulation and testing. 
+Furthermore, the power dissipated by the MOSFETs in the power amplifier will be estimated and the heat sink design will be selected. 
+Finally, the verification and testing will be examined on both the physical circuit and the simulated design.

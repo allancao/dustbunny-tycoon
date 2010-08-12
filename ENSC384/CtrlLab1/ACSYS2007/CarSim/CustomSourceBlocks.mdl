@@ -1,0 +1,1101 @@
+Model {
+  Name			  "CustomSourceBlocks"
+  Version		  5.0
+  SaveDefaultBlockParams  on
+  SampleTimeColors	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  off
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  off
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ExecutionOrder	  off
+  RecordCoverage	  off
+  CovPath		  "/"
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeVarName	  "covCumulativeData"
+  CovCumulativeReport	  off
+  DataTypeOverride	  "UseLocalSettings"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  BlockNameDataTip	  off
+  BlockParametersDataTip  off
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  Created		  "Tue Aug 05 16:01:03 2003"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "bbschube"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Wed Aug 13 10:15:24 2003"
+  ModelVersionFormat	  "1.%<AutoIncrement:7>"
+  ConfigurationManager	  "None"
+  SimParamPage		  "WorkspaceI/O"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  AccelSystemTargetFile	  "accel.tlc"
+  AccelTemplateMakefile	  "accel_default_tmf"
+  AccelMakeCommand	  "make_rtw"
+  TryForcingSFcnDF	  off
+  ExtModeMexFile	  "ext_comm"
+  ExtModeBatchMode	  off
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  BufferReuse		  on
+  RTWExpressionDepthLimit 5
+  SimulationMode	  "normal"
+  Solver		  "ode45"
+  SolverMode		  "Auto"
+  StartTime		  "0.0"
+  StopTime		  "10.0"
+  MaxOrder		  5
+  MaxStep		  "auto"
+  MinStep		  "auto"
+  MaxNumMinSteps	  "-1"
+  InitialStep		  "auto"
+  FixedStep		  "auto"
+  RelTol		  "1e-3"
+  AbsTol		  "auto"
+  OutputOption		  "RefineOutputTimes"
+  OutputTimes		  "[]"
+  Refine		  "1"
+  LoadExternalInput	  off
+  ExternalInput		  "[t, u]"
+  LoadInitialState	  off
+  InitialState		  "xInitial"
+  SaveTime		  off
+  TimeSaveName		  "tout"
+  SaveState		  off
+  StateSaveName		  "xout"
+  SaveOutput		  off
+  OutputSaveName	  "yout"
+  SaveFinalState	  off
+  FinalStateName	  "xFinal"
+  SaveFormat		  "Array"
+  Decimation		  "1"
+  LimitDataPoints	  on
+  MaxDataPoints		  "1000"
+  SignalLoggingName	  "sigsOut"
+  ConsistencyChecking	  "none"
+  ArrayBoundsChecking	  "none"
+  AlgebraicLoopMsg	  "warning"
+  BlockPriorityViolationMsg "warning"
+  MinStepSizeMsg	  "warning"
+  InheritedTsInSrcMsg	  "warning"
+  DiscreteInheritContinuousMsg "warning"
+  MultiTaskRateTransMsg	  "error"
+  SingleTaskRateTransMsg  "none"
+  CheckForMatrixSingularity "none"
+  IntegerOverflowMsg	  "warning"
+  Int32ToFloatConvMsg	  "warning"
+  ParameterDowncastMsg	  "error"
+  ParameterOverflowMsg	  "error"
+  ParameterPrecisionLossMsg "warning"
+  UnderSpecifiedDataTypeMsg "none"
+  UnnecessaryDatatypeConvMsg "none"
+  VectorMatrixConversionMsg "none"
+  InvalidFcnCallConnMsg	  "error"
+  SignalLabelMismatchMsg  "none"
+  UnconnectedInputMsg	  "warning"
+  UnconnectedOutputMsg	  "warning"
+  UnconnectedLineMsg	  "warning"
+  SfunCompatibilityCheckMsg "none"
+  RTWInlineParameters	  off
+  BlockReductionOpt	  on
+  BooleanDataType	  on
+  ConditionallyExecuteInputs on
+  ParameterPooling	  on
+  OptimizeBlockIOStorage  on
+  ZeroCross		  on
+  AssertionControl	  "UseLocalSettings"
+  ProdHWDeviceType	  "Microprocessor"
+  ProdHWWordLengths	  "8,16,32,32"
+  RTWSystemTargetFile	  "grt.tlc"
+  RTWTemplateMakefile	  "grt_default_tmf"
+  RTWMakeCommand	  "make_rtw"
+  RTWGenerateCodeOnly	  off
+  RTWRetainRTWFile	  off
+  TLCProfiler		  off
+  TLCDebug		  off
+  TLCCoverage		  off
+  TLCAssertion		  off
+  BlockDefaults {
+    Orientation		    "right"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      Backlash
+      BacklashWidth	      "1"
+      InitialOutput	      "0"
+      ZeroCross		      on
+    }
+    Block {
+      BlockType		      Derivative
+    }
+    Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ShowAdditionalParam     off
+      ParameterDataTypeMode   "Same as input"
+      ParameterDataType	      "sfix(16)"
+      ParameterScalingMode    "Best Precision: Matrix-wise"
+      ParameterScaling	      "2^0"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      ShowAdditionalParam     off
+      LatchInput	      off
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      Integrator
+      ExternalReset	      "none"
+      InitialConditionSource  "internal"
+      InitialCondition	      "0"
+      LimitOutput	      off
+      UpperSaturationLimit    "inf"
+      LowerSaturationLimit    "-inf"
+      ShowSaturationPort      off
+      ShowStatePort	      off
+      AbsoluteTolerance	      "auto"
+      ZeroCross		      on
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      RandomNumber
+      Mean		      "0"
+      Variance		      "1"
+      Seed		      "0"
+      SampleTime	      "-1"
+      VectorParams1D	      on
+    }
+    Block {
+      BlockType		      Saturate
+      UpperLimit	      "0.5"
+      LowerLimit	      "-0.5"
+      LinearizeAsGain	      on
+      ZeroCross		      on
+    }
+    Block {
+      BlockType		      "S-Function"
+      FunctionName	      "system"
+      PortCounts	      "[]"
+      SFunctionModules	      "''"
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      on
+      Permissions	      "ReadWrite"
+      RTWSystemCode	      "Auto"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
+    }
+    Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      ShowAdditionalParam     off
+      InputSameDT	      on
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+    }
+    Block {
+      BlockType		      Terminator
+    }
+    Block {
+      BlockType		      TransferFcn
+      Numerator		      "[1]"
+      Denominator	      "[1 2 1]"
+      AbsoluteTolerance	      "auto"
+      Realization	      "auto"
+    }
+    Block {
+      BlockType		      TransportDelay
+      DelayTime		      "1"
+      InitialInput	      "0"
+      BufferSize	      "1024"
+      PadeOrder		      "0"
+      TransDelayFeedthrough   off
+    }
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  System {
+    Name		    "CustomSourceBlocks"
+    Location		    [255, 103, 607, 548]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    ZoomFactor		    "100"
+    ReportName		    "simulink-default.rpt"
+    Block {
+      BlockType		      SubSystem
+      Name		      "Base Excitation"
+      Ports		      [2, 2]
+      Position		      [130, 15, 290, 115]
+      TreatAsAtomicUnit	      off
+      System {
+	Name			"Base Excitation"
+	Location		[354, 106, 768, 272]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "Base Accel"
+	  Position		  [25, 43, 55, 57]
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "Voltage"
+	  Position		  [25, 118, 55, 132]
+	  Port			  "2"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "1 DOF \nBase Excitaion System"
+	  Position		  [80, 27, 185, 73]
+	  Numerator		  "[-1]"
+	  Denominator		  "[1 c/M k/M]"
+	}
+	Block {
+	  BlockType		  Derivative
+	  Name			  "Derivative"
+	  Position		  [275, 85, 305, 115]
+	}
+	Block {
+	  BlockType		  Terminator
+	  Name			  "Terminator"
+	  Position		  [80, 115, 100, 135]
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Position"
+	  Position		  [350, 43, 380, 57]
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Velocity"
+	  Position		  [350, 93, 380, 107]
+	  Port			  "2"
+	}
+	Line {
+	  SrcBlock		  "1 DOF \nBase Excitaion System"
+	  SrcPort		  1
+	  Points		  [0, 0; 30, 0]
+	  Branch {
+	    Points		    [0, 50]
+	    DstBlock		    "Derivative"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Position"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Derivative"
+	  SrcPort		  1
+	  DstBlock		  "Velocity"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Base Accel"
+	  SrcPort		  1
+	  DstBlock		  "1 DOF \nBase Excitaion System"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Voltage"
+	  SrcPort		  1
+	  DstBlock		  "Terminator"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "RD"
+      Ports		      [0, 1]
+      Position		      [25, 75, 85, 105]
+      FunctionName	      "RoundedDisplacementFcn"
+      Parameters	      "X, gw, Output, SampleTime"
+      MaskType		      "Rounded Displacement (RD)"
+      MaskDescription	      "Output either the position, velocity or acceler"
+"ation of the Rounded Displacement function.  "
+      MaskHelp		      "Generate RD(t), RD'(t), or RD''(t).\n\n\nDescri"
+"ption:\nRD(t) = A*(1-(1+gwt)e^(-gwt)), where A is the amplitude, g (gamma) is"
+" the intensity factor, w (omega) is the circular frequency.\n\n\nAmplitude: "
+"\nThe amplitude of the pulse, a real number.\n\ngw:\nThe intensity factor mul"
+"tiplied by the frequency (gamma*omega), where T = (2*pi)/gw.\n\nOutput:\nSele"
+"ct whether to output the RD, or its first or second derivative (ie. position,"
+" velocity, or acceleration)."
+      MaskPromptString	      "Amplitude:|Gamma*Omega:|Block Output:|Sample Ti"
+"me"
+      MaskStyleString	      "edit,edit,popup(Position|Velocity|Acceleration)"
+",edit"
+      MaskTunableValueString  "on,on,on,on"
+      MaskCallbackString      "|||"
+      MaskEnableString	      "on,on,on,on"
+      MaskVisibilityString    "on,on,on,on"
+      MaskToolTipString	      "on,on,on,on"
+      MaskVarAliasString      ",,,"
+      MaskVariables	      "X=@1;gw=@2;Output=@3;SampleTime=@4;"
+      MaskInitialization      "t = [0:0.01:1];\ny = 1-(1+t.*8).*exp(-t.*8);"
+      MaskDisplay	      "plot(t,y)"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "normalized"
+      MaskValueString	      "1|5|Acceleration|0"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "SimLab DC Motor"
+      Ports		      [2, 2]
+      Position		      [130, 155, 290, 255]
+      TreatAsAtomicUnit	      off
+      MaskDisplay	      "port_label('input', 1, 'Base Accel')\nport_labe"
+"l('input', 2, 'Voltage')\nport_label('output', 1, 'Position')\nport_label('ou"
+"tput', 2, 'Speed')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      System {
+	Name			"SimLab DC Motor"
+	Location		[-12, 129, 978, 411]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [25, 28, 55, 42]
+	  Port {
+	    PortNumber		    1
+	    Name		    "Base Accel"
+	    TestPoint		    off
+	    LinearAnalysisOutput    off
+	    LinearAnalysisInput	    off
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    off
+	    DataLoggingNameMode	    "SignalName"
+	    DataLoggingDecimateData off
+	    DataLoggingDecimation   "2"
+	    DataLoggingLimitDataPoints off
+	    DataLoggingMaxPoints    "5000"
+	  }
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  Position		  [30, 98, 60, 112]
+	  Port			  "2"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Back EMF"
+	  Position		  [440, 156, 490, 204]
+	  Orientation		  "left"
+	  Gain			  "Kb"
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "Current\nSaturation"
+	  Position		  [340, 90, 370, 120]
+	  UpperLimit		  "+4"
+	  LowerLimit		  "-4"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Current -> Torque"
+	  Position		  [405, 81, 450, 129]
+	  Gain			  "Km"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Current -> Torque1"
+	  Position		  [145, 81, 200, 129]
+	  ShowName		  off
+	  Gain			  "Kamp"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gear Radius"
+	  Position		  [780, 81, 830, 129]
+	  Gain			  "r"
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "Input\nVoltage\nSaturation"
+	  Position		  [80, 90, 110, 120]
+	  UpperLimit		  "+10"
+	  LowerLimit		  "-10"
+	}
+	Block {
+	  BlockType		  Integrator
+	  Name			  "Integrator"
+	  Ports			  [1, 1]
+	  Position		  [880, 90, 910, 120]
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum1"
+	  Ports			  [2, 1]
+	  Position		  [460, 70, 480, 90]
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|-+"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum2"
+	  Ports			  [2, 1]
+	  Position		  [215, 95, 235, 115]
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Transfer Fcn1"
+	  Position		  [535, 78, 745, 132]
+	  ShowName		  off
+	  Numerator		  "[1 0]"
+	  Denominator		  "[(M*r^2 + Jm) (c*r^2 + Bm) (k*r^2)]"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Transfer Fcn2"
+	  Position		  [255, 87, 315, 123]
+	  ShowName		  off
+	  Denominator		  "[La Ra]"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "accel -> Torque1"
+	  Position		  [170, 11, 220, 59]
+	  ShowName		  off
+	  Gain			  "M*r"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [935, 97, 965, 113]
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out2"
+	  Position		  [940, 162, 970, 178]
+	  Port			  "2"
+	}
+	Line {
+	  SrcBlock		  "Current -> Torque"
+	  SrcPort		  1
+	  DstBlock		  "Sum1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Input\nVoltage\nSaturation"
+	  SrcPort		  1
+	  DstBlock		  "Current -> Torque1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Current\nSaturation"
+	  SrcPort		  1
+	  DstBlock		  "Current -> Torque"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Current -> Torque1"
+	  SrcPort		  1
+	  DstBlock		  "Sum2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Back EMF"
+	  SrcPort		  1
+	  Points		  [-210, 0]
+	  DstBlock		  "Sum2"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Sum2"
+	  SrcPort		  1
+	  DstBlock		  "Transfer Fcn2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Transfer Fcn2"
+	  SrcPort		  1
+	  DstBlock		  "Current\nSaturation"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "Base Accel"
+	  Labels		  [0, 0]
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "accel -> Torque1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Input\nVoltage\nSaturation"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Transfer Fcn1"
+	  SrcPort		  1
+	  Points		  [0, 0]
+	  Branch {
+	    Points		    [0, 0; 0, 75]
+	    DstBlock		    "Back EMF"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Gear Radius"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Sum1"
+	  SrcPort		  1
+	  Points		  [25, 0; 0, 25]
+	  DstBlock		  "Transfer Fcn1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Integrator"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Gear Radius"
+	  SrcPort		  1
+	  Points		  [25, 0]
+	  Branch {
+	    DstBlock		    "Integrator"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 65]
+	    DstBlock		    "Out2"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "accel -> Torque1"
+	  SrcPort		  1
+	  Points		  [220, 0]
+	  DstBlock		  "Sum1"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "URP"
+      Ports		      [0, 1]
+      Position		      [25, 20, 85, 50]
+      FunctionName	      "URPFcn"
+      Parameters	      "X, gw, Output, SampleTime"
+      MaskType		      "Unidirectional Rounded Pulse (URP)"
+      MaskDescription	      "Output either the position, velocity or acceler"
+"ation of the Unidirectional Rounded Pulse function.  "
+      MaskHelp		      "Generate URP(t), URP'(t), or URP''(t).\n\n\nDes"
+"cription:\nURP(t) = A*(e^2)/4*(g*w*t)^2*e^-g*w*t, where A is the amplitude, g"
+" (gamma) is the intensity factor, w (omega) is the circular frequency.\n\n\nA"
+"mplitude: \nThe amplitude of the pulse, a real number.\n\ngw:\nThe intensity "
+"factor multiplied by the frequency (gamma*omega), where T = (2*pi)/gw.\n\nOut"
+"put:\nSelect whether to output the URP, or its first or second derivative (ie"
+". position, velocity, or acceleration)."
+      MaskPromptString	      "Amplitude:|Gamma*Omega:|Block Output:|Sample Ti"
+"me"
+      MaskStyleString	      "edit,edit,popup(Position|Velocity|Acceleration)"
+",edit"
+      MaskTunableValueString  "on,on,on,on"
+      MaskCallbackString      "|||"
+      MaskEnableString	      "on,on,on,on"
+      MaskVisibilityString    "on,on,on,on"
+      MaskToolTipString	      "on,on,on,on"
+      MaskVarAliasString      ",,,"
+      MaskVariables	      "X=@1;gw=@2;Output=@3;SampleTime=@4;"
+      MaskInitialization      "t = [0:0.01:1];\ny = exp(2)/4*(11)^2*exp(-t.*11"
+").*t.^2;"
+      MaskDisplay	      "plot(t,y)"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "normalized"
+      MaskValueString	      "1|5|Position|0"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "VirtualLab DC Motor"
+      Ports		      [2, 2]
+      Position		      [130, 290, 290, 390]
+      TreatAsAtomicUnit	      off
+      MaskDisplay	      "port_label('input', 1, 'Base Accel')\nport_labe"
+"l('input', 2, 'Voltage')\nport_label('output', 1, 'Position')\nport_label('ou"
+"tput', 2, 'Speed')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      System {
+	Name			"VirtualLab DC Motor"
+	Location		[-65, 189, 947, 457]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [30, 28, 60, 42]
+	  Port {
+	    PortNumber		    1
+	    Name		    "Base Accel"
+	    TestPoint		    off
+	    LinearAnalysisOutput    off
+	    LinearAnalysisInput	    off
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    off
+	    DataLoggingNameMode	    "SignalName"
+	    DataLoggingDecimateData off
+	    DataLoggingDecimation   "2"
+	    DataLoggingLimitDataPoints off
+	    DataLoggingMaxPoints    "5000"
+	  }
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  Position		  [30, 98, 60, 112]
+	  Port			  "2"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Back EMF"
+	  Position		  [470, 156, 520, 204]
+	  Orientation		  "left"
+	  Gain			  ".1"
+	}
+	Block {
+	  BlockType		  Backlash
+	  Name			  "Backlash"
+	  Position		  [935, 90, 965, 120]
+	  BacklashWidth		  "0.0001"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Band-Limited\nWhite Noise"
+	  Ports			  [0, 1]
+	  Position		  [800, 155, 830, 185]
+	  SourceBlock		  "simulink/Sources/Band-Limited\nWhite Noise"
+	  SourceType		  "Continuous White Noise."
+	  Cov			  "0"
+	  Ts			  "0.01"
+	  seed			  "[23341]"
+	  VectorParams1D	  on
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "Current\nSaturation"
+	  Position		  [285, 90, 315, 120]
+	  NamePlacement		  "alternate"
+	  UpperLimit		  "+4"
+	  LowerLimit		  "-4"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Current -> Torque"
+	  Position		  [330, 80, 350, 130]
+	  Gain			  ".1"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Current -> Torque1"
+	  Position		  [125, 79, 150, 131]
+	  ShowName		  off
+	  Gain			  "2"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gear Radius"
+	  Position		  [735, 88, 760, 122]
+	  Gain			  ".02"
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "Input\nVoltage\nSaturation"
+	  Position		  [80, 90, 110, 120]
+	  UpperLimit		  "+10"
+	  LowerLimit		  "-10"
+	}
+	Block {
+	  BlockType		  Integrator
+	  Name			  "Integrator"
+	  Ports			  [1, 1]
+	  Position		  [795, 90, 825, 120]
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum"
+	  Ports			  [2, 1]
+	  Position		  [840, 95, 860, 115]
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|++"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum1"
+	  Ports			  [2, 1]
+	  Position		  [345, 25, 365, 45]
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|-+"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum2"
+	  Ports			  [2, 1]
+	  Position		  [165, 95, 185, 115]
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Transfer Fcn1"
+	  Position		  [390, 79, 705, 131]
+	  ShowName		  off
+	  Numerator		  "[1 0]"
+	  Denominator		  "[(10*0.02^2 + 1.9e-7) (.9135*.02^2 + 7.92e-"
+"4) (2.1735*.02^2)]"
+	  Port {
+	    PortNumber		    1
+	    Name		    "Velocity"
+	    TestPoint		    off
+	    LinearAnalysisOutput    off
+	    LinearAnalysisInput	    off
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    off
+	    DataLoggingNameMode	    "SignalName"
+	    DataLoggingDecimateData off
+	    DataLoggingDecimation   "2"
+	    DataLoggingLimitDataPoints off
+	    DataLoggingMaxPoints    "5000"
+	  }
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Transfer Fcn2"
+	  Position		  [200, 87, 270, 123]
+	  ShowName		  off
+	  Denominator		  "[5.6e-4 1.35]"
+	}
+	Block {
+	  BlockType		  TransportDelay
+	  Name			  "Transport\nDelay1"
+	  Position		  [795, 15, 825, 45]
+	  DelayTime		  ".001"
+	  BufferSize		  "4096"
+	}
+	Block {
+	  BlockType		  TransportDelay
+	  Name			  "Transport\nDelay2"
+	  Position		  [880, 90, 910, 120]
+	  DelayTime		  ".001"
+	  BufferSize		  "4096"
+	  Port {
+	    PortNumber		    1
+	    Name		    "Position"
+	    TestPoint		    off
+	    LinearAnalysisOutput    off
+	    LinearAnalysisInput	    off
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    off
+	    DataLoggingNameMode	    "SignalName"
+	    DataLoggingDecimateData off
+	    DataLoggingDecimation   "2"
+	    DataLoggingLimitDataPoints off
+	    DataLoggingMaxPoints    "5000"
+	  }
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "accel -> Torque1"
+	  Position		  [160, 11, 210, 59]
+	  ShowName		  off
+	  Gain			  "10*.02"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Position"
+	  Position		  [990, 97, 1020, 113]
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Velocity"
+	  Position		  [990, 22, 1020, 38]
+	  Port			  "2"
+	}
+	Line {
+	  Name			  "Velocity"
+	  Labels		  [0, 0]
+	  SrcBlock		  "Transfer Fcn1"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  Branch {
+	    Points		    [0, 75]
+	    DstBlock		    "Back EMF"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Gear Radius"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Integrator"
+	  SrcPort		  1
+	  DstBlock		  "Sum"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Band-Limited\nWhite Noise"
+	  SrcPort		  1
+	  Points		  [15, 0]
+	  DstBlock		  "Sum"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Sum"
+	  SrcPort		  1
+	  DstBlock		  "Transport\nDelay2"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "Position"
+	  Labels		  [0, 0]
+	  SrcBlock		  "Transport\nDelay2"
+	  SrcPort		  1
+	  DstBlock		  "Backlash"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Current -> Torque"
+	  SrcPort		  1
+	  DstBlock		  "Sum1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Input\nVoltage\nSaturation"
+	  SrcPort		  1
+	  DstBlock		  "Current -> Torque1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Current\nSaturation"
+	  SrcPort		  1
+	  DstBlock		  "Current -> Torque"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Current -> Torque1"
+	  SrcPort		  1
+	  DstBlock		  "Sum2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Back EMF"
+	  SrcPort		  1
+	  Points		  [-290, 0]
+	  DstBlock		  "Sum2"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Sum2"
+	  SrcPort		  1
+	  DstBlock		  "Transfer Fcn2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Transfer Fcn2"
+	  SrcPort		  1
+	  DstBlock		  "Current\nSaturation"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "Base Accel"
+	  Labels		  [0, 0]
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "accel -> Torque1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Input\nVoltage\nSaturation"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Sum1"
+	  SrcPort		  1
+	  Points		  [0, 70]
+	  DstBlock		  "Transfer Fcn1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Transport\nDelay1"
+	  SrcPort		  1
+	  DstBlock		  "Velocity"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Backlash"
+	  SrcPort		  1
+	  DstBlock		  "Position"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Gear Radius"
+	  SrcPort		  1
+	  Points		  [0, 0]
+	  Branch {
+	    DstBlock		    "Integrator"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -75]
+	    DstBlock		    "Transport\nDelay1"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "accel -> Torque1"
+	  SrcPort		  1
+	  DstBlock		  "Sum1"
+	  DstPort		  1
+	}
+      }
+    }
+  }
+}

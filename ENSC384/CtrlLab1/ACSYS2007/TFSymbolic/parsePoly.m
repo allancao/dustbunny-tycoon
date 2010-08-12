@@ -1,0 +1,100 @@
+%parsePoly.m
+% Parses a symbolic polynmial's coefficients from an input string.                                                            
+
+function [S] = parsePoly(Sin,symvars)
+
+        % Try for the easy route
+        [S , ok] = str2num(Sin);
+
+   if ~ok
+        while ~isempty(symvars)
+            [symvar symvars] = strtok(symvars,', ');
+            if any(symvar(1) == ['a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z',...
+                                 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J' 'K' 'L' 'M' 'N' 'O' 'P' 'Q' 'R' 'S' 'T' 'U' 'V' 'W' 'X' 'Y' 'Z'])
+                eval(['syms ' symvar ';']);
+            else
+                disp(['Warning: ' symvar ' is not a valid symbolic variable.  It must start with a letter (a-z,A-Z).']);
+            end
+        end
+        
+        
+        try
+            % Handles input strings in polynomial form like (s^2 + 4*s + k)
+            if any(Sin == 's')
+                syms s;
+                eval(['densym = ' Sin ';']);
+                densym = expand(densym);
+                [p,t] = coeffs(densym);
+                % Find proper place for coefficients
+                for ii = 1:length(t)
+                    tmp = strrep(char(t(ii)),'s^','');
+                    if tmp == '1'
+                        tmp = '0';
+                    elseif tmp == 's'
+                        tmp = '1';
+                    end
+                    t2(ii) = str2num(tmp);
+                end
+                % Create symbolic denominator
+                syms S;
+                for ii = 1:length(p)
+                    S(max(t2)-t2(ii)+1) = p(ii);
+                end
+            else
+                error('Not a proper polynomial.');
+            end
+        catch
+
+
+            % If the conversion is unsuccessful
+
+                tokens = [];
+                tokens2 = [];
+                while ~isempty(Sin)
+                        % Definite token breaks
+                        [Sint Sin] = strtok(Sin,'[,]');
+                        Sint = strrep(Sint,'^-','^ -');
+                        while ~isempty(Sint)
+                            % Potential token breaks
+                             [token Sint] = strtok(Sint,' ');
+                                 if numel(tokens) ~= 0 && length(token) ~= 0
+                                     [height,width] = size(tokens);
+                                     lasttoken = strtrim(tokens(height,:));
+                                     if any(lasttoken(end) == ['*' '/' '-' '+' '^']) || any(token(1) == ['*' '/' '-' '+' '^'])
+                                         tokens = tokens(1:height-1,:);
+                                         token = [lasttoken token];
+                                     end
+                                 end
+                             % Clean up any potential mess
+                             token = strrep(token,'+-','-');
+                             token = strrep(token,'-+','-');
+                             token = strrep(token,'*-','*(-1)*');
+                             token = strrep(token,'/-','*(-1)/');
+                             tokens = strvcat(tokens,token);
+                        end
+                        tokens2 = strvcat(tokens2,tokens);
+                        tokens = [];
+                end
+
+            % Tokens is now a column vector of character strings
+            [height,width] = size(tokens2);
+
+            syms S;
+
+            for x = 1:height
+                [var , ok] = str2num(tokens2(x,:));
+                if ~ok
+                    try
+                        eval(['a =' tokens2(x,:) ';']);
+                        S(x) = a;
+                    catch
+                        disp(['Warning: ' tokens2(x,:) ' is not a valid symbolic expression.']);
+                        err = lasterror;
+                        disp(err.message);
+                    end
+                else
+                    S(x) = var;
+                end
+            end
+        end
+    end

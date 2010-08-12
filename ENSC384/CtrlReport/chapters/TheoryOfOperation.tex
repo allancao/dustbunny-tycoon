@@ -1,0 +1,101 @@
+\section{Theory of Operation}
+
+\subsection{Determination of Truss Inertia}
+
+\subsubsection{Essential Equations}
+The truss inertia was calculated from the time domain equations for system speed-control.
+Equation \ref{eq:w} is the general equation for DC motor speed control closed-loop response, with zero disturbance torque.
+
+\begin{equation}
+\label{eq:w}
+w(t) = AK{\it K_m}\,{\it K_t}\, \left( 1-{{\rm e}^{-{\frac {t \left( {\it K_m}\,
+{\it K_b}+{\it R_a}\,B+{\it K_t}\,{\it K_m}\,K \right) }{{\it Ra}\,
+ \left( {\it J_{truss}}+{\it J_{mag}}+{\it J_{mot}} \right) }}}} \right) 
+ \left( {\it K_m}\,{\it K_b}+{\it R_a}\,B+{\it K_t}\,{\it K_m}\,K \right) ^
+{-1}
+\end{equation}
+
+Equation \ref{eq:B} is the equation for final velocity, $w_{fv}$, that has been solved for the unknown viscous damping constant, $B$.
+
+\begin{equation}
+\label{eq:B}
+B =  \left( {\frac {AK{\it Km}\,{\it Kt}}{{\it w_fv}}}-{\it Km}\,{\it Kb}-{
+\it Kt}\,{\it Km}\,K \right) {{\it Ra}}^{-1}
+\end{equation}
+
+By substituting \ref{eq:B} into \ref{eq:w}, the simplified equation for $w(t)$ is produced.
+
+\begin{equation}
+\label{eq:vel}
+w(t) = {\it w_fv}\, \left( 1-{{\rm e}^{-{\frac {tAK{\it Km}\,{\it Kt}}{{\it 
+w_fv}\,{\it Ra}\, \left( {\it Jtruss}+{\it Jmag}+{\it Jmot} \right) }}}}
+ \right) 
+\end{equation}
+
+In \ref{eq:vel}, the variables that remain after substituting for constants are $t$, $w(t)$, $w_{fv}$, and $A$. 
+
+\subsubsection{Determining the Variables}
+Using a sampling time of 0.001s the velocity was recorded, and to be thorough, testing was done at $A$ values of $5V$, $7.5V$, and $9V$. By taking an average of $w(t)$ values (over a roughly one second period) after final velocity was achieved, a value for $w_{fv}$ was obtained. Finally, $t$ was chosen at $2/3$ final velocity, which provided a  corresponding $w(t)$ value.
+
+By solving \ref{eq:vel} in terms of $J_{truss}$ and substituting the previous constant/variable values, three truss inertia values were calculated for two different arrangements, a) truss alone and b) full truss-magnet. By averaging the results, an experimental determination of $J_{truss}$ is achieved for each arrangement.
+
+\subsection{Controller Design}
+
+The transient response is characterized by behavior such as maximum overshoot, rise time, delay time, and settling time and parameters such as damping ratio ($\zeta$) and natural undamped frequency ($\omega_n$). 
+The main objective is to reach the steady state stage as soon as possible. In order to achieve this goal there certain steps must be taken.
+
+The response of the system becomes more oscillatory with larger percent overshoot as $\zeta$ decreases. 
+Also setting time is affect by $\zeta$ and $\omega_n$ and a practical way to reduce ts is to increase $\omega_n$ while keeping $\zeta$ constant. 
+However, this increased the overshoot which depends only on $\zeta$. 
+To simplify our calculations, the assumption was made to ignore new zero in the transfer function numerator and to use conservative specifications.  %What new zero -> need to say adding derivative gain adds zero
+	% TODO: Reference pole zero plot -> notice zero is further away.
+By increasing or decreasing settling time, $\omega_n$ will decrease or increase accordingly (see Equation \ref{eq:ts}).
+
+In addition, the overshoot changes as $\zeta$ increases or decreases. 
+The gains $K_p$ and $K_d$ were calculated using $\zeta$ and $\omega_n$. 
+These gains made a significant impact on the response of the system. 
+For instance, $K_p$ increases overshoot while it has a small change of the setting time. 
+Furthermore, $K_d$ has minor affect on both the settling time and overshoot. 
+Therefore, to obtain better overall response it is important to add $K_d$ to improve overshoot.
+Finally, the overall performance is generally measured by the step response and steady- state error.
+
+The reason is that $K_i$ is not considered because there is no factors to cause steady-state error in the response such as disturbance torque which assumed to be zero and also it causes an increase in the settling time. 
+Therefore, it was desired that unless integral gain was needed, it be left out.
+
+
+%TODO: Fix Me.
+%Effect of parameters and gains + how they relate.
+%Ignoring new zero in transfer function - new assumption - use conservative specifications.
+%Talk about where PO and Ts equations come from.
+%Ts for $\zeta$ < 0.69 - just a heuristic so results are not perfectly accurate.
+
+%TODO: Add equations, transfer function, second order system
+
+%\begin{equation}
+%	\label{eq:po}
+%	{\it PO}={{\rm e}^{-{\frac {\pi \,\zeta}{\sqrt {1-{\zeta}^{2}}}}}}
+%\end{equation}
+
+%\begin{equation}
+%	\label{eq:ts}
+%	{\it T_s} ={\frac {3.2}{\zeta\,\omega_n}}
+%\end{equation}
+
+%Add pole zero plot.
+
+%\subsection{Simulation}
+
+%TODO: Fix Me.
+%Is this subsection needed?
+%Talk about what the simulation is doing?
+
+\subsection{Amplifier Compensation}
+
+A simulink model to implement software PWM including motor back EMF compensation and simple error correction feedback is shown in figure \ref{fig:swpwm}.
+The core component of this model is the PWM generator; a ramp generator which outputs between zero and one and repeats ever 20 discreet steps . 
+For a system timestep of 0.001 seconds, this gives the software PWM output a nominal frequency of 50 Hz.
+Two feed back mechanisms have been implemented to improve output accuracy. 
+The first is motor back EMF compensation.
+This compensator estimates voltage generated by the spinning motor based on its encoder measured speed and back EMF constant (from Table \ref{tbl:sysparams}.
+The second mechanism is error feedback using a proportional controller.
+The input to this compensator is the actual voltage measured at the motor terminals.	

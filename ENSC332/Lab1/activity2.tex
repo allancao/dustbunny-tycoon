@@ -1,0 +1,40 @@
+\section{Activity 2}
+
+The second activity involved writing an assembly program which added five numbers and stored the result in register A.
+The \emph{ADDA} instruction was used to sum a set of predefined values in-place in accumulator A.
+The program terminated by entering an infinite loop.
+Stepping through the program line by line using the debugger, the final value of accumulator A was verified.
+
+\subsection{Code}
+
+%\begin{verbatim}
+{\footnotesize
+\begin{lstlisting}
+; Example Assembly Language Program
+	ABSENTRY Entry ; absolute assembly application entry point
+; Include derivative-specific definitions
+	INCLUDE 'mc9s12dg256.inc'
+ROMStart EQU $4000 ; absolute address to place my code/constant data
+; $4000 is where code ROM starts for 9s12dx256 up to $7fff
+; variable/data section
+	ORG RAMStart ; RAMStart is defined in mc9s12dj256.inc as $1000
+; Insert here your data definition.
+Counter DS.W 1 ; set aside 1 word for counter in RAM
+FiboRes DS.W 1
+; code section
+	ORG ROMStart
+Entry:
+	LDAA #$42 ; First number to be summed
+	ADDA #$D ; Second through fifth numbers
+	ADDA #$F
+	ADDA #$D
+	ADDA #$F 
+HERE JMP HERE
+	END ; if system has monitor program END can be removed
+;*********************************************
+;* Where to go when reset key is pressed *
+;*********************************************
+	ORG $FFFE
+	DC.W Entry ; Reset Vector
+\end{lstlisting}
+}

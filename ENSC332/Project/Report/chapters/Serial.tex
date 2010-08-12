@@ -1,0 +1,23 @@
+\section{Serial Interface} 
+
+Communication between the HCS12 micro-controller and OLED uses RS-232, a two wire, duplex, asynchronous serial communication protocol.
+Of the two hardware communication blocks provided by the HCS12, SCI1 with external pins PS2 and PS3, was used to send and receive commands as described in section \ref{sec:graphics}.
+Code used to interact with the relevant hardware registers may be seen in appendix \ref{code:interface.c}.
+A list of pertinent registers is given in Table \ref{tbl:serialregisters}.
+
+\begin{table}[htp]
+    \centering
+    \caption{Registers used for serial port control}
+    \label{tbl:serialregisters}
+    \vspace{6pt}
+    \begin{tabular}{ccc}
+        \toprule
+        Register Name & Function & Value \\
+        \midrule 
+        SCI1BDH & MSB baud rate selector & 0 \\
+        SCI1BDL & LSB baud rate selector & 156 (For 9600 Buad) \\
+        SCI1CR1 & Control Register & 0 \\
+        SCI1CR2 & Control Register & 0x0C (enable transmit and receive circuits) \\
+        \bottomrule
+    \end{tabular}
+\end{table}

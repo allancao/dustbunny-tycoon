@@ -1,0 +1,30 @@
+\section{Activity 1}
+
+The first activity required the creation of an assembly program which added the number three to accumulator A fifteen times before exiting.
+The X index register was used as a counter.
+After each addition, it was decremented and if it was not equal to zero, a loop to perform the desired action (adding 3 to register A) was repeated.
+
+The program was simulated in CodeWarrior and was seen to behave as expected.
+At termination, accumulator A had a value of 0x2D and register X a value of 0x0.
+Partial code for this activity is shown below.
+This was run within the template provided in the first lab.
+
+
+\subsection{Code}
+
+{\footnotesize
+\begin{lstlisting}
+
+EntryA1: ;	Entry for the first assignment
+	CLRA ; Clear reg a
+	LDX #$000F ; Load the number of times to count in X
+	
+Loop: ; Loop 15 times
+	ADDA #$03 
+	DEX
+	BNE Loop
+	
+	JMP HERE ; End - go into an infinite loop
+	
+\end{lstlisting}
+}

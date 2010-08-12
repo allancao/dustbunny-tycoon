@@ -1,0 +1,16 @@
+\section{Ball Movement} 
+
+Code related to ball movement is included in the \emph{main.c} file. 
+There are a few important points which should be mentioned.
+First, graphics functions are called int the init fucntion to create an image of a soccer ball.
+Due to limitation of the OLED, the center pentagon had to be drawn as a set of five triangle.
+Additionally, triangle vertices's must be drawn in a counter clockwise order.
+
+Most core logic related to the ball is implemented in its move function.
+Specifically, there is code used to detect when one player scores on another.
+Randomization of the balls direction vector is also performed whenever it hits a players paddle.
+
+%Init - drawing for soccer ball
+%Move - wait to die
+%move - randomization
+%move -speed factor?

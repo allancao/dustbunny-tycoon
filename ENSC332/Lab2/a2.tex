@@ -1,0 +1,38 @@
+\section{Activity 2}
+
+The second activity required the creation of a generic program capable of processing more that 16 million iterations.
+Both index registers, X and Y, were used as decrementing counters. 
+Since each is 16 bits, a loop capable of handling $2^{32}$ (approximately 4.3 billion) iterations was created.
+The code shown below will iterate 6 times and perform a NOP on each iteration.
+The program was simulated using CodeWarrior and was seen to behave as expected, performing a NOP six times before terminating.
+
+
+\subsection{Code}
+
+The number of iterations which will be performed is given by the values of X and Y multiplied before the program executes.
+In this case, 2*3=6 iterations will be performed.
+
+{\footnotesize
+\begin{lstlisting}
+EntryA2: ;Entry point for the second activity
+	CLRA
+	LDX #$0002 ; Outer counter
+	
+LoopOuter:
+	LDY #$0003 ; Inner counter
+LoopInner:
+		
+	;Some action
+    ;This section will be repeated
+	NOP
+	
+	DEY
+	BNE LoopInner
+	DEX
+	BNE LoopOuter
+
+	;End
+	;RTS ; Uncomment when being used for activity 3
+	JMP HERE
+\end{lstlisting}
+}

@@ -1,0 +1,13 @@
+\section{Random Values - Linear Feedback Shift Register} 
+\label{sec:random}
+
+Ball speed has the possibility of being randomized whenever it hits a players paddle.
+A linear feedback shift register is used to generate pseduorandom numbers.
+The basic technique used to generate pseduorandom is given below.
+% Cite source for the LFSR? - wikipedia.
+
+\begin{enumerate}
+\item Start with some seed value.
+\item Each time a random value is requested compute a binary value (1 or 0) based on the current random value. An XOR is performed on three existing bits. %Yuck.
+\item Perform a logical shift on the current random value, sifting in the value of the new bit.
+\end{enumerate}

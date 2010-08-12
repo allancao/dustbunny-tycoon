@@ -1,0 +1,45 @@
+\section{Activity 1}
+
+The first activity involved writing an assembly program which transfered a specific value to eight predefined memory locations.
+The template given in the lab instructions was basis for creating the program.
+A simplistic program was written which loaded the value to be copied to RAM into accumulator A.
+It then used eight separate assembly instructions to write to each memory address.
+After executing the eight store instructions, the program entered an infinite loop, effectively ending execution.
+A potentially more efficient and elegant solution would used a counter use a single store command repeated eight times.
+Regardless, the program performed as expected and using the debugging environment, the value of the RAM locations was seen to have the desired and expected value.
+
+\subsection{Code}
+
+{\footnotesize
+\begin{lstlisting}
+; Assembly Language Program
+	ABSENTRY Entry ; absolute assembly application entry point
+; Include derivative-specific definitions
+	INCLUDE 'mc9s12dg256.inc'
+ROMStart EQU $4000 ; absolute address to place my code/constant data
+; $4000 is where code ROM starts for 9s12dx256 up to $7fff
+; variable/data section
+	ORG RAMStart ; RAMStart is defined in mc9s12dj256.inc as $1000
+; Insert here your data definition.
+Counter DS.W 1 ; set aside 1 word for counter in RAM
+FiboRes DS.W 1
+; code section
+	ORG ROMStart
+Entry:
+	LDAA #$99 ; Load the value to be stored
+	STAA $1220 ; Store it to 8 ram locations
+	STAA $1221
+	STAA $1222
+	STAA $1223
+	STAA $1224
+	STAA $1225
+	STAA $1226
+	STAA $1227
+HERE JMP HERE
+	END ; if system has monitor program END can be removed
+;***************************************************
+;* Where to go when reset key is pressed *
+;***************************************************
+	ORG $FFFE
+	DC.W Entry ; Reset Vector
+\end{lstlisting}

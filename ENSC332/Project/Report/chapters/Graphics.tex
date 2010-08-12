@@ -1,0 +1,63 @@
+\section{OLED and Drawing Commands} 
+\label{sec:graphics}
+
+%Basic introduction
+%   
+The OLED is controlled using simple commands sent over the serial interface. 
+Code related to OLED control is presented in appendix \ref{code:graphics.c}.
+The majority of the file contains functions which wrap serial communication commands to implement specific functionality.
+Three general classes of OLED commands used for this project are detailed in sections \ref{sec:devctrl} through section \ref{sec:animation}.
+Each function follows the following general template.
+
+\begin{enumerate}
+    \item Send command byte
+    \item Send additional data required by the command
+    \item Wait for confirmation to be sent from the OLED (either an ACK or NAK response byte)
+\end{enumerate}
+
+
+\subsection{Device Control Commands}
+\label{sec:devctrl}
+
+Two device control commands are used in this project and implemented in the OLED specific code file (appendix \ref{code:graphics.c}).
+The first is used to initialize the OLED and is part of the initialization function.
+The second, OLED\_Clear(), reverts all drawing commands and causes the screen to reset to its default color (black). 
+
+\subsection{Drawing Commands}
+
+Basic drawing functions were created to interact with the OLEDs graphics processor.
+These include functions to draw lines, rectangles, circles, triangles and single pixels.
+Each requires a set of verticies to be sent consisting of a pair of 16-bit numbers representing x and y coordinates.
+Most functions also require a 16-bit integer representing the color to be sent.
+A function to convert a standard triplet of red, green and blue colors into a specially formatted 16 bit integer is shown.
+Drawing commands are only issued after the screen has been reset.
+During game play, only the function used to animate is used. %Ugh
+
+\subsection{Animation}
+\label{sec:animation}
+
+Gameplay animations are created using a simple copy-paste command.
+During each update cycle (see section \ref{sec:main}), 
+the copy-paste command is used to move one area of the screen to another.
+The screen bounds for gameplay objects, such as the player paddles and the ball, are stored in memory or computed on the fly to be used used when calling this command.
+One limitation when using this technique is that it does move the area of the screen, but copies it. 
+As such, a blank buffer area must be included around each visual object such that when moving it, edges of the object dont appear to be left behind. 
+Without using much more complicated logic, this requirement has three important impacts.
+First of all, it limits the maximum speed objects can move.
+This maximum speed is determined by the size of the buffer area.
+Second, objects never actually appear to touch. 
+This is a particularly poor user interface feature given paddles and balls never contact.
+Finally, it severely limits the extent to which background textures and images may be implemented.
+
+\subsection{Limits of Baud Rate}
+\label{sec:baud}
+
+The OLED module being used was severely constrained based on the baud rate it operates at.
+The only baud rate at which commands could be successfully sent was 9600.
+%	Something about continuously sending commands
+During gameplay, three animation commands are sent each frame. 
+A command to update the balls position, and two to update player paddle locations, conditional on interface buttons having been pressed.
+Due to the limited rate commands can be sent at, the speed of the ball may appear to change if players move their paddles.
+A speed factor is used to correct for this effect.
+The number of pixels the ball is moved each update cycle depends on whether players are also moving their paddles.
+To minimize truncation errors associated with integer math, this speed factor is implicitly considered some decimal value multiplied by 1000.

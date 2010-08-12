@@ -1,0 +1,10 @@
+\section{LCD Scoreboard} 
+
+The LCD, which is used by the system as a scoreboard is controlled through the use of four assembly-coded subroutines, which call another three communications subroutines, (all included in one source file), each of which performs a very specific function.  
+These may be seen in appendix \ref{code:displayScores.asm}.
+The code was split into these subroutines to handle initialization, the left player scoring, the right player scoring, updating the display output, sending communications data to the LCD sending ASCII characters individually, and a delay respectively.
+The reason for the separate right and left player scoring subroutines is that it is very difficult to handle pass-through variables when calling an assembly-coded subroutine from a C-coded program.  
+The initialization code simply sets the memory where the scores are set to zero, and the left and right player scoring subroutines increment their respective scores.  
+The LCD update subroutine sends configuration data to the LCD and converts the player scores to BCD, then to ASCII, and sends them to the LCD, along with some text for the benefit of the user.  
+There are two subroutines which handle sending communications data and characters to be displayed on the LCD, to the port which connects the microcontroller to the LCD, they are separated for ease of coding in other sections, one being use for sending communications data, and the other for sendigng ASCII characters, these subroutines send a single byte at each call, four bits at a time, and largely deal with configuring the port and handling delays to allow communications to take place. 
+There is also a simple delay function which is used by the LCD communications subroutines to provide proper signal pulse width.

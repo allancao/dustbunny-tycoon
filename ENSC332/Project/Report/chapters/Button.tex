@@ -1,0 +1,11 @@
+\section{Button Interfacing} 
+
+Four buttons from the keypad are used as player controls.
+The assembly code used to detect button presses, is given in appendix \ref{code:chkbtnasm.asm}.
+This code is of particular interest as it demonstrates the implementation of a C function, taking two \emph{char} arguments and returning a \emph{char} value, in assembly.
+The function name, \emph{chkbtn} is simply a label.
+The second function argument, is placed in the B register when the function is called.
+It is used to create a mask for selecting the row of column of buttons to check.
+The firs argument, the return value to use, is accessed via the stack using the \emph{4,sp} relative address.
+Four in this case is used to skip over the three stack locations used by the \emph{CALL} instruction.
+Finally, the value the function is to return is loaded into the B register before any \emph{RTC} instruction is used.

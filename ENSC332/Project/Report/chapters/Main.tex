@@ -1,0 +1,20 @@
+\section{Main Program Loop} 
+\label{sec:main}
+
+Core logic for the PONG game is implemented in C.
+A main function containing an infinite loop is documented as part of appendix \ref{code:main.c}.
+This file also contains support functions and code used to control the ball.
+The program starts by performing various initialization actions. These include:
+
+\begin{itemize}
+\item Setting the data direction register for port A such that it may be used to power and detect keypad button presses.
+\item Setting PB0 as an output. It is connected to the OLED module and used for resetting.
+\item Initializing the serial communication hardware used for interfacing to the OLED.
+\item Resetting and initializing the OLED module.
+\item Initializing and displaying the initial score on the LCD display.
+\item Initializing the C structures used for tracking each players paddle.
+\end{itemize}
+
+After initialization, the program enters an \q{outer} infinite loop then an \q{inner} loop which breaks whenever a player scores.
+Each iteration of this inner loop encapsulates an animation step including checking if players are moving their paddles, visually changing paddle locations if necessary, and updating the ball location.
+A speed factor is used to account for the limited baud rate supported by the OLED module; see section \ref{sec:baud} for more information.

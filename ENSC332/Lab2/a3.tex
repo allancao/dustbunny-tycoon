@@ -1,0 +1,44 @@
+\section{Activity 3}
+
+The third activity required the creation of an assembly program to count from \$0 to \$A twice, storing the current value in accumulator B. 
+A short delay between incrementing A was required and implemented using the program from activity 2 as a subroutine.
+For testing, the value of accumulator B was set to PORTB such that it was visible on the LEDs.
+
+The program was simulated using CodeWarrior and was seen to behave as expected.
+It was also loaded to the board and the LEDs were seen to change and count from 0 to A twice.
+When running the program on the Dragon board, the number of iterations performed by the delay loop was increased to slow the count down such that the LED changes were visible.
+
+\subsection{Code}
+
+{\footnotesize
+\begin{lstlisting}
+CountUpSR:
+	INCA
+	CBA ; Compare A and B, is it time to reset? 
+	BNE DoneReset
+	LDAA #$00 ; Reset
+DoneReset:
+	STAA PORTB ; Update output
+	RTS
+
+EntryA3:
+	MOVB #$FF, DDRB
+	MOVB #$FF, PORTB
+	LDAA #$00
+	LDAB #$0B ; When to reset A
+	LDX #$0016 ; Howe many times to increment, 0xA*2
+
+Repeat:
+	JSR CountUpSR
+	
+	PSHA
+	PSHX
+	JSR EntryA2 ; Delay
+	PULX
+	PULA
+	
+	DEX
+	BNE Repeat
+	JMP HERE
+\end{lstlisting}
+}
